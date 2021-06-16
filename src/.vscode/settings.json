@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/emmanuel/rlss_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/gridmap162_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/ego-planner-swarm/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/uwb_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/kinetic/lib/python2.7/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/emmanuel/rlss_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/gridmap162_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/ego-planner-swarm/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/uwb_ws/devel/lib/python2.7/dist-packages",
+        "/home/emmanuel/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/kinetic/lib/python2.7/dist-packages"
+    ]
+}
