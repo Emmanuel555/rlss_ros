@@ -4,7 +4,7 @@
     <arg name="commander_dt" default="0.05"/>
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
-    <arg name="obstacles_directory" default="/home/baskin/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/obstacle_descriptions/2d/empty/"/>
+    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/obstacle_descriptions/2d/empty/"/>
     <arg name="occupancy_grid_step_size" default="[0.5, 0.5]"/>
 
 
@@ -41,7 +41,7 @@
     <arg name="robot_frame" default="base_footprint"/>
     <arg name="parent_frame" default="odom"/>
 
-    <arg name="robot_description_path" default="/home/baskin/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/demo_descriptions/3d/hetero/turtlebot_1.json"/>
+    <arg name="robot_description_path" default="/home/emmanuel/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/demo_descriptions/3d/hetero/turtlebot_1.json"/>
 
 
     <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>

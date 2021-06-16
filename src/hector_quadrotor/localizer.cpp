@@ -30,7 +30,7 @@ void publish() {
         }
     }
 
-    self_state_publisher.publish(msg);
+    self_state_publisher.publish(msg);//self state - where the robot is atm
 
     AlignedBox current_cs = shape->boundingBox(state[0]);
 
@@ -41,7 +41,7 @@ void publish() {
         cs_msg.bbox.max.push_back(current_cs.max()(i));
     }
 
-    collision_shape_publisher.publish(cs_msg);
+    collision_shape_publisher.publish(cs_msg);//collision shapes
 }
 
 

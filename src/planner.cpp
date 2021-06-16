@@ -50,6 +50,7 @@ ros::Time desired_trajectory_set_time = ros::Time(0);
 PiecewiseCurve desired_trajectory;
 StdVectorVectorDIM state;
 unsigned int continuity_upto_degree;
+double testing;
 
 void otherRobotShapeCallback(const rlss_ros::AABBCollisionShape::ConstPtr& msg) {
     if(msg->bbox.min.size() != DIM) {
@@ -79,6 +80,9 @@ void selfStateCallback(const rlss_ros::RobotState::ConstPtr& msg) {
 }
 
 void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr& msg) {
+    if(1+1==2){
+            ROS_INFO_STREAM("callback is working");
+        }
     PiecewiseCurve curve;
     for(std::size_t i = 0; i < msg->pieces.size(); i++) {
         rlss_ros::Bezier piece_msg = msg->pieces[i];
@@ -99,6 +103,8 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr& ms
     }
     desired_trajectory = curve;
     desired_trajectory_set_time = ros::Time::now();
+    testing = 7.0;
+
 }
 
 void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr& msg) {
@@ -372,7 +378,7 @@ int main(int argc, char **argv) {
 
     ros::Subscriber colshapesub = nh.subscribe("/other_robot_collision_shapes", 1000, otherRobotShapeCallback);
     ros::Subscriber statesub = nh.subscribe("self_state", 1, selfStateCallback);
-    ros::Subscriber destrajsub = nh.subscribe("desired_trajectory", 1, desiredTrajectoryCallback);
+    ros::Subscriber destrajsub = nh.subscribe("Pseudo_trajectory", 1, desiredTrajectoryCallback);
     ros::Subscriber occgridsub = nh.subscribe("occupancy_grid", 1, occupancyGridCallback);
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("trajectory", 1);
 
@@ -386,7 +392,17 @@ int main(int argc, char **argv) {
 //            ROS_INFO_STREAM(desired_trajectory_set_time);
 //        }
 
+
+        //if(desired_trajectory_set_time != ros::Time(0)){
+        //    ROS_INFO_STREAM("true");
+        //}
+        //else{
+        //    ROS_INFO_STREAM("false");
+        //}
+        // piecewise curve is empty and needs fixing**** 
+        //ROS_INFO_STREAM (desired_trajectory_set_time);
         if(desired_trajectory_set_time != ros::Time(0)) {
+            //ROS_INFO_STREAM("desired trajectory set.");
             rlss_goal_selector->setOriginalTrajectory(desired_trajectory);
 
             std::vector<AlignedBox> other_robot_shapes;
@@ -439,7 +455,9 @@ int main(int argc, char **argv) {
 //                }
                 ROS_WARN_STREAM("planner failed.");
             }
-        } else {
+        } 
+        else {
+            ROS_INFO_STREAM(testing);
             ROS_INFO_STREAM("desired trajectory not yet set.");
         }
         rate.sleep();

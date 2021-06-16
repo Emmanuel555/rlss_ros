@@ -3,7 +3,7 @@
     <arg name="commander_dt" default="0.05"/>
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
-    <arg name="obstacles_directory" default="/home/baskin/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/empty"/>
+    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/gazebo_sim"/>
     <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
 
 
@@ -46,7 +46,7 @@
     <arg name="kdp" default="3"/>
     <arg name="kdv" default="0"/>
 
-    <arg name="robot_description_path" default="/home/baskin/rlss_ws/src/rlss-ros/third_party/rlss/examples/inputs/demo_descriptions/3d/hetero/hector_1.json"/>
+    <arg name="robot_description_path" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/demo_descriptions/3d/hetero_phy_cf/cf2_25.json"/>
 
 
     <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>
@@ -97,7 +97,7 @@
     <node name="desired_traj_feeder" pkg="rlss_ros" type="static_desired_trajectory_feeder_3d" required="true"  output="screen">
     </node>
 
-    <node pkg="rlss_ros" name="controller" type="hector_quadrotor_controller" required="true" output="screen">
+    <!--<node pkg="rlss_ros" name="controller" type="hector_quadrotor_controller" required="true" output="screen">
         <param name="kpp" value="$(arg kpp)"/>
         <param name="kpv" value="$(arg kpv)"/>
         <param name="kdp" value="$(arg kdp)"/>
@@ -114,7 +114,7 @@
         <arg name="z" value="$(arg z_pos)"/>
         <arg name="name" value="hector$(arg robot_idx)"/>
         <arg name="tf_prefix" value="hector$(arg robot_idx)"/>
-    </include>
+    </include> -->
 
 <!--    <node pkg="rosservice" type="rosservice" name="enable_motors" args='call &#45;&#45;wait enable_motors "enable: true"'>-->
 

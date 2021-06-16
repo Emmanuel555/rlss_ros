@@ -10,7 +10,7 @@ using PiecewiseCurve = splx::PiecewiseCurve<double, DIM>;
 using Bezier = splx::Bezier<double, DIM>;
 using VectorDIM = Bezier::VectorDIM;
 PiecewiseCurve traj;
-ros::Time last_traj_update_time(0);
+ros::Time last_traj_update_time(0);    
 
 void trajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr& msg) {
     PiecewiseCurve curve;

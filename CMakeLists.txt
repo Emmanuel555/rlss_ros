@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.9)
 project(rlss_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -13,12 +13,12 @@ find_package(
     catkin REQUIRED COMPONENTS
         roscpp
         message_generation
-        create2_controller
+        # create2_controller
         nav_msgs
         std_msgs
         tf
         geometry_msgs
-        crazyflie_driver
+        # crazyflie_driver
 )
 
 find_package(
@@ -153,19 +153,19 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/rlss-ros_node.cpp)
 
-add_executable(
-        figure8
-        src/figure8.cpp
-)
-target_link_libraries(
-        figure8
-        ${catkin_LIBRARIES}
-        rlss
-)
-add_dependencies(
-        figure8
-        ${PROJECT_NAME}_generate_messages_cpp
-)
+#add_executable(
+#        figure8
+#        src/figure8.cpp
+#)
+#target_link_libraries(
+#        figure8
+#        ${catkin_LIBRARIES}
+#        rlss
+#)
+#add_dependencies(
+#        figure8
+#        ${PROJECT_NAME}_generate_messages_cpp
+#)
 
 add_executable(
         figure8_3d
@@ -303,18 +303,18 @@ target_compile_definitions(
         DIMENSION=3
 )
 
-add_executable(
-        create2_state_reducer
-        src/create2/state_reducer.cpp
-)
-target_link_libraries(
-        create2_state_reducer
-        ${catkin_LIBRARIES}
-)
-add_dependencies(
-        create2_state_reducer
-        ${PROJECT_NAME}_generate_messages_cpp
-)
+#add_executable(
+#        create2_state_reducer
+#        src/create2/state_reducer.cpp
+#)
+#target_link_libraries(
+#        create2_state_reducer
+#        ${catkin_LIBRARIES}
+#)
+#add_dependencies(
+#        create2_state_reducer
+#        ${PROJECT_NAME}_generate_messages_cpp
+#)
 
 add_executable(
         create2_localizer_2d
@@ -397,10 +397,10 @@ target_link_libraries(
         ${catkin_LIBRARIES}
         rlss
 )
-add_dependencies(
-        hector_quadrotor_localizer
-        ${PROJECT_NAME}_generate_message_cpp
-)
+#add_dependencies(
+#        hector_quadrotor_localizer
+#        ${PROJECT_NAME}_generate_message_cpp
+#)
 
 add_executable(
         hector_quadrotor_controller
@@ -411,23 +411,23 @@ target_link_libraries(
         ${catkin_LIBRARIES}
         rlss
 )
-add_dependencies(
-        hector_quadrotor_controller
-        ${PROJECT_NAME}_generate_message_cpp
-)
+#add_dependencies(
+#        hector_quadrotor_controller
+#        ${PROJECT_NAME}_generate_message_cpp
+#)
 
-add_executable(
-        cf2_state_reducer
-        src/cf2/state_reducer.cpp
-)
-target_link_libraries(
-        cf2_state_reducer
-        ${catkin_LIBRARIES}
-)
-add_dependencies(
-        cf2_state_reducer
-        ${PROJECT_NAME}_generate_messages_cpp
-)
+#add_executable(
+#        cf2_state_reducer
+#        src/cf2/state_reducer.cpp
+#)
+#target_link_libraries(
+#        cf2_state_reducer
+#        ${catkin_LIBRARIES}
+#)
+#add_dependencies(
+#        cf2_state_reducer
+#        ${PROJECT_NAME}_generate_messages_cpp
+#)
 
 add_executable(
         cf2_localizer
@@ -438,10 +438,10 @@ target_link_libraries(
         ${catkin_LIBRARIES}
         rlss
 )
-add_dependencies(
-        cf2_localizer
-        ${PROJECT_NAME}_generate_message_cpp
-)
+#add_dependencies(
+#        cf2_localizer
+#        ${PROJECT_NAME}_generate_message_cpp
+#)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
