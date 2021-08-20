@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 
     PiecewiseCurve traj;
         
-    for(const auto& piece: robot_desc["original_trajectory"]["pieces"]) {
+    for(const auto& piece: robot_desc["original_trajectory"]["pieces"]) { // within original traj
         if(piece["type"] != "BEZIER") { //test with this tmr
             ROS_ERROR_STREAM("piece type should be bezier");
             return 0;

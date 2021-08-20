@@ -181,6 +181,26 @@ add_dependencies(
         ${PROJECT_NAME}_generate_messages_cpp
 )
 
+
+add_executable(
+        borealis_planner_3d
+        src/planner.cpp
+)
+target_compile_definitions(
+        borealis_planner_3d PUBLIC
+        DIMENSION=3
+)
+target_link_libraries(
+        borealis_planner_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        borealis_planner_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+
+
 add_executable(
         planner_3d
         src/planner.cpp
@@ -222,6 +242,25 @@ add_dependencies(
 target_include_directories(
         static_occupancy_grid_feeder_3d PUBLIC
         ${Boost_INCLUDE_DIRS}
+)
+
+
+add_executable(
+        borealis_planner_2d
+        src/planner.cpp
+)
+target_compile_definitions(
+        borealis_planner_2d PUBLIC
+        DIMENSION=2
+)
+target_link_libraries(
+        borealis_planner_2d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        borealis_planner_2d
+        ${PROJECT_NAME}_generate_messages_cpp
 )
 
 

@@ -60,12 +60,12 @@ void otherRobotShapeCallback(const rlss_ros::AABBCollisionShape::ConstPtr& msg) 
     if(robot_idx != self_robot_idx) {
         VectorDIM shape_min, shape_max;
         for(unsigned int i = 0; i < DIM; i++) {
-            shape_min(i) = msg->bbox.min[i];
-            shape_max(i) = msg->bbox.max[i];
+            shape_min(i) = msg->bbox.min[i]; // -0.6, 0.6, 0
+            shape_max(i) = msg->bbox.max[i]; // 0.6, 0.6, 0.25
         }
         other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max);
     }
-}
+} // other robot shapes
 
 void selfStateCallback(const rlss_ros::RobotState::ConstPtr& msg) {
     if(msg->vars.size() != DIM * (continuity_upto_degree + 1)) {
