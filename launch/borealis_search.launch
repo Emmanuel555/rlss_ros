@@ -1,0 +1,32 @@
+<launch>
+
+    <!-- OBSTACLE FEEDER PARAMETERS -->
+    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/gazebo_sim"/>
+    <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
+
+
+    <!-- PLANNER PARAMETERS -->
+    <arg name="workspace_min" default="[50, -50, 0]"/>
+    <arg name="workspace_max" default="[50, 50, 10]"/>
+    <arg name="collision_shape_at_zero_min" default="[-1, -1, -1]"/>
+    <arg name="collision_shape_at_zero_max" default="[1, 1, 1]"/>
+    
+
+    <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>
+    <rosparam param="occupancy_grid_step_size" subst_value="True">$(arg occupancy_grid_step_size)</rosparam>
+    <rosparam param="workspace_min" subst_value="True">$(arg workspace_min)</rosparam>
+    <rosparam param="workspace_max" subst_value="True">$(arg workspace_max)</rosparam>
+    <rosparam param="collision_shape_at_zero_min" subst_value="True">$(arg collision_shape_at_zero_min)</rosparam>
+    <rosparam param="collision_shape_at_zero_max" subst_value="True">$(arg collision_shape_at_zero_max)</rosparam>
+   
+    <node pkg="rlss_ros" name="static_occupancy_grid_feeder" type="static_occupancy_grid_feeder_2d" required="true">
+    </node>
+
+    <node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_2d" required="true" output="screen">
+    </node>
+
+<!--    <node pkg="rosservice" type="rosservice" name="enable_motors" args='call &#45;&#45;wait enable_motors "enable: true"'>-->
+
+<!--    </node>-->
+
+</launch>

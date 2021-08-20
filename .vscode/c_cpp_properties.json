@@ -1,0 +1,54 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/emmanuel/rlss_ws/devel/include/**",
+                "/home/emmanuel/gridmap162_ws/devel/include/**",
+                "/home/emmanuel/ego-planner-swarm/devel/include/**",
+                "/home/emmanuel/uwb_ws/devel/include/**",
+                "/home/emmanuel/catkin_ws/devel/include/**",
+                "/opt/ros/kinetic/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/bspline_opt/include/**",
+                "/home/emmanuel/catkin_ws/src/mavros_controllers/controller_msgs/include/**",
+                "/home/emmanuel/catkin_ws/src/controllers/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/drone_detect/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/plan_manage/include/**",
+                "/home/emmanuel/fiesta_ws/src/FIESTA/include/**",
+                "/home/emmanuel/catkin_ws/src/mavros_controllers/geometric_controller/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_core/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_costmap_2d/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_cv/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_demos/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_filters/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_loader/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_octomap/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_pcl/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_ros/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_rviz_plugin/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_sdf/include/**",
+                "/home/emmanuel/gridmap162_ws/src/grid_map-1.6.2/grid_map_visualization/include/**",
+                "/home/emmanuel/catkin_ws/src/mavros/libmavconn/include/**",
+                "/home/emmanuel/catkin_ws/src/mavros/mavros/include/**",
+                "/home/emmanuel/catkin_ws/src/mavros/mavros_msgs/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/mockamap/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/Utils/multi_map_server/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/path_searching/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/plan_env/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/Utils/pose_utils/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/Utils/quadrotor_msgs/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/so3_control/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/so3_quadrotor_simulator/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/planner/traj_utils/include/**",
+                "/home/emmanuel/ego-planner-swarm/src/uav_simulator/Utils/uav_utils/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
