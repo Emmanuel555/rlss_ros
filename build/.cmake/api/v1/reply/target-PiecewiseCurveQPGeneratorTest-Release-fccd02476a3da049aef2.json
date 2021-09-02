@@ -1,0 +1,336 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "third_party/rlss/third_party/splx/PiecewiseCurveQPGeneratorTest"
+		}
+	],
+	"backtrace" : 4,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"generate_test",
+			"include",
+			"target_link_libraries",
+			"add_definitions",
+			"find_package",
+			"configure_shared_library_build_settings"
+		],
+		"files" : 
+		[
+			"third_party/rlss/third_party/splx/test/Tests.cmake",
+			"third_party/rlss/third_party/splx/CMakeLists.txt",
+			"/opt/ros/kinetic/share/rosconsole/cmake/rosconsole-extras.cmake",
+			"/opt/ros/kinetic/share/rosconsole/cmake/rosconsoleConfig.cmake",
+			"/opt/ros/kinetic/share/roscpp/cmake/roscppConfig.cmake",
+			"/opt/ros/kinetic/share/catkin/cmake/catkinConfig.cmake",
+			"CMakeLists.txt",
+			"/opt/ros/kinetic/share/catkin/cmake/tools/libraries.cmake",
+			"/opt/ros/kinetic/share/catkin/cmake/all.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 25,
+				"parent" : 0
+			},
+			{
+				"file" : 0,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 2,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 7,
+				"parent" : 3
+			},
+			{
+				"file" : 6
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 12,
+				"parent" : 6
+			},
+			{
+				"file" : 5,
+				"parent" : 7
+			},
+			{
+				"command" : 5,
+				"file" : 5,
+				"line" : 76,
+				"parent" : 8
+			},
+			{
+				"file" : 4,
+				"parent" : 9
+			},
+			{
+				"command" : 5,
+				"file" : 4,
+				"line" : 197,
+				"parent" : 10
+			},
+			{
+				"file" : 3,
+				"parent" : 11
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 222,
+				"parent" : 12
+			},
+			{
+				"file" : 2,
+				"parent" : 13
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 12,
+				"parent" : 14
+			},
+			{
+				"command" : 2,
+				"file" : 5,
+				"line" : 20,
+				"parent" : 8
+			},
+			{
+				"file" : 8,
+				"parent" : 16
+			},
+			{
+				"command" : 6,
+				"file" : 8,
+				"line" : 174,
+				"parent" : 17
+			},
+			{
+				"command" : 4,
+				"file" : 7,
+				"line" : 18,
+				"parent" : 18
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 14
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-O3 -DNDEBUG"
+				},
+				{
+					"fragment" : "-std=gnu++1z"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 15,
+					"define" : "ROSCONSOLE_BACKEND_LOG4CXX"
+				},
+				{
+					"backtrace" : 19,
+					"define" : "ROS_BUILD_SHARED_LIBS=1"
+				},
+				{
+					"backtrace" : 20,
+					"define" : "ROS_PACKAGE_NAME=\"rlss_ros\""
+				},
+				{
+					"backtrace" : 5,
+					"define" : "__CLANG_SUPPORT_DYN_ANNOTATION__"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 5,
+					"path" : "/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/third_party/splx/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/third_party/splx/third_party/qp_wrappers/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/home/emmanuel/catkin_ws/devel/include/eigen3"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/third_party/splx/third_party/abseil-cpp"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					4
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "absl_dynamic_annotations::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_raw_logging_internal::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_log_severity::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_base::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_spinlock_wait::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_throw_delegate::@5b3dd587cb711f6e8f95"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_int128::@90f4d8b2759f2b4f4dcb"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_strings::@1f1490ac5c1cb7b28036"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "absl_strings_internal::@1f1490ac5c1cb7b28036"
+		}
+	],
+	"id" : "PiecewiseCurveQPGeneratorTest::@ebf69d6d30d26613125b",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-O3 -DNDEBUG",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/strings:/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base:/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/numeric",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/strings/libabsl_strings.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/strings/libabsl_strings_internal.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_base.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_dynamic_annotations.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_spinlock_wait.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/numeric/libabsl_int128.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_throw_delegate.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_raw_logging_internal.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "third_party/rlss/third_party/splx/third_party/abseil-cpp/absl/base/libabsl_log_severity.so",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "PiecewiseCurveQPGeneratorTest",
+	"nameOnDisk" : "PiecewiseCurveQPGeneratorTest",
+	"paths" : 
+	{
+		"build" : "third_party/rlss/third_party/splx",
+		"source" : "third_party/rlss/third_party/splx"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "third_party/rlss/third_party/splx/test/PiecewiseCurveQPGeneratorTest.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

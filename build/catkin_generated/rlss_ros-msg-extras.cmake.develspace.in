@@ -1,0 +1,2 @@
+set(rlss_ros_MESSAGE_FILES "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/RobotState.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/OccupancyGrid.msg")
+set(rlss_ros_SERVICE_FILES "")
