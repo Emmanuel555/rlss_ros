@@ -23,24 +23,15 @@ ros::Publisher pub;
 rlss_ros::PiecewiseTrajectory msg;   //msg needs fixing 
 
 
+
 bool setDesiredTrajectory(std_srvs::Empty::Request& req, std_srvs::Empty::Request& res) {
     pub.publish(msg);
     return true;
 }
 
-void dynamicReconfigureCallback(controllers::setTrajectoryConfig &config, uint32_t level){
+void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
     last_yaw = config.yaw_d / 180 * M_PI;
     trajectory_type = config.trajectory;
-    if(level == 0){
-        waypoint = 0;
-        if(trajectory_type == 6)
-            t = M_PI/2;
-        else
-            if(trajectory_type == 7)
-                t = 1;
-            else
-                t = 0;
-    }
 
     speed = config.speed;
     scale = config.scale;
@@ -49,9 +40,20 @@ void dynamicReconfigureCallback(controllers::setTrajectoryConfig &config, uint32
     yaw_d = initial_local_yaw + pose_d(3); // + pose_d(3) ...... checked
 }
 
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "static_desired_trajectory_feeder");
     ros::NodeHandle nh;
+
+    //dynamic reconfigure callback
+    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig> server;
+    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig>::CallbackType f;
+    f = boost::bind(&dynamicReconfigureCallback, _1, _2);
+    server.setCallback(f);
+
+    //subscription
+    ros::Subscriber hover_pub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, localPosCallback);
+    
     ros::Publisher Bezpub = nh.advertise<rlss_ros::Bezier>("Bezier_trajectory", 1); //just added 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
     ros::Publisher duration_demo = nh.advertise<std_msgs::Float64>("duration", 1); //just added

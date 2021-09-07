@@ -47,7 +47,8 @@
                 "/usr/include/**"
             ],
             "name": "ROS",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerPath": "/usr/bin/gcc-10"
         }
     ],
     "version": 4
