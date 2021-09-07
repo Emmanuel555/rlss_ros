@@ -40,6 +40,13 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
     yaw_d = initial_local_yaw + pose_d(3); // + pose_d(3) ...... checked
 }
 
+void hoverCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    auto local_pos = *msg;
+    pose_act << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
+}
+
+
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "static_desired_trajectory_feeder");
@@ -52,7 +59,7 @@ int main(int argc, char** argv) {
     server.setCallback(f);
 
     //subscription
-    ros::Subscriber hover_pub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, localPosCallback);
+    ros::Subscriber hover_pub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, hoverCallback);
     
     ros::Publisher Bezpub = nh.advertise<rlss_ros::Bezier>("Bezier_trajectory", 1); //just added 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
