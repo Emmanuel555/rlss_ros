@@ -8,12 +8,36 @@
 #include <rlss_ros/PiecewiseTrajectory.h>
 #include <rlss_ros/Bezier.h>
 #include "../third_party/rlss/third_party/json.hpp"
+#include <rlss/RLSS.hpp>
+#include <rlss/OccupancyGrid.hpp>
 #include <fstream>
 #include <ios>
 #include <std_srvs/Empty.h>
 #include <std_msgs/Float64.h>
+#include <eigen3/Eigen/Dense>
 
 constexpr unsigned int DIM = DIMENSION;
+
+using namespace geometry_msgs;
+using namespace std;
+using namespace ros;
+using namespace Eigen;
+using Eigen::Vector4d;
+
+Vector4d local_pose_0;
+Vector4d local_pose_1;
+Vector4d goal_pose_0;
+Vector4d goal_pose_1;
+Vector4d goal_pose_2;
+
+int trajectory_target;
+
+
+
+using RLSS = rlss::RLSS<double, DIM>;
+using OccupancyGrid = rlss::OccupancyGrid<double, DIM>;
+using StdVectorVectorDIM = OccupancyGrid::StdVectorVectorDIM;
+using VectorDIM = OccupancyGrid::VectorDIM;
 
 using Bezier = splx::Bezier<double, DIM>;
 using PiecewiseCurve = splx::PiecewiseCurve<double, DIM>;
@@ -23,15 +47,13 @@ ros::Publisher pub;
 rlss_ros::PiecewiseTrajectory msg;   //msg needs fixing 
 
 
-
 bool setDesiredTrajectory(std_srvs::Empty::Request& req, std_srvs::Empty::Request& res) {
     pub.publish(msg);
     return true;
 }
 
 void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
-    last_yaw = config.yaw_d / 180 * M_PI;
-    trajectory_type = config.trajectory;
+    trajectory_target = config.trajectory_target;
 
     speed = config.speed;
     scale = config.scale;
@@ -40,10 +62,19 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
     yaw_d = initial_local_yaw + pose_d(3); // + pose_d(3) ...... checked
 }
 
-void hoverCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+std::vector<StdVectorVectorDIM> states;
+
+
+void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    pose_act << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
+    local_pose_0 << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
+}
+
+void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    auto local_pos = *msg;
+    local_pose_1 << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
 }
 
 
@@ -59,8 +90,9 @@ int main(int argc, char** argv) {
     server.setCallback(f);
 
     //subscription
-    ros::Subscriber hover_pub = nh.subscribe<geometry_msgs::PoseStamped>("mavros/local_position/pose", 10, hoverCallback);
-    
+    ros::Subscriber hover_pub_0 = nh.subscribe<geometry_msgs::PoseStamped>("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe<geometry_msgs::PoseStamped>("/uav1/mavros/local_position/pose", 10, hover1Callback);
+
     ros::Publisher Bezpub = nh.advertise<rlss_ros::Bezier>("Bezier_trajectory", 1); //just added 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
     ros::Publisher duration_demo = nh.advertise<std_msgs::Float64>("duration", 1); //just added

@@ -14,5 +14,8 @@
 		"/home/emmanuel/uwb_ws/devel/lib/python2.7/dist-packages",
 		"/home/emmanuel/catkin_ws/devel/lib/python2.7/dist-packages",
 		"/opt/ros/kinetic/lib/python2.7/dist-packages"
-	]
+	],
+	"files.associations": {
+		"vector": "cpp"
+	}
 }
