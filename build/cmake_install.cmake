@@ -168,6 +168,22 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/rlss_ros" TYPE FILE FILES "/home/emmanuel/rlss_ws/src/rlss_ros/build/devel/include/rlss_ros/setTargetsConfig.h")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rlss_ros" TYPE FILE FILES "/home/emmanuel/rlss_ws/src/rlss_ros/build/devel/lib/python2.7/dist-packages/rlss_ros/__init__.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  execute_process(COMMAND "/usr/bin/python2" -m compileall "/home/emmanuel/rlss_ws/src/rlss_ros/build/devel/lib/python2.7/dist-packages/rlss_ros/cfg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/python2.7/dist-packages/rlss_ros" TYPE DIRECTORY FILES "/home/emmanuel/rlss_ws/src/rlss_ros/build/devel/lib/python2.7/dist-packages/rlss_ros/cfg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/emmanuel/rlss_ws/src/rlss_ros/build/catkin_generated/installspace/rlss_ros.pc")
 endif()
 

@@ -13,12 +13,14 @@ find_package(
     catkin REQUIRED COMPONENTS
         roscpp
         message_generation
+        dynamic_reconfigure
         # create2_controller
         nav_msgs
         std_msgs
         tf
         geometry_msgs
         # crazyflie_driver
+        sensor_msgs
 )
 
 find_package(
@@ -88,7 +90,11 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
     DEPENDENCIES
-    std_msgs  # Or other packages containing msgs
+    std_msgs
+    geometry_msgs
+    sensor_msgs
+    nav_msgs
+    # Or other packages containing msgs
 )
 
 ################################################
@@ -111,6 +117,10 @@ generate_messages(
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/setTargets.cfg
+)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -123,7 +133,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES rlss-ros
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs nav_msgs
 #  DEPENDS Boost
 )
 
@@ -427,29 +437,57 @@ target_compile_definitions(
         DIMENSION=3
 )
 
+
 add_executable(
-        hector_quadrotor_localizer
-        src/hector_quadrotor/localizer.cpp
+        dynamic_desired_target_feeder_3d
+        src/dynamic_desired_target_feeder.cpp
 )
 target_link_libraries(
-        hector_quadrotor_localizer
+        dynamic_desired_target_feeder_3d
         ${catkin_LIBRARIES}
         rlss
 )
+add_dependencies(
+        dynamic_desired_target_feeder_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        dynamic_desired_target_feeder_3d PUBLIC
+        DIMENSION=3
+)
+
+
+
+
+
+
+
+
+
+
+#add_executable(
+#        hector_quadrotor_localizer
+#        src/hector_quadrotor/localizer.cpp
+#)
+#target_link_libraries(
+#        hector_quadrotor_localizer
+#        ${catkin_LIBRARIES}
+#        rlss
+#)
 #add_dependencies(
 #        hector_quadrotor_localizer
 #        ${PROJECT_NAME}_generate_message_cpp
 #)
 
-add_executable(
-        hector_quadrotor_controller
-        src/hector_quadrotor/controller.cpp
-)
-target_link_libraries(
-        hector_quadrotor_controller
-        ${catkin_LIBRARIES}
-        rlss
-)
+#add_executable(
+#        hector_quadrotor_controller
+#        src/hector_quadrotor/controller.cpp
+#)
+#target_link_libraries(
+#        hector_quadrotor_controller
+#        ${catkin_LIBRARIES}
+#        rlss
+#)
 #add_dependencies(
 #        hector_quadrotor_controller
 #        ${PROJECT_NAME}_generate_message_cpp

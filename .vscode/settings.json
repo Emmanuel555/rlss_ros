@@ -16,6 +16,12 @@
 		"/opt/ros/kinetic/lib/python2.7/dist-packages"
 	],
 	"files.associations": {
-		"vector": "cpp"
-	}
+		"vector": "cpp",
+		"deque": "cpp",
+		"*.tcc": "cpp",
+		"forward_list": "cpp",
+		"unordered_map": "cpp",
+		"system_error": "cpp"
+	},
+	"ros.distro": "melodic"
 }

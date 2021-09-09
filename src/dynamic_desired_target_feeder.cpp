@@ -15,6 +15,7 @@
 #include <std_srvs/Empty.h>
 #include <std_msgs/Float64.h>
 #include <eigen3/Eigen/Dense>
+#include <rlss_ros/setTargetsConfig.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -24,60 +25,39 @@ using namespace ros;
 using namespace Eigen;
 using Eigen::Vector4d;
 
-Vector4d local_pose_0;
-Vector4d local_pose_1;
-Vector4d goal_pose_0;
-Vector4d goal_pose_1;
-Vector4d goal_pose_2;
-
-int trajectory_target;
-
-
-
 using RLSS = rlss::RLSS<double, DIM>;
 using OccupancyGrid = rlss::OccupancyGrid<double, DIM>;
 using StdVectorVectorDIM = OccupancyGrid::StdVectorVectorDIM;
-using VectorDIM = OccupancyGrid::VectorDIM;
-
 using Bezier = splx::Bezier<double, DIM>;
 using PiecewiseCurve = splx::PiecewiseCurve<double, DIM>;
 using VectorDIM = Bezier::VectorDIM;
 
-ros::Publisher pub;
-rlss_ros::PiecewiseTrajectory msg;   //msg needs fixing 
-
-
-bool setDesiredTrajectory(std_srvs::Empty::Request& req, std_srvs::Empty::Request& res) {
-    pub.publish(msg);
-    return true;
-}
+// Trajectory Target
+StdVectorVectorDIM goal_pose;
+StdVectorVectorDIM current_pose;
+int trajectory_target = 0;
+double velocity = 0;
+int number_of_drones = 0;
 
 void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
     trajectory_target = config.trajectory_target;
-
-    speed = config.speed;
-    scale = config.scale;
-
-    pose_d << config.x_d, config.y_d, config.z_d, config.yaw_d / 180 * M_PI;
-    yaw_d = initial_local_yaw + pose_d(3); // + pose_d(3) ...... checked
+    velocity = config.intended_velocity;
+    number_of_drones = config.number_of_drones; 
+    goal_pose[0] << config.x_0, config.y_0, config.z_0;
+    goal_pose[1] << config.x_1, config.y_1, config.z_1;
 }
-
-std::vector<StdVectorVectorDIM> states;
-
 
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    local_pose_0 << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
+    current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    local_pose_1 << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z, 0;
+    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
-
-
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "static_desired_trajectory_feeder");
@@ -92,104 +72,50 @@ int main(int argc, char** argv) {
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe<geometry_msgs::PoseStamped>("/uav0/mavros/local_position/pose", 10, hover0Callback);
     ros::Subscriber hover_pub_1 = nh.subscribe<geometry_msgs::PoseStamped>("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    // dso convex hull algo would be added here
 
-    ros::Publisher Bezpub = nh.advertise<rlss_ros::Bezier>("Bezier_trajectory", 1); //just added 
-    ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
+    //publishing
+    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
     ros::Publisher duration_demo = nh.advertise<std_msgs::Float64>("duration", 1); //just added
-    ros::Subscriber  = nh.subscribe("occupancy_grid", 1, occupancyGridCallback) 
-    ros::Rate rate(1);
-    
-    std::string robot_description_path;
-    nh.getParam("robot_description_path", robot_description_path); // source of initial control points
+    ros::Rate rate(10);
 
-    std::fstream json_fs(robot_description_path, std::ios_base::in);
-    nlohmann::json robot_desc = nlohmann::json::parse(json_fs); // read in this json file
-
-    PiecewiseCurve traj;
-        
-    for(const auto& piece: robot_desc["original_trajectory"]["pieces"]) { // within original traj
-        if(piece["type"] != "BEZIER") { //test with this tmr
-            ROS_ERROR_STREAM("piece type should be bezier");
-            return 0;
-        }
-
-        double duration = piece["duration"]; //duration
-        duration_demo.publish(duration);
-        //double extension = piece["duration"];
-        ROS_INFO_STREAM (duration); // not looping ** need to fix this shit
-
-        Bezier bez(duration);
-        for(const auto& cpt: piece["control_points"]) { // control point consist of x y z
-            std::vector<double> cptv = cpt;
-            if(cptv.size() != DIM) {
-                ROS_ERROR_STREAM("cpt size does not match DIM");
-                return 0;
-            }
-            VectorDIM cpt_vec;
-
-            for(unsigned int i = 0; i < DIM; i++) {
-                cpt_vec(i)= cptv[i];
-            }
-            bez.appendControlPoint(cpt_vec);
-            //std::cout << bez.duration; // not looping ** need to fix this shit
-            //std::cout << cpt_vec; 
-            //ROS_INFO_STREAM (duration); // not looping ** need to fix this shit
-            //std::cout << typeid(DIM).name() << std::endl;
-
-        }
-
-        traj.addPiece(bez); //total based on json file shud have 1 piece 
-        //duration_demo.publish(duration);
-        //std::cout << msg.pieces.duration; // not looping ** need to fix this shit 
-        
-    }
-
-    pub = nh.advertise<rlss_ros::PiecewiseTrajectory>("desired_trajectory", 1);
+    //control_pts setup
+    int starting_pt = 0;
+    StdVectorVectorDIM starting_cpt;
     std::size_t count = 0;
     std::size_t anti_count = 0;
+    Vector2d duration;
+    std::vector<Bezier> bez_vec;
+
+    //rlss_ros msgs
+    rlss_ros::PiecewiseTrajectory Pt_msg;
+    rlss_ros::Bezier bez_msg;
+
     while(ros::ok()){
-        ros::spinOnce();
-        //for(std::size_t i = 0; i < traj.numPieces(); i++) {
-        
-        if (count < traj.numPieces()){   
-            const Bezier& bez = traj[count];
-
-            rlss_ros::Bezier bez_msg;
-            bez_msg.dimension = DIM;
-            bez_msg.duration = bez.maxParameter();
-
-            for(std::size_t j = 0; j < bez.numControlPoints(); j++) {
-
-                for(unsigned int d = 0; d < DIM; d++) {
-                    bez_msg.cpts.push_back(bez[j][d]); // inserts control point no. followed by the axis
-                }
-                ROS_INFO_STREAM (bez.numControlPoints()); // 2
-            }
-            ROS_INFO_STREAM (bez_msg.cpts.size()); // 6
-            //ROS_INFO_STREAM (traj.numPieces());
-            //ROS_INFO_STREAM (bez_msg.duration);
-            //ROS_INFO_STREAM (bez_msg.dimension);
-            //ROS_INFO_STREAM(typeid(bez_msg.cpts).name());
-            //ROS_INFO_STREAM(typeid(msg.pieces).name());
-            Bezpub.publish(bez_msg); // after inserting 
-
-            //if (anti_count == count){
-            msg.pieces.push_back(bez_msg);
-            trajpub.publish(msg);
-            //ROS_INFO_STREAM ("allahuahbak");
-            //}    
-            ros::ServiceServer service = nh.advertiseService("set_desired_trajectory", setDesiredTrajectory);
-            anti_count++;
-            //ROS_INFO_STREAM (count);
-            //shud use while ros != shutdown to loop this, its only going thru one shot 
-        }
-    
-     
-        //trajpub.publish(msg);
-        //ros::ServiceServer service = nh.advertiseService("set_desired_trajectory", setDesiredTrajectory);
-
-        //ros::spin();
         rate.sleep();
+        ros::spinOnce();   
+        switch(trajectory_target){
+        
+        case 0:
+            starting_pt = 0;
+            starting_cpt.clear();
+
+        case 1:
+            if(starting_pt < 1){
+                for(unsigned int d = 0; d < number_of_drones; d++){
+                    starting_cpt[d] = current_pose[d];
+                    duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
+                    bez_msg.dimension = DIM;
+                    bez_msg.duration = duration[d]; 
+                    //bez_msg.starting_cpts = starting_cpt[d]; need to fking run a double for loop to include all the values
+                    //bez_msg.goal_pose = goal_pose[d];
+                    Pt_msg.pieces.push_back(bez_msg);
+                    bez_msg.cpts.clear();
+            } 
+                starting_pt += 1;
+                pt.publish(Pt_msg);
+            }
+        }    
 
     }
     return 0;

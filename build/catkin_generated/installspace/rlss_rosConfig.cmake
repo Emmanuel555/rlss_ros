@@ -177,7 +177,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(rlss_ros_EXPORTED_TARGETS "rlss_ros_generate_messages_cpp;rlss_ros_generate_messages_eus;rlss_ros_generate_messages_lisp;rlss_ros_generate_messages_nodejs;rlss_ros_generate_messages_py")
+set(rlss_ros_EXPORTED_TARGETS "rlss_ros_generate_messages_cpp;rlss_ros_generate_messages_eus;rlss_ros_generate_messages_lisp;rlss_ros_generate_messages_nodejs;rlss_ros_generate_messages_py;rlss_ros_gencfg")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${rlss_ros_EXPORTED_TARGETS})
   if(NOT TARGET ${t})
@@ -185,7 +185,7 @@ foreach(t ${rlss_ros_EXPORTED_TARGETS})
   endif()
 endforeach()
 
-set(depends "message_runtime")
+set(depends "message_runtime;std_msgs;geometry_msgs;sensor_msgs;nav_msgs")
 foreach(depend ${depends})
   string(REPLACE " " ";" depend_list ${depend})
   # the package name of the dependency must be kept in a unique variable so that it is not overwritten in recursive calls

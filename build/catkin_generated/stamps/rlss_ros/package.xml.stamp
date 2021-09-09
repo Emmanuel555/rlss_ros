@@ -58,6 +58,10 @@
   <depend>std_msgs</depend>
   <depend>tf</depend>
   <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <exec_depend>dynamic_reconfigure</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

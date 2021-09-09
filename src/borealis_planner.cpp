@@ -52,6 +52,17 @@ StdVectorVectorDIM state;
 unsigned int continuity_upto_degree;
 double testing;
 
+// Dynamic Planner Params
+double reach_distance;
+double optimization_obstacle_check_distance;
+int solver_selection;
+
+// Duration and rescaling coeff
+double rescaling_factor;
+double intended_velocity;
+
+
+
 void otherRobotShapeCallback(const rlss_ros::AABBCollisionShape::ConstPtr &msg) // each robot needs to have its own shape topic
 {
     if (msg->bbox.min.size() != DIM)
@@ -155,6 +166,12 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "planner");
     ros::NodeHandle nh;
+
+    //dynamic reconfigure callback
+    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig> server;
+    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig>::CallbackType f;
+    f = boost::bind(&dynamicReconfigureCallback, _1, _2);
+    server.setCallback(f);
 
     nh.getParam("robot_idx", self_robot_idx);
     int c_upto_d;
