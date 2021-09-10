@@ -15,7 +15,7 @@
     <arg name="maximum_derivative_magnitude_magnitudes" default="[2, 4]"/>
     <arg name="workspace_min" default="[-50, -50, -1.5]"/>
     <arg name="workspace_max" default="[50, 50, 10]"/>
-    <arg name="collision_shape_at_zero_min" default="[-1, -1, -1]"/>
+    <arg name="collision_shape_at_zero_min" default="[-1, -1, 0]"/>
     <arg name="collision_shape_at_zero_max" default="[1, 1, 1]"/>
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>
     <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>

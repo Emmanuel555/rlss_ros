@@ -19,12 +19,12 @@ add_custom_target(rlss_ros_generate_messages ALL)
 
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" "geometry_msgs/Vector3"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" ""
 )
 
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" "rlss_ros/Bezier:std_msgs/Time:geometry_msgs/Vector3"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" "rlss_ros/Bezier:std_msgs/Time"
 )
 
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg" NAME_WE)
@@ -56,13 +56,13 @@ add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
 _generate_msg_cpp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_cpp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg;/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_cpp(rlss_ros
@@ -129,13 +129,13 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS rlss_ros_generate_messages_cpp)
 _generate_msg_eus(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  ""
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_eus(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg;/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_eus(rlss_ros
@@ -202,13 +202,13 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS rlss_ros_generate_messages_eus)
 _generate_msg_lisp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_lisp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg;/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_lisp(rlss_ros
@@ -275,13 +275,13 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS rlss_ros_generate_messages_lisp)
 _generate_msg_nodejs(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  ""
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_nodejs(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg;/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_nodejs(rlss_ros
@@ -348,13 +348,13 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS rlss_ros_generate_messages_nodejs)
 _generate_msg_py(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_py(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg"
   "${MSG_I_FLAGS}"
-  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg;/opt/ros/melodic/share/geometry_msgs/cmake/../msg/Vector3.msg"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/opt/ros/melodic/share/std_msgs/cmake/../msg/Time.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_py(rlss_ros

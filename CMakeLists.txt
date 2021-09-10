@@ -194,7 +194,7 @@ add_dependencies(
 
 add_executable(
         borealis_planner_3d
-        src/planner.cpp
+        src/borealis_planner.cpp
 )
 target_compile_definitions(
         borealis_planner_3d PUBLIC

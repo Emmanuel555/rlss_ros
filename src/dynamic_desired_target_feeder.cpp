@@ -3,6 +3,7 @@
 #include <splx/curve/Bezier.hpp>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <dynamic_reconfigure/server.h>
 #include <rlss_ros/PiecewiseTrajectory.h>
@@ -80,15 +81,14 @@ int main(int argc, char** argv) {
     ros::Rate rate(10);
 
     //control_pts setup
-    int starting_pt = 0;
+    //int starting_pt = 0;
     StdVectorVectorDIM starting_cpt;
     std::size_t count = 0;
     std::size_t anti_count = 0;
     Vector2d duration;
-    std::vector<Bezier> bez_vec;
 
     //rlss_ros msgs
-    rlss_ros::PiecewiseTrajectory Pt_msg;
+    rlss_ros::PiecewiseTrajectory pt_msg;
     rlss_ros::Bezier bez_msg;
 
     while(ros::ok()){
@@ -97,24 +97,52 @@ int main(int argc, char** argv) {
         switch(trajectory_target){
         
         case 0:
-            starting_pt = 0;
-            starting_cpt.clear();
-
-        case 1:
-            if(starting_pt < 1){
-                for(unsigned int d = 0; d < number_of_drones; d++){
-                    starting_cpt[d] = current_pose[d];
-                    duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
-                    bez_msg.dimension = DIM;
-                    bez_msg.duration = duration[d]; 
-                    //bez_msg.starting_cpts = starting_cpt[d]; need to fking run a double for loop to include all the values
-                    //bez_msg.goal_pose = goal_pose[d];
-                    Pt_msg.pieces.push_back(bez_msg);
-                    bez_msg.cpts.clear();
-            } 
-                starting_pt += 1;
-                pt.publish(Pt_msg);
+            //if (starting_pt > 0){
+            pt_msg.pieces.clear();
+            //    starting_pt = 0;
+            //}
+            //else{
+            for(unsigned int d = 0; d < number_of_drones; d++){
+                starting_cpt[d] = current_pose[d];
+                duration[d] = 0;
+                bez_msg.dimension = DIM;
+                bez_msg.duration = duration[d];
+                for (std::size_t i = 0; i < DIM; i++){
+                    bez_msg.start.push_back(starting_cpt[d][i]);
+                    bez_msg.end.push_back(starting_cpt[d][i]);
+                } 
+                pt_msg.pieces.push_back(bez_msg);
+                bez_msg.start.clear();
+                bez_msg.end.clear();
             }
+            pt.publish(pt_msg);
+            ROS_INFO_STREAM ("Hovering");
+            break;
+            
+        case 1:
+            //if(starting_pt < 1){
+            pt_msg.pieces.clear();
+            for(unsigned int d = 0; d < number_of_drones; d++){
+                starting_cpt[d] = current_pose[d];
+                duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
+                bez_msg.dimension = DIM;
+                bez_msg.duration = duration[d];
+                for (std::size_t i = 0; i < DIM; i++){
+                    bez_msg.start.push_back(starting_cpt[d][i]);
+                    bez_msg.end.push_back(goal_pose[d][i]);
+                } 
+                //bez_msg.starting_cpts = starting_cpt[d]; need to fking run a double for loop to include all the values
+                //bez_msg.goal_pose = goal_pose[d];
+                pt_msg.pieces.push_back(bez_msg);
+                bez_msg.start.clear();
+                bez_msg.end.clear();
+            } 
+            //    starting_pt += 1;
+            pt.publish(pt_msg);
+            ROS_INFO_STREAM ("Going to target");
+            break;
+            //}
+
         }    
 
     }

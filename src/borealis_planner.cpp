@@ -17,6 +17,12 @@
 #include <rlss/ValidityCheckers/RLSSValidityChecker.hpp>
 #include <rlss/GoalSelectors/RLSSGoalSelector.hpp>
 #include <std_msgs/Time.h>
+#include <rlss_ros/setTargetsConfig.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Vector3.h>
+#include <nav_msgs/Odometry.h>
+#include <dynamic_reconfigure/server.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -56,10 +62,20 @@ double testing;
 double reach_distance;
 double optimization_obstacle_check_distance;
 int solver_selection;
+int number_of_drones;
 
 // Duration and rescaling coeff
 double rescaling_factor;
 double intended_velocity;
+
+
+void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
+    trajectory_target = config.trajectory_target;
+    velocity = config.intended_velocity;
+    number_of_drones = config.number_of_drones; 
+    goal_pose[0] << config.x_0, config.y_0, config.z_0;
+    goal_pose[1] << config.x_1, config.y_1, config.z_1;
+}
 
 
 
@@ -82,6 +98,8 @@ void otherRobotShapeCallback(const rlss_ros::AABBCollisionShape::ConstPtr &msg) 
     }
 } // other robot shapes
 
+
+
 void selfStateCallback(const rlss_ros::RobotState::ConstPtr &msg) // position callback = state[0][1-3] 
 {
     if (msg->vars.size() != DIM * (continuity_upto_degree + 1))
@@ -99,6 +117,8 @@ void selfStateCallback(const rlss_ros::RobotState::ConstPtr &msg) // position ca
         }
     }
 }
+
+
 
 void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &msg)
 {
@@ -135,6 +155,8 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
     testing = 7.0;
 }
 
+
+
 void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)
 {
     if (msg->step_size.size() != DIM)
@@ -162,9 +184,11 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)
     }
 }
 
+
+
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "planner");
+    ros::init(argc, argv, "borealis-planner-3D");
     ros::NodeHandle nh;
 
     //dynamic reconfigure callback
@@ -173,16 +197,24 @@ int main(int argc, char **argv)
     f = boost::bind(&dynamicReconfigureCallback, _1, _2);
     server.setCallback(f);
 
+
+
+    //required params from launch file*********************************************
     nh.getParam("robot_idx", self_robot_idx);
+    
+    //continuity upto deg
     int c_upto_d;
     nh.getParam("continuity_upto_degree", c_upto_d);
     continuity_upto_degree = c_upto_d;
     state.resize(continuity_upto_degree + 1);
+    
+    //replanning period
     double replanning_period;
     nh.getParam("replanning_period", replanning_period);
+    //std::cout << "replanning_period: " << replanning_period << std::endl;
 
-    std::cout << "replanning_period: " << replanning_period << std::endl;
 
+    //max derivative mag
     std::vector<int> maximum_derivative_magnitude_degrees;
     std::vector<double> maximum_derivative_magnitude_magnitudes;
     nh.getParam("maximum_derivative_magnitude_degrees", maximum_derivative_magnitude_degrees);
@@ -201,6 +233,8 @@ int main(int argc, char **argv)
                 maximum_derivative_magnitude_magnitudes[i]));
     }
 
+
+    //workspace size 
     std::vector<double> workspace_min_vec, workspace_max_vec;
     nh.getParam("workspace_min", workspace_min_vec);
     nh.getParam("workspace_max", workspace_max_vec);
@@ -222,6 +256,8 @@ int main(int argc, char **argv)
     }
     AlignedBox workspace(workspace_min, workspace_max);
 
+
+    //UAV collision shape
     std::vector<double> colshape_min_vec, colshape_max_vec;
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
     nh.getParam("collision_shape_at_zero_max", colshape_max_vec);
@@ -247,6 +283,9 @@ int main(int argc, char **argv)
     auto self_col_shape = std::static_pointer_cast<CollisionShape>(
         aabb_col_shape);
 
+
+
+    //soft optimisation SVM params for r2r, r2o, ipc, cc 
     const std::vector<std::string> soft_opt_param_names{
         "robot_to_robot_hyperplane_constraints",
         "robot_to_obstacle_hyperplane_constraints",
@@ -263,15 +302,24 @@ int main(int argc, char **argv)
         soft_optimization_parameters[opt_param_name] = std::make_pair(enabled, value);
     }
 
+
+
+    //obstacle check distance limit
     double optimization_obstacle_check_distance;
     nh.getParam("optimization_obstacle_check_distance", optimization_obstacle_check_distance);
 
+
+    //soft-hard, hard, soft
     std::string optimizer;
     nh.getParam("optimizer", optimizer);
 
+
+    //end point cost weights
     std::vector<double> piece_endpoint_cost_weights;
     nh.getParam("piece_endpoint_cost_weights", piece_endpoint_cost_weights);
 
+
+    //integrated squared derivative weights
     std::vector<int> integrated_squared_derivative_weight_degrees;
     std::vector<double> integrated_squared_derivative_weight_weights;
     nh.getParam("integrated_squared_derivative_weight_degrees", integrated_squared_derivative_weight_degrees);
@@ -291,20 +339,26 @@ int main(int argc, char **argv)
                 integrated_squared_derivative_weight_weights[i]));
     }
 
+    
+    //Planned for a Time horizon of 8
     double desired_time_horizon;
     nh.getParam("desired_time_horizon", desired_time_horizon);
 
+    //how many times can the recalculation be done
     unsigned int max_rescaling_count;
     int m_r_c;
     nh.getParam("max_rescaling_count", m_r_c);
     max_rescaling_count = m_r_c;
 
+    //duration multiplier
     double rescaling_multiplier;
     nh.getParam("rescaling_multiplier", rescaling_multiplier);
 
+    //search step for validity 
     double search_step;
     nh.getParam("search_step", search_step);
 
+    //Time horizon divided by 4, where each piece has 8 control points
     std::vector<int> num_bezier_control_points;
     nh.getParam("num_bezier_control_points", num_bezier_control_points);
 
@@ -314,9 +368,14 @@ int main(int argc, char **argv)
         qp_generator.addBezier(cpts, 0);
     }
 
+//***********************************************************
+
+
+
+    //Goal selection constructor
     auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>(
         desired_time_horizon,
-        desired_trajectory,
+        desired_trajectory,// taken from dynamic_desired_target_feeder
         workspace,
         self_col_shape,
         search_step);
@@ -331,6 +390,9 @@ int main(int argc, char **argv)
             break;
         }
     }
+
+
+    //Path searching constructor
     auto rlss_discrete_path_searcher = std::make_shared<RLSSDiscretePathSearcher>(
         replanning_period,
         workspace,
@@ -340,6 +402,8 @@ int main(int argc, char **argv)
     auto discrete_path_searcher = std::static_pointer_cast<DiscretePathSearcher>(
         rlss_discrete_path_searcher);
 
+
+    //Traj optimisation constructor
     std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
     if (optimizer == "rlss-hard-soft")
     {
@@ -391,12 +455,16 @@ int main(int argc, char **argv)
                 " not recognized."));
     }
 
+
+    //validity check constructor
     auto rlss_validity_checker = std::make_shared<RLSSValidityChecker>(
         maximum_derivative_magnitudes,
         search_step);
     auto validity_checker = std::static_pointer_cast<ValidityChecker>(
         rlss_validity_checker);
 
+
+    //RLSS constructor
     RLSS planner(
         goal_selector,
         trajectory_optimizer,
@@ -405,12 +473,28 @@ int main(int argc, char **argv)
         max_rescaling_count,
         rescaling_multiplier);
 
+
+    //collision shapes
     ros::Subscriber colshapesub = nh.subscribe("/other_robot_collision_shapes", 1000, otherRobotShapeCallback);
+    
+
+    //each robot's location
     ros::Subscriber statesub = nh.subscribe("self_state", 1, selfStateCallback);
+    
+    
+    //Current drone's intended goal and starting cpt/position
     ros::Subscriber destrajsub = nh.subscribe("Pseudo_trajectory", 1, desiredTrajectoryCallback);
+    
+    
+    //Occupancy grid of current drone
     ros::Subscriber occgridsub = nh.subscribe("occupancy_grid", 1, occupancyGridCallback);
+    
+
+    //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("trajectory", 1);
 
+
+    //loops at the rate of the replanning period
     ros::Rate rate(1 / replanning_period);
 
     while (ros::ok())
