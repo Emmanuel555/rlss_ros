@@ -136,25 +136,6 @@ rule CXX_EXECUTABLE_LINKER__static_occupancy_grid_feeder_3d
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__borealis_planner_3d
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /usr/bin/x86_64-linux-gnu-g++-10  $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building CXX object $out
-
-
-#############################################
-# Rule for linking CXX executable.
-
-rule CXX_EXECUTABLE_LINKER__borealis_planner_3d
-  command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
-  description = Linking CXX executable $TARGET_FILE
-  restat = $RESTAT
-
-
-#############################################
-# Rule for compiling CXX files.
-
 rule CXX_COMPILER__borealis_planner_2d
   depfile = $DEP_FILE
   deps = gcc
@@ -185,44 +166,6 @@ rule CXX_COMPILER__commander_2d
 # Rule for linking CXX executable.
 
 rule CXX_EXECUTABLE_LINKER__commander_2d
-  command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
-  description = Linking CXX executable $TARGET_FILE
-  restat = $RESTAT
-
-
-#############################################
-# Rule for compiling CXX files.
-
-rule CXX_COMPILER__static_desired_trajectory_feeder_3d
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /usr/bin/x86_64-linux-gnu-g++-10  $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building CXX object $out
-
-
-#############################################
-# Rule for linking CXX executable.
-
-rule CXX_EXECUTABLE_LINKER__static_desired_trajectory_feeder_3d
-  command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
-  description = Linking CXX executable $TARGET_FILE
-  restat = $RESTAT
-
-
-#############################################
-# Rule for compiling CXX files.
-
-rule CXX_COMPILER__static_desired_trajectory_feeder_2d
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /usr/bin/x86_64-linux-gnu-g++-10  $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building CXX object $out
-
-
-#############################################
-# Rule for linking CXX executable.
-
-rule CXX_EXECUTABLE_LINKER__static_desired_trajectory_feeder_2d
   command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -280,6 +223,25 @@ rule CXX_COMPILER__cf2_localizer
 # Rule for linking CXX executable.
 
 rule CXX_EXECUTABLE_LINKER__cf2_localizer
+  command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  description = Linking CXX executable $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CXX files.
+
+rule CXX_COMPILER__borealis_callbacks
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /usr/bin/x86_64-linux-gnu-g++-10  $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX executable.
+
+rule CXX_EXECUTABLE_LINKER__borealis_callbacks
   command = $PRE_LINK && /usr/bin/x86_64-linux-gnu-g++-10  $FLAGS  $LINK_FLAGS $in  -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -451,7 +413,7 @@ rule CXX_COMPILER__qpOASES
 # Rule for linking CXX static library.
 
 rule CXX_STATIC_LIBRARY_LINKER__qpOASES
-  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/x86_64-linux-gnu-ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/x86_64-linux-gnu-ranlib $TARGET_FILE && $POST_BUILD
+  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
 
@@ -508,7 +470,7 @@ rule C_COMPILER__osqpstatic
 # Rule for linking C static library.
 
 rule C_STATIC_LIBRARY_LINKER__osqpstatic
-  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/x86_64-linux-gnu-ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/x86_64-linux-gnu-ranlib $TARGET_FILE && $POST_BUILD
+  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
 
@@ -566,7 +528,7 @@ rule C_COMPILER__qdldlstatic
 # Rule for linking C static library.
 
 rule C_STATIC_LIBRARY_LINKER__qdldlstatic
-  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/x86_64-linux-gnu-ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/x86_64-linux-gnu-ranlib $TARGET_FILE && $POST_BUILD
+  command = $PRE_LINK && /usr/bin/cmake -E remove $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
 

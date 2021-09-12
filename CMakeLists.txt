@@ -71,6 +71,8 @@ add_message_files(
     AABBCollisionShape.msg
     RobotState.msg
     OccupancyGrid.msg
+    dyn_params.msg
+    Collision_Shape_Grp.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -192,23 +194,23 @@ add_dependencies(
 )
 
 
-add_executable(
-        borealis_planner_3d
-        src/borealis_planner.cpp
-)
-target_compile_definitions(
-        borealis_planner_3d PUBLIC
-        DIMENSION=3
-)
-target_link_libraries(
-        borealis_planner_3d
-        ${catkin_LIBRARIES}
-        rlss
-)
-add_dependencies(
-        borealis_planner_3d
-        ${PROJECT_NAME}_generate_messages_cpp
-)
+# add_executable(
+#         borealis_planner_3d
+#         src/borealis_planner.cpp
+# )
+# target_compile_definitions(
+#         borealis_planner_3d PUBLIC
+#         DIMENSION=3
+# )
+# target_link_libraries(
+#         borealis_planner_3d
+#         ${catkin_LIBRARIES}
+#         rlss
+# )
+# add_dependencies(
+#         borealis_planner_3d
+#         ${PROJECT_NAME}_generate_messages_cpp
+# )
 
 
 add_executable(
@@ -401,43 +403,60 @@ target_compile_definitions(
         DIMENSION=3
 )
 
-add_executable(
-        static_desired_trajectory_feeder_2d
-        src/static_desired_trajectory_feeder.cpp
-)
-target_link_libraries(
-        static_desired_trajectory_feeder_2d
-        ${catkin_LIBRARIES}
-        rlss
-)
-add_dependencies(
-        static_desired_trajectory_feeder_2d
-        ${PROJECT_NAME}_generate_messages_cpp
-)
-target_compile_definitions(
-        static_desired_trajectory_feeder_2d PUBLIC
-        DIMENSION=2
-)
+#add_executable(
+#        static_desired_trajectory_feeder_2d
+#        src/static_desired_trajectory_feeder.cpp
+#)
+#target_link_libraries(
+#        static_desired_trajectory_feeder_2d
+#        ${catkin_LIBRARIES}
+#        rlss
+#)
+#add_dependencies(
+#        static_desired_trajectory_feeder_2d
+#        ${PROJECT_NAME}_generate_messages_cpp
+#)
+#target_compile_definitions(
+#        static_desired_trajectory_feeder_2d PUBLIC
+#        DIMENSION=2
+#)
 
+#add_executable(
+#        static_desired_trajectory_feeder_3d
+#        src/static_desired_trajectory_feeder.cpp
+#)
+#target_link_libraries(
+#        static_desired_trajectory_feeder_3d
+##        ${catkin_LIBRARIES}
+ #       rlss
+#)
+#add_dependencies(
+#        static_desired_trajectory_feeder_3d
+#        ${PROJECT_NAME}_generate_messages_cpp
+#)
+#target_compile_definitions(
+#        static_desired_trajectory_feeder_3d PUBLIC
+#        DIMENSION=3
+#)
+
+########### Borealis #############
 add_executable(
-        static_desired_trajectory_feeder_3d
-        src/static_desired_trajectory_feeder.cpp
+        borealis_callbacks
+        src/borealis/borealis_pose_callback.cpp
 )
 target_link_libraries(
-        static_desired_trajectory_feeder_3d
+        borealis_callbacks
         ${catkin_LIBRARIES}
         rlss
 )
 add_dependencies(
-        static_desired_trajectory_feeder_3d
+        borealis_callbacks
         ${PROJECT_NAME}_generate_messages_cpp
 )
 target_compile_definitions(
-        static_desired_trajectory_feeder_3d PUBLIC
+        borealis_callbacks PUBLIC
         DIMENSION=3
 )
-
-
 add_executable(
         dynamic_desired_target_feeder_3d
         src/dynamic_desired_target_feeder.cpp

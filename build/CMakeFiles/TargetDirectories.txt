@@ -1,3 +1,4 @@
+/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/install/strip.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/list_install_components.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rebuild_cache.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/test.dir
@@ -7,9 +8,6 @@
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/static_occupancy_grid_feeder_2d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/planner_2d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/static_occupancy_grid_feeder_3d.dir
-/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/install/strip.dir
-/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/borealis_planner_3d.dir
-/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rlss_ros_generate_messages_py.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/borealis_planner_2d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rlss_ros_gennodejs.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/commander_2d.dir
@@ -20,6 +18,9 @@
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/_rlss_ros_generate_messages_check_deps_RobotState.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rlss_ros_geneus.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/_rlss_ros_generate_messages_check_deps_AABB.dir
+/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/_rlss_ros_generate_messages_check_deps_Collision_Shape_Grp.dir
+/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rlss_ros_generate_messages_py.dir
+/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/_rlss_ros_generate_messages_check_deps_dyn_params.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rlss_ros_generate_messages.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/tf2_msgs_generate_messages_nodejs.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/install/local.dir
@@ -30,7 +31,6 @@
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/tf2_msgs_generate_messages_py.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/dynamic_reconfigure_generate_messages_nodejs.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/std_msgs_generate_messages_py.dir
-/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/static_desired_trajectory_feeder_3d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/std_msgs_generate_messages_nodejs.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/geometry_msgs_generate_messages_eus.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/std_msgs_generate_messages_cpp.dir
@@ -58,7 +58,6 @@
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/doxygen.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/rosgraph_msgs_generate_messages_py.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/roscpp_generate_messages_py.dir
-/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/static_desired_trajectory_feeder_2d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/nav_msgs_generate_messages_lisp.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/planner_3d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/nav_msgs_generate_messages_cpp.dir
@@ -81,6 +80,7 @@
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/geometry_msgs_generate_messages_lisp.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/_rlss_ros_generate_messages_check_deps_Bezier.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/tf_generate_messages_cpp.dir
+/home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/borealis_callbacks.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/figure8_3d.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir
 /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir

@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "rlss_ros: 6 messages, 0 services")
+message(STATUS "rlss_ros: 8 messages, 0 services")
 
 set(MSG_I_FLAGS "-Irlss_ros:/home/emmanuel/rlss_ws/src/rlss_ros/msg;-Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg;-Igeometry_msgs:/opt/ros/melodic/share/geometry_msgs/cmake/../msg;-Isensor_msgs:/opt/ros/melodic/share/sensor_msgs/cmake/../msg;-Inav_msgs:/opt/ros/melodic/share/nav_msgs/cmake/../msg;-Iactionlib_msgs:/opt/ros/melodic/share/actionlib_msgs/cmake/../msg")
 
@@ -20,6 +20,16 @@ add_custom_target(rlss_ros_generate_messages ALL)
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" ""
+)
+
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" ""
+)
+
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
+add_custom_target(_rlss_ros_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "rlss_ros" "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" "rlss_ros/AABBCollisionShape:rlss_ros/AABB"
 )
 
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
@@ -57,6 +67,18 @@ _generate_msg_cpp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
   ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_cpp(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_cpp(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
+  "${MSG_I_FLAGS}"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_cpp(rlss_ros
@@ -106,6 +128,10 @@ add_dependencies(rlss_ros_generate_messages rlss_ros_generate_messages_cpp)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_cpp _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_cpp _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_cpp _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_cpp _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg" NAME_WE)
@@ -130,6 +156,18 @@ _generate_msg_eus(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
   ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_eus(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_eus(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
+  "${MSG_I_FLAGS}"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_eus(rlss_ros
@@ -179,6 +217,10 @@ add_dependencies(rlss_ros_generate_messages rlss_ros_generate_messages_eus)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_eus _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_eus _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_eus _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_eus _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg" NAME_WE)
@@ -203,6 +245,18 @@ _generate_msg_lisp(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
   ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_lisp(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_lisp(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
+  "${MSG_I_FLAGS}"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_lisp(rlss_ros
@@ -252,6 +306,10 @@ add_dependencies(rlss_ros_generate_messages rlss_ros_generate_messages_lisp)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_lisp _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_lisp _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_lisp _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_lisp _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg" NAME_WE)
@@ -276,6 +334,18 @@ _generate_msg_nodejs(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
   ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_nodejs(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_nodejs(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
+  "${MSG_I_FLAGS}"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_nodejs(rlss_ros
@@ -325,6 +395,10 @@ add_dependencies(rlss_ros_generate_messages rlss_ros_generate_messages_nodejs)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_nodejs _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_nodejs _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_nodejs _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_nodejs _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg" NAME_WE)
@@ -349,6 +423,18 @@ _generate_msg_py(rlss_ros
   "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg"
   "${MSG_I_FLAGS}"
   ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_py(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rlss_ros
+)
+_generate_msg_py(rlss_ros
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
+  "${MSG_I_FLAGS}"
+  "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/rlss_ros
 )
 _generate_msg_py(rlss_ros
@@ -397,6 +483,10 @@ add_dependencies(rlss_ros_generate_messages rlss_ros_generate_messages_py)
 
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_py _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg" NAME_WE)
+add_dependencies(rlss_ros_generate_messages_py _rlss_ros_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_py _rlss_ros_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg" NAME_WE)
 add_dependencies(rlss_ros_generate_messages_py _rlss_ros_generate_messages_check_deps_${_filename})

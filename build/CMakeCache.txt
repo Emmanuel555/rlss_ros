@@ -39,16 +39,7 @@ BLAS_acml_LIBRARY:FILEPATH=BLAS_acml_LIBRARY-NOTFOUND
 BLAS_acml_mp_LIBRARY:FILEPATH=BLAS_acml_mp_LIBRARY-NOTFOUND
 
 //Path to a library.
-BLAS_armpl_lp64_LIBRARY:FILEPATH=BLAS_armpl_lp64_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_atlas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libatlas.so
-
-//Path to a library.
-BLAS_blas_LIBRARY:FILEPATH=/usr/lib/libblas.so
-
-//Path to a library.
-BLAS_blis_LIBRARY:FILEPATH=BLAS_blis_LIBRARY-NOTFOUND
+BLAS_blas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libblas.so
 
 //Path to a library.
 BLAS_complib.sgimath_LIBRARY:FILEPATH=BLAS_complib.sgimath_LIBRARY-NOTFOUND
@@ -60,37 +51,13 @@ BLAS_cxml_LIBRARY:FILEPATH=BLAS_cxml_LIBRARY-NOTFOUND
 BLAS_dxml_LIBRARY:FILEPATH=BLAS_dxml_LIBRARY-NOTFOUND
 
 //Path to a library.
-BLAS_eml_LIBRARY:FILEPATH=BLAS_eml_LIBRARY-NOTFOUND
-
-//Path to a library.
 BLAS_essl_LIBRARY:FILEPATH=BLAS_essl_LIBRARY-NOTFOUND
 
 //Path to a library.
-BLAS_f77blas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libf77blas.so
-
-//Path to a library.
-BLAS_flexiblas_LIBRARY:FILEPATH=BLAS_flexiblas_LIBRARY-NOTFOUND
+BLAS_f77blas_LIBRARY:FILEPATH=BLAS_f77blas_LIBRARY-NOTFOUND
 
 //Path to a library.
 BLAS_goto2_LIBRARY:FILEPATH=BLAS_goto2_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_LIBRARY:FILEPATH=BLAS_mkl_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_em64t_LIBRARY:FILEPATH=BLAS_mkl_em64t_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_ia32_LIBRARY:FILEPATH=BLAS_mkl_ia32_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_intel_LIBRARY:FILEPATH=BLAS_mkl_intel_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_intel_lp64_LIBRARY:FILEPATH=BLAS_mkl_intel_lp64_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_mkl_rt_LIBRARY:FILEPATH=BLAS_mkl_rt_LIBRARY-NOTFOUND
 
 //Path to a library.
 BLAS_openblas_LIBRARY:FILEPATH=BLAS_openblas_LIBRARY-NOTFOUND
@@ -157,10 +124,7 @@ CATKIN_SKIP_TESTING:BOOL=OFF
 CATKIN_SYMLINK_INSTALL:BOOL=OFF
 
 //Path to a program.
-CMAKE_ADDR2LINE:FILEPATH=/usr/bin/x86_64-linux-gnu-addr2line
-
-//Path to a program.
-CMAKE_AR:FILEPATH=/usr/bin/x86_64-linux-gnu-ar
+CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //No help, variable specified on the command line.
 CMAKE_BUILD_TYPE:STRING=Debug
@@ -170,25 +134,26 @@ CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-g++-10
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-ar-7
+CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-10
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-ranlib-7
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-10
 
-//Flags used by the CXX compiler during all build types.
+//Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
 
-//Flags used by the CXX compiler during DEBUG builds.
+//Flags used by the compiler during debug builds.
 CMAKE_CXX_FLAGS_DEBUG:STRING=-g
 
-//Flags used by the CXX compiler during MINSIZEREL builds.
+//Flags used by the compiler during release builds for minimum
+// size.
 CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
 
-//Flags used by the CXX compiler during RELEASE builds.
+//Flags used by the compiler during release builds.
 CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 
-//Flags used by the CXX compiler during RELWITHDEBINFO builds.
+//Flags used by the compiler during release builds with debug info.
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //No help, variable specified on the command line.
@@ -196,43 +161,41 @@ CMAKE_C_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-10
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-ar-7
+CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-10
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-ranlib-7
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-10
 
-//Flags used by the C compiler during all build types.
+//Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
 
-//Flags used by the C compiler during DEBUG builds.
+//Flags used by the compiler during debug builds.
 CMAKE_C_FLAGS_DEBUG:STRING=-g
 
-//Flags used by the C compiler during MINSIZEREL builds.
+//Flags used by the compiler during release builds for minimum
+// size.
 CMAKE_C_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
 
-//Flags used by the C compiler during RELEASE builds.
+//Flags used by the compiler during release builds.
 CMAKE_C_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 
-//Flags used by the C compiler during RELWITHDEBINFO builds.
+//Flags used by the compiler during release builds with debug info.
 CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
-//Path to a program.
-CMAKE_DLLTOOL:FILEPATH=CMAKE_DLLTOOL-NOTFOUND
-
-//Flags used by the linker during all build types.
+//Flags used by the linker.
 CMAKE_EXE_LINKER_FLAGS:STRING=
 
-//Flags used by the linker during DEBUG builds.
+//Flags used by the linker during debug builds.
 CMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=
 
-//Flags used by the linker during MINSIZEREL builds.
+//Flags used by the linker during release minsize builds.
 CMAKE_EXE_LINKER_FLAGS_MINSIZEREL:STRING=
 
-//Flags used by the linker during RELEASE builds.
+//Flags used by the linker during release builds.
 CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
 
-//Flags used by the linker during RELWITHDEBINFO builds.
+//Flags used by the linker during Release with Debug Info builds.
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //No help, variable specified on the command line.
@@ -290,73 +253,54 @@ CMAKE_INSTALL_SHAREDSTATEDIR:PATH=com
 CMAKE_INSTALL_SYSCONFDIR:PATH=etc
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/usr/bin/x86_64-linux-gnu-ld
+CMAKE_LINKER:FILEPATH=/usr/bin/ld
 
 //Program used to build from build.ninja files.
 CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/ninja
 
-//Flags used by the linker during the creation of modules during
-// all build types.
+//Flags used by the linker during the creation of modules.
 CMAKE_MODULE_LINKER_FLAGS:STRING=
 
-//Flags used by the linker during the creation of modules during
-// DEBUG builds.
+//Flags used by the linker during debug builds.
 CMAKE_MODULE_LINKER_FLAGS_DEBUG:STRING=
 
-//Flags used by the linker during the creation of modules during
-// MINSIZEREL builds.
+//Flags used by the linker during release minsize builds.
 CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL:STRING=
 
-//Flags used by the linker during the creation of modules during
-// RELEASE builds.
+//Flags used by the linker during release builds.
 CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 
-//Flags used by the linker during the creation of modules during
-// RELWITHDEBINFO builds.
+//Flags used by the linker during Release with Debug Info builds.
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=/usr/bin/x86_64-linux-gnu-nm
+CMAKE_NM:FILEPATH=/usr/bin/nm
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=/usr/bin/x86_64-linux-gnu-objcopy
+CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=/usr/bin/x86_64-linux-gnu-objdump
-
-//Value Computed by CMake
-CMAKE_PROJECT_DESCRIPTION:STATIC=
-
-//Value Computed by CMake
-CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
+CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=rlss_ros
 
 //Path to a program.
-CMAKE_RANLIB:FILEPATH=/usr/bin/x86_64-linux-gnu-ranlib
+CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
 
-//Path to a program.
-CMAKE_READELF:FILEPATH=/usr/bin/x86_64-linux-gnu-readelf
-
-//Flags used by the linker during the creation of shared libraries
-// during all build types.
+//Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=
 
-//Flags used by the linker during the creation of shared libraries
-// during DEBUG builds.
+//Flags used by the linker during debug builds.
 CMAKE_SHARED_LINKER_FLAGS_DEBUG:STRING=
 
-//Flags used by the linker during the creation of shared libraries
-// during MINSIZEREL builds.
+//Flags used by the linker during release minsize builds.
 CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL:STRING=
 
-//Flags used by the linker during the creation of shared libraries
-// during RELEASE builds.
+//Flags used by the linker during release builds.
 CMAKE_SHARED_LINKER_FLAGS_RELEASE:STRING=
 
-//Flags used by the linker during the creation of shared libraries
-// during RELWITHDEBINFO builds.
+//Flags used by the linker during Release with Debug Info builds.
 CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //If set, runtime paths are not added when installing shared libraries,
@@ -366,28 +310,23 @@ CMAKE_SKIP_INSTALL_RPATH:BOOL=NO
 //If set, runtime paths are not added when using shared libraries.
 CMAKE_SKIP_RPATH:BOOL=NO
 
-//Flags used by the linker during the creation of static libraries
-// during all build types.
+//Flags used by the linker during the creation of static libraries.
 CMAKE_STATIC_LINKER_FLAGS:STRING=
 
-//Flags used by the linker during the creation of static libraries
-// during DEBUG builds.
+//Flags used by the linker during debug builds.
 CMAKE_STATIC_LINKER_FLAGS_DEBUG:STRING=
 
-//Flags used by the linker during the creation of static libraries
-// during MINSIZEREL builds.
+//Flags used by the linker during release minsize builds.
 CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL:STRING=
 
-//Flags used by the linker during the creation of static libraries
-// during RELEASE builds.
+//Flags used by the linker during release builds.
 CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 
-//Flags used by the linker during the creation of static libraries
-// during RELWITHDEBINFO builds.
+//Flags used by the linker during Release with Debug Info builds.
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=/usr/bin/x86_64-linux-gnu-strip
+CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -438,10 +377,7 @@ DFLOAT:BOOL=OFF
 DLONG:BOOL=OFF
 
 //Path to a program.
-DOXYGEN_EXECUTABLE:FILEPATH=/usr/bin/doxygen
-
-//Doxygen found
-DOXYGEN_FOUND:BOOL=TRUE
+DOXYGEN_EXECUTABLE:FILEPATH=DOXYGEN_EXECUTABLE-NOTFOUND
 
 //Path to a program.
 EMPY_EXECUTABLE:FILEPATH=/usr/bin/empy
@@ -474,52 +410,34 @@ GMock_DIR:PATH=GMock_DIR-NOTFOUND
 GTEST_INCLUDE_DIR:PATH=/usr/include
 
 //Path to a library.
-GTEST_LIBRARY:FILEPATH=/usr/lib/libgtest.a
+GTEST_LIBRARY:FILEPATH=GTEST_LIBRARY-NOTFOUND
 
 //Path to a library.
 GTEST_LIBRARY_DEBUG:FILEPATH=GTEST_LIBRARY_DEBUG-NOTFOUND
 
 //Path to a library.
-GTEST_MAIN_LIBRARY:FILEPATH=/usr/lib/libgtest_main.a
+GTEST_MAIN_LIBRARY:FILEPATH=GTEST_MAIN_LIBRARY-NOTFOUND
 
 //Path to a library.
 GTEST_MAIN_LIBRARY_DEBUG:FILEPATH=GTEST_MAIN_LIBRARY_DEBUG-NOTFOUND
 
-//The directory containing a CMake configuration file for GTest.
-GTest_DIR:PATH=GTest_DIR-NOTFOUND
-
 //Path to a library.
-GUROBI_CXX_LIBRARY:FILEPATH=/home/emmanuel/gurobi912/linux64/lib/libgurobi_c++.a
+GUROBI_CXX_LIBRARY:FILEPATH=/opt/gurobi912/linux64/lib/libgurobi_c++.a
 
 //Path to a file.
-GUROBI_INCLUDE_DIRS:PATH=/home/emmanuel/gurobi912/linux64/include
+GUROBI_INCLUDE_DIRS:PATH=/opt/gurobi912/linux64/include
 
 //Path to a library.
-GUROBI_LIBRARY:FILEPATH=/home/emmanuel/gurobi912/linux64/lib/libgurobi91.so
+GUROBI_LIBRARY:FILEPATH=/opt/gurobi912/linux64/lib/libgurobi91.so
 
 //Path to a library.
 LAPACK_Accelerate_LIBRARY:FILEPATH=LAPACK_Accelerate_LIBRARY-NOTFOUND
 
 //Path to a library.
-LAPACK_armpl_lp64_LIBRARY:FILEPATH=LAPACK_armpl_lp64_LIBRARY-NOTFOUND
-
-//Path to a library.
-LAPACK_eml_LIBRARY:FILEPATH=LAPACK_eml_LIBRARY-NOTFOUND
-
-//Path to a library.
-LAPACK_flame_LIBRARY:FILEPATH=LAPACK_flame_LIBRARY-NOTFOUND
-
-//Path to a library.
-LAPACK_flexiblas_LIBRARY:FILEPATH=LAPACK_flexiblas_LIBRARY-NOTFOUND
-
-//Path to a library.
 LAPACK_goto2_LIBRARY:FILEPATH=LAPACK_goto2_LIBRARY-NOTFOUND
 
 //Path to a library.
-LAPACK_lapack_LIBRARY:FILEPATH=/usr/lib/liblapack.so
-
-//Path to a library.
-LAPACK_mkl_lapack_LIBRARY:FILEPATH=LAPACK_mkl_lapack_LIBRARY-NOTFOUND
+LAPACK_lapack_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/liblapack.so
 
 //Path to a library.
 LAPACK_openblas_LIBRARY:FILEPATH=LAPACK_openblas_LIBRARY-NOTFOUND
@@ -537,7 +455,7 @@ LSB_FOUND:BOOL=TRUE
 LSB_RELEASE_EXECUTABLE:FILEPATH=/usr/bin/lsb_release
 
 //Path to a program.
-NOSETESTS:FILEPATH=/usr/local/bin/nosetests-2.7
+NOSETESTS:FILEPATH=/usr/bin/nosetests-2.7
 
 //Enable solver printing
 PRINTING:BOOL=ON
@@ -576,16 +494,13 @@ RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
 SETUPTOOLS_DEB_LAYOUT:BOOL=ON
 
 //Name of the computer/site where compile is being run
-SITE:STRING=Emmanuel
+SITE:STRING=emmanuel-ThinkPad-X1-Carbon-Gen-9
 
 //LSB Distrib tag
 UBUNTU:BOOL=TRUE
 
 //LSB Distrib - codename tag
 UBUNTU_BIONIC:BOOL=TRUE
-
-//LSB Distrib - codename tag
-UBUNTU_XENIAL:BOOL=TRUE
 
 //Enable unittests generation
 UNITTESTS:BOOL=OFF
@@ -788,23 +703,11 @@ actionlib_msgs_DIR:PATH=/opt/ros/melodic/share/actionlib_msgs/cmake
 //The directory containing a CMake configuration file for catkin.
 catkin_DIR:PATH=/opt/ros/melodic/share/catkin/cmake
 
-//The directory containing a CMake configuration file for class_loader.
-class_loader_DIR:PATH=/opt/ros/melodic/share/class_loader/cmake
-
 //The directory containing a CMake configuration file for cpp_common.
 cpp_common_DIR:PATH=/opt/ros/melodic/share/cpp_common/cmake
 
-//The directory containing a CMake configuration file for diagnostic_msgs.
-diagnostic_msgs_DIR:PATH=/opt/ros/melodic/share/diagnostic_msgs/cmake
-
-//The directory containing a CMake configuration file for diagnostic_updater.
-diagnostic_updater_DIR:PATH=/opt/ros/melodic/share/diagnostic_updater/cmake
-
 //The directory containing a CMake configuration file for dynamic_reconfigure.
 dynamic_reconfigure_DIR:PATH=/opt/ros/melodic/share/dynamic_reconfigure/cmake
-
-//The directory containing a CMake configuration file for eigen_conversions.
-eigen_conversions_DIR:PATH=/opt/ros/melodic/share/eigen_conversions/cmake
 
 //The directory containing a CMake configuration file for gencpp.
 gencpp_DIR:PATH=/opt/ros/melodic/share/gencpp/cmake
@@ -823,9 +726,6 @@ gennodejs_DIR:PATH=/opt/ros/melodic/share/gennodejs/cmake
 
 //The directory containing a CMake configuration file for genpy.
 genpy_DIR:PATH=/opt/ros/melodic/share/genpy/cmake
-
-//The directory containing a CMake configuration file for geographic_msgs.
-geographic_msgs_DIR:PATH=/opt/ros/melodic/share/geographic_msgs/cmake
 
 //The directory containing a CMake configuration file for geometry_msgs.
 geometry_msgs_DIR:PATH=/opt/ros/melodic/share/geometry_msgs/cmake
@@ -882,26 +782,11 @@ gtest_main_LIB_DEPENDS:STATIC=general;-lpthread;general;gtest;
 //Path to a library.
 lib:FILEPATH=/opt/ros/melodic/lib/libtf2.so
 
-//The directory containing a CMake configuration file for libmavconn.
-libmavconn_DIR:PATH=/home/emmanuel/catkin_ws/devel/share/libmavconn/cmake
-
 //Value Computed by CMake
 lp_wrappers_BINARY_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/lp_wrappers
 
 //Value Computed by CMake
 lp_wrappers_SOURCE_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/third_party/lp_wrappers
-
-//The directory containing a CMake configuration file for mavlink.
-mavlink_DIR:PATH=/home/emmanuel/catkin_ws/devel/share/mavlink/cmake
-
-//The directory containing a CMake configuration file for mavros.
-mavros_DIR:PATH=/home/emmanuel/catkin_ws/devel/share/mavros/cmake
-
-//The directory containing a CMake configuration file for mavros_extras.
-mavros_extras_DIR:PATH=/home/emmanuel/catkin_ws/devel/share/mavros_extras/cmake
-
-//The directory containing a CMake configuration file for mavros_msgs.
-mavros_msgs_DIR:PATH=/home/emmanuel/catkin_ws/devel/share/mavros_msgs/cmake
 
 //The directory containing a CMake configuration file for message_filters.
 message_filters_DIR:PATH=/opt/ros/melodic/share/message_filters/cmake
@@ -927,9 +812,6 @@ osqp_SOURCE_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/thir
 //Dependencies for target
 osqpstatic_LIB_DEPENDS:STATIC=
 
-//The directory containing a CMake configuration file for pluginlib.
-pluginlib_DIR:PATH=/opt/ros/melodic/share/pluginlib/cmake
-
 //Value Computed by CMake
 qdldl_BINARY_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/splx/third_party/qp_wrappers/third_party/osqp/lin_sys/direct/qdldl/qdldl_sources
 
@@ -946,7 +828,7 @@ qdldlstatic_LIB_DEPENDS:STATIC=
 qpOASES_BINARY_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/build/third_party/rlss/third_party/splx/third_party/qp_wrappers/third_party/qpoases-mirror
 
 //Dependencies for the target
-qpOASES_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libf77blas.so;general;/usr/lib/x86_64-linux-gnu/libatlas.so;general;/usr/lib/liblapack.so;general;/usr/lib/x86_64-linux-gnu/libf77blas.so;general;/usr/lib/x86_64-linux-gnu/libatlas.so;
+qpOASES_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libblas.so;general;/usr/lib/x86_64-linux-gnu/liblapack.so;general;/usr/lib/x86_64-linux-gnu/libblas.so;
 
 //Value Computed by CMake
 qpOASES_SOURCE_DIR:STATIC=/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/third_party/splx/third_party/qp_wrappers/third_party/qpoases-mirror
@@ -987,12 +869,6 @@ rosgraph_DIR:PATH=/opt/ros/melodic/share/rosgraph/cmake
 //The directory containing a CMake configuration file for rosgraph_msgs.
 rosgraph_msgs_DIR:PATH=/opt/ros/melodic/share/rosgraph_msgs/cmake
 
-//The directory containing a CMake configuration file for roslib.
-roslib_DIR:PATH=/opt/ros/melodic/share/roslib/cmake
-
-//The directory containing a CMake configuration file for rospack.
-rospack_DIR:PATH=/opt/ros/melodic/share/rospack/cmake
-
 //The directory containing a CMake configuration file for rospy.
 rospy_DIR:PATH=/opt/ros/melodic/share/rospy/cmake
 
@@ -1026,12 +902,6 @@ tf2_ros_DIR:PATH=/opt/ros/melodic/share/tf2_ros/cmake
 //The directory containing a CMake configuration file for tf.
 tf_DIR:PATH=/opt/ros/melodic/share/tf/cmake
 
-//The directory containing a CMake configuration file for uuid_msgs.
-uuid_msgs_DIR:PATH=/opt/ros/melodic/share/uuid_msgs/cmake
-
-//The directory containing a CMake configuration file for visualization_msgs.
-visualization_msgs_DIR:PATH=/opt/ros/melodic/share/visualization_msgs/cmake
-
 //The directory containing a CMake configuration file for xmlrpcpp.
 xmlrpcpp_DIR:PATH=/opt/ros/melodic/share/xmlrpcpp/cmake
 
@@ -1042,54 +912,28 @@ xmlrpcpp_DIR:PATH=/opt/ros/melodic/share/xmlrpcpp/cmake
 
 //ADVANCED property for variable: BLAS_Accelerate_LIBRARY
 BLAS_Accelerate_LIBRARY-ADVANCED:INTERNAL=1
-//Have function sgemm_
-BLAS_WORKS:INTERNAL=
 //ADVANCED property for variable: BLAS_acml_LIBRARY
 BLAS_acml_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_acml_mp_LIBRARY
 BLAS_acml_mp_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_armpl_lp64_LIBRARY
-BLAS_armpl_lp64_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_atlas_LIBRARY
-BLAS_atlas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_blas_LIBRARY
 BLAS_blas_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: BLAS_blas_WORKS
+BLAS_blas_WORKS-ADVANCED:INTERNAL=1
 //Have function sgemm_
 BLAS_blas_WORKS:INTERNAL=1
-//ADVANCED property for variable: BLAS_blis_LIBRARY
-BLAS_blis_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_complib.sgimath_LIBRARY
 BLAS_complib.sgimath_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_cxml_LIBRARY
 BLAS_cxml_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_dxml_LIBRARY
 BLAS_dxml_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_eml_LIBRARY
-BLAS_eml_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_essl_LIBRARY
 BLAS_essl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_f77blas_LIBRARY
 BLAS_f77blas_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_f77blas_atlas_WORKS
-BLAS_f77blas_atlas_WORKS-ADVANCED:INTERNAL=1
-//Have function dgemm_
-BLAS_f77blas_atlas_WORKS:INTERNAL=1
-//ADVANCED property for variable: BLAS_flexiblas_LIBRARY
-BLAS_flexiblas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_goto2_LIBRARY
 BLAS_goto2_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_LIBRARY
-BLAS_mkl_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_em64t_LIBRARY
-BLAS_mkl_em64t_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_ia32_LIBRARY
-BLAS_mkl_ia32_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_intel_LIBRARY
-BLAS_mkl_intel_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_intel_lp64_LIBRARY
-BLAS_mkl_intel_lp64_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_mkl_rt_LIBRARY
-BLAS_mkl_rt_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_openblas_LIBRARY
 BLAS_openblas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_scsl_LIBRARY
@@ -1119,8 +963,6 @@ Boost_SYSTEM_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //catkin environment
 CATKIN_ENV:INTERNAL=/home/emmanuel/rlss_ws/src/rlss_ros/build/catkin_generated/env_cached.sh
 CATKIN_TEST_RESULTS_DIR:INTERNAL=/home/emmanuel/rlss_ws/src/rlss_ros/build/test_results
-//ADVANCED property for variable: CMAKE_ADDR2LINE
-CMAKE_ADDR2LINE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_AR
 CMAKE_AR-ADVANCED:INTERNAL=1
 //This is the directory where this CMakeCache.txt was created
@@ -1169,8 +1011,6 @@ CMAKE_C_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_C_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_RELWITHDEBINFO
 CMAKE_C_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_DLLTOOL
-CMAKE_DLLTOOL-ADVANCED:INTERNAL=1
 //Executable file format
 CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
@@ -1189,16 +1029,12 @@ CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 CMAKE_EXTRA_GENERATOR:INTERNAL=
 //Name of generator.
 CMAKE_GENERATOR:INTERNAL=Ninja
-//Generator instance identifier.
-CMAKE_GENERATOR_INSTANCE:INTERNAL=
 //Name of generator platform.
 CMAKE_GENERATOR_PLATFORM:INTERNAL=
 //Name of generator toolset.
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Have symbol pthread_create
 CMAKE_HAVE_LIBC_CREATE:INTERNAL=
-//Test CMAKE_HAVE_LIBC_PTHREAD
-CMAKE_HAVE_LIBC_PTHREAD:INTERNAL=
 //Have library pthreads
 CMAKE_HAVE_PTHREADS_CREATE:INTERNAL=
 //Have library pthread
@@ -1268,8 +1104,6 @@ CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RANLIB
 CMAKE_RANLIB-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_READELF
-CMAKE_READELF-ADVANCED:INTERNAL=1
 //Path to CMake installation.
 CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.10
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
@@ -1318,10 +1152,6 @@ CPLEX_ILOCPLEX_LIBRARY-ADVANCED:INTERNAL=1
 CPLEX_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CPLEX_LIBRARY
 CPLEX_LIBRARY-ADVANCED:INTERNAL=1
-//Details about finding BLAS
-FIND_PACKAGE_MESSAGE_DETAILS_BLAS:INTERNAL=[/usr/lib/libblas.so][v()]
-//Details about finding Boost
-FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/include][cfound components: filesystem system ][v1.58.0()]
 //Details about finding CPLEX
 FIND_PACKAGE_MESSAGE_DETAILS_CPLEX:INTERNAL=[/opt/ibm/ILOG/CPLEX_Studio201/cplex/lib/x86-64_linux/static_pic/libcplex.a][/opt/ibm/ILOG/CPLEX_Studio201/cplex/lib/x86-64_linux/static_pic/libcplex.a][/opt/ibm/ILOG/CPLEX_Studio201/cplex/include][v()]
 //Details about finding CPLEX_CONCERT
@@ -1331,9 +1161,7 @@ FIND_PACKAGE_MESSAGE_DETAILS_CPLEX_CP:INTERNAL=[/opt/ibm/ILOG/CPLEX_Studio201/cp
 //Details about finding CPLEX_ILOCPLEX
 FIND_PACKAGE_MESSAGE_DETAILS_CPLEX_ILOCPLEX:INTERNAL=[/opt/ibm/ILOG/CPLEX_Studio201/cplex/lib/x86-64_linux/static_pic/libilocplex.a][/opt/ibm/ILOG/CPLEX_Studio201/cplex/lib/x86-64_linux/static_pic/libilocplex.a][/opt/ibm/ILOG/CPLEX_Studio201/cplex/include][TRUE][TRUE][v()]
 //Details about finding GUROBI
-FIND_PACKAGE_MESSAGE_DETAILS_GUROBI:INTERNAL=[/home/emmanuel/gurobi912/linux64/lib/libgurobi91.so][v()]
-//Details about finding LAPACK
-FIND_PACKAGE_MESSAGE_DETAILS_LAPACK:INTERNAL=[/usr/lib/liblapack.so;/usr/lib/libblas.so][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_GUROBI:INTERNAL=[/opt/gurobi912/linux64/lib/libgurobi91.so][v()]
 //Details about finding PythonInterp
 FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python2][v2.7.17()]
 //Details about finding Threads
@@ -1364,16 +1192,6 @@ HAVE_LIBM:INTERNAL=1
 HAVE_WNO_LONG_LONG_FLAG:INTERNAL=1
 //ADVANCED property for variable: LAPACK_Accelerate_LIBRARY
 LAPACK_Accelerate_LIBRARY-ADVANCED:INTERNAL=1
-//Have function cheev_
-LAPACK_WORKS:INTERNAL=
-//ADVANCED property for variable: LAPACK_armpl_lp64_LIBRARY
-LAPACK_armpl_lp64_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LAPACK_eml_LIBRARY
-LAPACK_eml_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LAPACK_flame_LIBRARY
-LAPACK_flame_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: LAPACK_flexiblas_LIBRARY
-LAPACK_flexiblas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_goto2_LIBRARY
 LAPACK_goto2_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_lapack_LIBRARY
@@ -1382,8 +1200,6 @@ LAPACK_lapack_LIBRARY-ADVANCED:INTERNAL=1
 LAPACK_lapack_WORKS-ADVANCED:INTERNAL=1
 //Have function cheev_
 LAPACK_lapack_WORKS:INTERNAL=1
-//ADVANCED property for variable: LAPACK_mkl_lapack_LIBRARY
-LAPACK_mkl_lapack_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_openblas_LIBRARY
 LAPACK_openblas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: LAPACK_vecLib_LIBRARY

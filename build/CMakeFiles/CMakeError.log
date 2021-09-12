@@ -1,87 +1,12 @@
-Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/ninja cmTC_558ba && [1/2] Building C object CMakeFiles/cmTC_558ba.dir/src.c.o
-[2/2] Linking C executable cmTC_558ba
-FAILED: : && /usr/bin/x86_64-linux-gnu-gcc-7   CMakeFiles/cmTC_558ba.dir/src.c.o -o cmTC_558ba   && :
-CMakeFiles/cmTC_558ba.dir/src.c.o: In function `main':
-src.c:(.text+0x3c): undefined reference to `pthread_create'
-src.c:(.text+0x48): undefined reference to `pthread_detach'
-src.c:(.text+0x54): undefined reference to `pthread_cancel'
-src.c:(.text+0x65): undefined reference to `pthread_join'
-src.c:(.text+0x79): undefined reference to `pthread_atfork'
-collect2: error: ld returned 1 exit status
-ninja: build stopped: subcommand failed.
-
-
-Source file was:
-#include <pthread.h>
-
-static void* test_func(void* data)
-{
-  return data;
-}
-
-int main(void)
-{
-  pthread_t thread;
-  pthread_create(&thread, NULL, test_func, NULL);
-  pthread_detach(thread);
-  pthread_cancel(thread);
-  pthread_join(thread, NULL);
-  pthread_atfork(NULL, NULL, NULL);
-  pthread_exit(NULL);
-
-  return 0;
-}
-
-Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/ninja cmTC_d829a && [1/2] Building C object CMakeFiles/cmTC_d829a.dir/CheckFunctionExists.c.o
-[2/2] Linking C executable cmTC_d829a
-FAILED: : && /usr/bin/x86_64-linux-gnu-gcc-7 -DCHECK_FUNCTION_EXISTS=pthread_create  CMakeFiles/cmTC_d829a.dir/CheckFunctionExists.c.o -o cmTC_d829a  -lpthreads && :
-/usr/bin/ld: cannot find -lpthreads
-collect2: error: ld returned 1 exit status
-ninja: build stopped: subcommand failed.
-
-
-
-Determining if the function sgemm_ exists failed with the following output:
-Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/ninja cmTC_75ff4 && [1/2] Building C object CMakeFiles/cmTC_75ff4.dir/CheckFunctionExists.c.o
-[2/2] Linking C executable cmTC_75ff4
-FAILED: : && /usr/bin/x86_64-linux-gnu-gcc-7 -DCHECK_FUNCTION_EXISTS=sgemm_  CMakeFiles/cmTC_75ff4.dir/CheckFunctionExists.c.o -o cmTC_75ff4   && :
-CMakeFiles/cmTC_75ff4.dir/CheckFunctionExists.c.o: In function `main':
-CheckFunctionExists.c:(.text+0x10): undefined reference to `sgemm_'
-collect2: error: ld returned 1 exit status
-ninja: build stopped: subcommand failed.
-
-
-
-Determining if the function cheev_ exists failed with the following output:
-Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/ninja cmTC_d4480 && [1/2] Building C object CMakeFiles/cmTC_d4480.dir/CheckFunctionExists.c.o
-[2/2] Linking C executable cmTC_d4480
-FAILED: : && /usr/bin/x86_64-linux-gnu-gcc-7 -DCHECK_FUNCTION_EXISTS=cheev_  CMakeFiles/cmTC_d4480.dir/CheckFunctionExists.c.o -o cmTC_d4480  /usr/lib/libblas.so  -lpthread  -lm  -ldl && :
-CMakeFiles/cmTC_d4480.dir/CheckFunctionExists.c.o: In function `main':
-CheckFunctionExists.c:(.text+0x10): undefined reference to `cheev_'
-collect2: error: ld returned 1 exit status
-ninja: build stopped: subcommand failed.
-
-
-
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/ninja" "cmTC_85a1b"
-[1/2] Building C object CMakeFiles/cmTC_85a1b.dir/CheckSymbolExists.c.o
-[2/2] Linking C executable cmTC_85a1b
-FAILED: cmTC_85a1b 
-: && /usr/bin/x86_64-linux-gnu-gcc-10    CMakeFiles/cmTC_85a1b.dir/CheckSymbolExists.c.o  -o cmTC_85a1b   && :
-CMakeFiles/cmTC_85a1b.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command:"/usr/bin/ninja" "cmTC_6915f"
+[1/2] Building C object CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o
+[2/2] Linking C executable cmTC_6915f
+FAILED: cmTC_6915f 
+: && /usr/bin/x86_64-linux-gnu-gcc-10   -rdynamic CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o  -o cmTC_6915f   && :
+CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 ninja: build stopped: subcommand failed.
@@ -100,4 +25,17 @@ int main(int argc, char** argv)
   return 0;
 #endif
 }
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/ninja" "cmTC_6925e"
+[1/2] Building C object CMakeFiles/cmTC_6925e.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_6925e
+FAILED: cmTC_6925e 
+: && /usr/bin/x86_64-linux-gnu-gcc-10 -DCHECK_FUNCTION_EXISTS=pthread_create  -rdynamic CMakeFiles/cmTC_6925e.dir/CheckFunctionExists.c.o  -o cmTC_6925e  -lpthreads && :
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+
 

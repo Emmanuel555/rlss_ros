@@ -136,6 +136,8 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     "/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg"
     "/home/emmanuel/rlss_ws/src/rlss_ros/msg/RobotState.msg"
     "/home/emmanuel/rlss_ws/src/rlss_ros/msg/OccupancyGrid.msg"
+    "/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg"
+    "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
     )
 endif()
 

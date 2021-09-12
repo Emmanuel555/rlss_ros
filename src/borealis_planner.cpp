@@ -22,7 +22,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
-#include <dynamic_reconfigure/server.h>
+#include <rlss_ros/Collision_Shape_Grp.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -50,83 +50,58 @@ using ValidityChecker = rlss::ValidityChecker<double, DIM>;
 using GoalSelector = rlss::GoalSelector<double, DIM>;
 
 int self_robot_idx;
-std::map<unsigned int, AlignedBox> other_robot_collision_shapes; // robot_idx -> colshape
+std::vector<std::map<unsigned int, AlignedBox>> other_robot_collision_shapes; // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
 ros::Time desired_trajectory_set_time = ros::Time(0);
-PiecewiseCurve desired_trajectory;
-StdVectorVectorDIM state;
+std::vector<PiecewiseCurve> desired_trajectory;
+StdVectorVectorDIM state;// this one needs to be changed
+StdVectorVectorDIM current_pose;
 unsigned int continuity_upto_degree;
 double testing;
+
 
 // Dynamic Planner Params
 double reach_distance;
 double optimization_obstacle_check_distance;
-int solver_selection;
-int number_of_drones;
-
+unsigned int solver_type;
+unsigned int number_of_drones;
 // Duration and rescaling coeff
 double rescaling_factor;
 double intended_velocity;
 
 
-void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
-    trajectory_target = config.trajectory_target;
-    velocity = config.intended_velocity;
-    number_of_drones = config.number_of_drones; 
-    goal_pose[0] << config.x_0, config.y_0, config.z_0;
-    goal_pose[1] << config.x_1, config.y_1, config.z_1;
-}
-
-
-
-void otherRobotShapeCallback(const rlss_ros::AABBCollisionShape::ConstPtr &msg) // each robot needs to have its own shape topic
-{
-    if (msg->bbox.min.size() != DIM)
-    {
-        return;
-    }
-    unsigned int robot_idx = msg->robot_idx;
-    if (robot_idx != self_robot_idx)
-    {
+void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg) // each robot needs to have its own shape topic
+{   
+    for (const auto &c_s : msg->col_shapes){
+        unsigned int robot_idx = c_s.robot_idx;
         VectorDIM shape_min, shape_max;
         for (unsigned int i = 0; i < DIM; i++)
         {
-            shape_min(i) = msg->bbox.min[i]; // -0.6, 0.6, 0
-            shape_max(i) = msg->bbox.max[i]; // 0.6, 0.6, 0.25
+            shape_min(i) = c_s.bbox.min[i]; // -0.6, 0.6, 0
+            shape_max(i) = c_s.bbox.max[i]; // 0.6, 0.6, 0.25
         }
         other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max);
     }
 } // other robot shapes
 
 
-
-void selfStateCallback(const rlss_ros::RobotState::ConstPtr &msg) // position callback = state[0][1-3] 
+void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
-    if (msg->vars.size() != DIM * (continuity_upto_degree + 1))
-    {
-        ROS_FATAL_STREAM("state message vars length is not valid.");
-    }
-    else
-    {
-        for (unsigned int i = 0; i <= continuity_upto_degree; i++)
-        {
-            for (unsigned int j = 0; j < DIM; j++)
-            {
-                state[i](j) = msg->vars[i * DIM + j];
-            }
-        }
-    }
+    auto local_pos = *msg;
+    state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
+
+void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    auto local_pos = *msg;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+}
 
 
 void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &msg)
 {
-    if (1 + 1 == 2)
-    {
-        ROS_INFO_STREAM("callback is working");
-    }
-    PiecewiseCurve curve;
+    std::vector<PiecewiseCurve> curve;
     for (std::size_t i = 0; i < msg->pieces.size(); i++)
     {
         rlss_ros::Bezier piece_msg = msg->pieces[i];
@@ -138,26 +113,24 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
         else
         {
             Bezier bez(piece_msg.duration);
-            for (unsigned int j = 0; j < piece_msg.cpts.size() / DIM; j++)
-            {
-                VectorDIM cpt;
-                for (unsigned int k = 0; k < DIM; k++)
-                {
-                    cpt(k) = piece_msg.cpts[j * DIM + k];
-                }
-                bez.appendControlPoint(cpt);
+            VectorDIM starting_cpt;
+            VectorDIM end_cpt;
+            for (unsigned int j = 0; j < DIM; j++)
+            {    
+                starting_cpt[j] = piece_msg.start[j];
+                end_cpt[j] = piece_msg.end[j];
             }
-            curve.addPiece(bez);
+            bez.appendControlPoint(starting_cpt);
+            bez.appendControlPoint(end_cpt);
+
         }
+            curve[i].addPiece(bez);
     }
     desired_trajectory = curve;
     desired_trajectory_set_time = ros::Time::now();
-    testing = 7.0;
 }
 
-
-
-void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)
+void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
 {
     if (msg->step_size.size() != DIM)
     {
@@ -184,6 +157,14 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)
     }
 }
 
+void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
+    number_of_drones = msg->number_of_drones;
+    reach_distance = msg->reach_distance;
+    solver_type = msg->solver_type;
+    optimization_obstacle_check_distance = msg->obs_check_distance;
+    rescaling_factor = msg->rescaling_factor;
+    intended_velocity = msg->intended_velocity;
+}
 
 
 int main(int argc, char **argv)
@@ -191,14 +172,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "borealis-planner-3D");
     ros::NodeHandle nh;
 
-    //dynamic reconfigure callback
-    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig> server;
-    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig>::CallbackType f;
-    f = boost::bind(&dynamicReconfigureCallback, _1, _2);
-    server.setCallback(f);
-
-
-
+    
     //required params from launch file*********************************************
     nh.getParam("robot_idx", self_robot_idx);
     
@@ -303,12 +277,6 @@ int main(int argc, char **argv)
     }
 
 
-
-    //obstacle check distance limit
-    double optimization_obstacle_check_distance;
-    nh.getParam("optimization_obstacle_check_distance", optimization_obstacle_check_distance);
-
-
     //soft-hard, hard, soft
     std::string optimizer;
     nh.getParam("optimizer", optimizer);
@@ -370,114 +338,122 @@ int main(int argc, char **argv)
 
 //***********************************************************
 
+    // initialises the relevant vectors for the planner
+    std::vector<RLSS> planners;
 
-
-    //Goal selection constructor
-    auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>(
-        desired_time_horizon,
-        desired_trajectory,// taken from dynamic_desired_target_feeder
-        workspace,
-        self_col_shape,
-        search_step);
-    auto goal_selector = std::static_pointer_cast<GoalSelector>(rlss_goal_selector);
-
-    double maximum_velocity = std::numeric_limits<double>::max();
-    for (const auto &[d, v] : maximum_derivative_magnitudes)
+    for(unsigned int d = 0; d < number_of_drones; d++)
     {
-        if (d == 1)
+        //Goal selection constructor
+        auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>(
+            desired_time_horizon,
+            desired_trajectory,// taken from dynamic_desired_target_feeder
+            workspace,
+            self_col_shape,
+            search_step);
+        auto goal_selector = std::static_pointer_cast<GoalSelector>(rlss_goal_selector);
+
+        double maximum_velocity = std::numeric_limits<double>::max();
+        for (const auto &[d, v] : maximum_derivative_magnitudes)
         {
-            maximum_velocity = v;
-            break;
+            if (d == 1)
+            {
+                maximum_velocity = v;
+                break;
+            }
         }
-    }
 
 
-    //Path searching constructor
-    auto rlss_discrete_path_searcher = std::make_shared<RLSSDiscretePathSearcher>(
-        replanning_period,
-        workspace,
-        self_col_shape,
-        maximum_velocity,
-        qp_generator.numPieces());
-    auto discrete_path_searcher = std::static_pointer_cast<DiscretePathSearcher>(
-        rlss_discrete_path_searcher);
-
-
-    //Traj optimisation constructor
-    std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
-    if (optimizer == "rlss-hard-soft")
-    {
-        auto rlss_hard_soft_optimizer = std::make_shared<RLSSHardSoftOptimizer>(
-            self_col_shape,
-            qp_generator,
+        //Path searching constructor
+        auto rlss_discrete_path_searcher = std::make_shared<RLSSDiscretePathSearcher>(
+            replanning_period,
             workspace,
-            continuity_upto_degree,
-            integrated_squared_derivative_weights,
-            piece_endpoint_cost_weights,
-            soft_optimization_parameters,
-            optimization_obstacle_check_distance);
-        trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
-            rlss_hard_soft_optimizer);
-    }
-    else if (optimizer == "rlss-soft")
-    {
-        auto rlss_soft_optimizer = std::make_shared<RLSSSoftOptimizer>(
             self_col_shape,
-            qp_generator,
-            workspace,
-            continuity_upto_degree,
-            integrated_squared_derivative_weights,
-            piece_endpoint_cost_weights,
-            soft_optimization_parameters,
-            optimization_obstacle_check_distance);
-        trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
-            rlss_soft_optimizer);
+            maximum_velocity,
+            qp_generator.numPieces());
+        auto discrete_path_searcher = std::static_pointer_cast<DiscretePathSearcher>(
+            rlss_discrete_path_searcher);
+
+
+        //Traj optimisation constructor
+        std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
+        if (optimizer == "rlss-hard-soft")
+        {
+            auto rlss_hard_soft_optimizer = std::make_shared<RLSSHardSoftOptimizer>(
+                self_col_shape,
+                qp_generator,
+                workspace,
+                continuity_upto_degree,
+                integrated_squared_derivative_weights,
+                piece_endpoint_cost_weights,
+                soft_optimization_parameters,
+                optimization_obstacle_check_distance);
+            trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                rlss_hard_soft_optimizer);
+        }
+        else if (optimizer == "rlss-soft")
+        {
+            auto rlss_soft_optimizer = std::make_shared<RLSSSoftOptimizer>(
+                self_col_shape,
+                qp_generator,
+                workspace,
+                continuity_upto_degree,
+                integrated_squared_derivative_weights,
+                piece_endpoint_cost_weights,
+                soft_optimization_parameters,
+                optimization_obstacle_check_distance);
+            trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                rlss_soft_optimizer);
+        }
+        else if (optimizer == "rlss-hard")
+        {
+            auto rlss_hard_optimizer = std::make_shared<RLSSHardOptimizer>(
+                self_col_shape,
+                qp_generator,
+                workspace,
+                continuity_upto_degree,
+                integrated_squared_derivative_weights,
+                piece_endpoint_cost_weights,
+                optimization_obstacle_check_distance);
+            trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                rlss_hard_optimizer);
+        }
+        else
+        {
+            throw std::domain_error(
+                absl::StrCat(
+                    "optimizer ",
+                    optimizer,
+                    " not recognized."));
+        }
+
+
+        //validity check constructor
+        auto rlss_validity_checker = std::make_shared<RLSSValidityChecker>(
+            maximum_derivative_magnitudes,
+            search_step);
+        auto validity_checker = std::static_pointer_cast<ValidityChecker>(
+            rlss_validity_checker);
+
+
+        //emplace back used to append the planners vector for the drones
+        planners.emplace_back(
+            goal_selector,
+            trajectory_optimizer,
+            discrete_path_searcher,
+            validity_checker,
+            max_rescaling_count,
+            rescaling_multiplier);
     }
-    else if (optimizer == "rlss-hard")
-    {
-        auto rlss_hard_optimizer = std::make_shared<RLSSHardOptimizer>(
-            self_col_shape,
-            qp_generator,
-            workspace,
-            continuity_upto_degree,
-            integrated_squared_derivative_weights,
-            piece_endpoint_cost_weights,
-            optimization_obstacle_check_distance);
-        trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
-            rlss_hard_optimizer);
-    }
-    else
-    {
-        throw std::domain_error(
-            absl::StrCat(
-                "optimizer ",
-                optimizer,
-                " not recognized."));
-    }
-
-
-    //validity check constructor
-    auto rlss_validity_checker = std::make_shared<RLSSValidityChecker>(
-        maximum_derivative_magnitudes,
-        search_step);
-    auto validity_checker = std::static_pointer_cast<ValidityChecker>(
-        rlss_validity_checker);
-
-
-    //RLSS constructor
-    RLSS planner(
-        goal_selector,
-        trajectory_optimizer,
-        discrete_path_searcher,
-        validity_checker,
-        max_rescaling_count,
-        rescaling_multiplier);
-
-
+    
     //collision shapes
-    ros::Subscriber colshapesub = nh.subscribe("/other_robot_collision_shapes", 1000, otherRobotShapeCallback);
+    ros::Subscriber colshapesub = nh.subscribe("/other_robot_collision_shapes", 10, otherRobotShapeCallback);
     
 
+    //subscription
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    
+    
     //each robot's location
     ros::Subscriber statesub = nh.subscribe("self_state", 1, selfStateCallback);
     
@@ -514,6 +490,32 @@ int main(int argc, char **argv)
         //}
         // piecewise curve is empty and needs fixing****
         //ROS_INFO_STREAM (desired_trajectory_set_time);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if (desired_trajectory_set_time != ros::Time(0))
         {
             //ROS_INFO_STREAM("desired trajectory set.");

@@ -8,6 +8,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <rlss_ros/PiecewiseTrajectory.h>
 #include <rlss_ros/Bezier.h>
+#include <rlss_ros/dyn_params.h>
 #include "../third_party/rlss/third_party/json.hpp"
 #include <rlss/RLSS.hpp>
 #include <rlss/OccupancyGrid.hpp>
@@ -38,14 +39,32 @@ StdVectorVectorDIM goal_pose;
 StdVectorVectorDIM current_pose;
 int trajectory_target = 0;
 double velocity = 0;
-int number_of_drones = 0;
+unsigned int number_of_drones = 0;
+double reach_distance;
+double obs_check_distance;
+double rescaling_factor;
+double intended_velocity;
+unsigned int solver;
+
+ros::Publisher dp;
 
 void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
+    rlss_ros::dyn_params dyn_msg;
+
     trajectory_target = config.trajectory_target;
     velocity = config.intended_velocity;
-    number_of_drones = config.number_of_drones; 
     goal_pose[0] << config.x_0, config.y_0, config.z_0;
     goal_pose[1] << config.x_1, config.y_1, config.z_1;
+
+    dyn_msg.number_of_drones = config.number_of_drones; 
+    dyn_msg.reach_distance = config.reach_distance;
+    dyn_msg.obs_check_distance = config.optimization_obstacle_check_distance;
+    dyn_msg.rescaling_factor = config.rescaling_factor;
+    dyn_msg.solver_type = config.solver_type;
+    dyn_msg.intended_velocity = config.intended_velocity;
+
+    dp.publish(dyn_msg);
+
 }
 
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -71,13 +90,13 @@ int main(int argc, char** argv) {
     server.setCallback(f);
 
     //subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe<geometry_msgs::PoseStamped>("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe<geometry_msgs::PoseStamped>("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
     // dso convex hull algo would be added here
 
     //publishing
-    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 1); //just added 
-    ros::Publisher duration_demo = nh.advertise<std_msgs::Float64>("duration", 1); //just added
+    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 10); //just added 
+    dp = nh.advertise<rlss_ros::dyn_params>("dyn_params",10);
     ros::Rate rate(10);
 
     //control_pts setup
@@ -93,7 +112,7 @@ int main(int argc, char** argv) {
 
     while(ros::ok()){
         rate.sleep();
-        ros::spinOnce();   
+        ros::spinOnce(); 
         switch(trajectory_target){
         
         case 0:
@@ -108,7 +127,7 @@ int main(int argc, char** argv) {
                 bez_msg.dimension = DIM;
                 bez_msg.duration = duration[d];
                 for (std::size_t i = 0; i < DIM; i++){
-                    bez_msg.start.push_back(starting_cpt[d][i]);
+                    bez_msg.start.push_back(starting_cpt[d][i]);// x y z thats why need []
                     bez_msg.end.push_back(starting_cpt[d][i]);
                 } 
                 pt_msg.pieces.push_back(bez_msg);

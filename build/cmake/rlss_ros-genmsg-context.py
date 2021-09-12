@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/RobotState.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/OccupancyGrid.msg"
+messages_str = "/home/emmanuel/rlss_ws/src/rlss_ros/msg/Bezier.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/PiecewiseTrajectory.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABB.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/AABBCollisionShape.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/RobotState.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/OccupancyGrid.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/dyn_params.msg;/home/emmanuel/rlss_ws/src/rlss_ros/msg/Collision_Shape_Grp.msg"
 services_str = ""
 pkg_name = "rlss_ros"
 dependencies_str = "std_msgs;geometry_msgs;sensor_msgs;nav_msgs"
