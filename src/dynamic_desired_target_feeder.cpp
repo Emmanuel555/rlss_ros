@@ -50,6 +50,23 @@ unsigned int solver;
 
 ros::Publisher dp;
 
+bool reached_final_destination(const StdVectorVectorDIM& goal_pose, 
+                            const StdVectorVectorDIM& current_pose, 
+                            const double& reach_distance,
+                            const double& number_of_drones){
+    for (unsigned int i = 0; i < number_of_drones; i++)
+    {
+        double count = 0;
+        if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
+        {
+            count += 1;
+       
+        }
+    }
+
+
+}
+
 void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
     rlss_ros::dyn_params dyn_msg;
 
@@ -124,8 +141,8 @@ int main(int argc, char** argv) {
         case 0:
     
             trigger = 0;
-            trigger_pose.clear()
-            std_msgs::bool activation;
+            trigger_pose.clear();
+            std_msgs::Bool activation;
             activation.data = false;
             planner_activation.publish(activation); 
             ROS_INFO_STREAM ("Hovering");
@@ -134,7 +151,7 @@ int main(int argc, char** argv) {
             
         case 1:
             //pt_msg.pieces.clear();
-            if ((goal_pose[d] - starting_cpt[d]).norm() > reach_distance){ 
+            if (((goal_pose[0] - current_pose[0]).norm() && (goal_pose[1] - starting_cpt[1]).norm())  > reach_distance){ 
                 std_msgs::bool activation;
                 activation.data = true;
                 planner_activation.publish(activation); 
