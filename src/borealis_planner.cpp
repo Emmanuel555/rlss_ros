@@ -23,6 +23,9 @@
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <rlss_ros/Collision_Shape_Grp.h>
+#include <std_msgs/Bool.h>
+#include <rlss_ros/dyn_params.h>
+#include <rlss_ros/Collision_Shape_Grp.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -50,14 +53,16 @@ using ValidityChecker = rlss::ValidityChecker<double, DIM>;
 using GoalSelector = rlss::GoalSelector<double, DIM>;
 
 int self_robot_idx;
-std::map<unsigned int, AlignedBox> other_robot_collision_shapes; // robot_idx -> colshape
+std::vector<AlignedBox> other_robot_collision_shapes; // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
-ros::Time desired_trajectory_set_time = ros::Time(0);
+//ros::Time desired_trajectory_set_time = ros::Time(0);
 std::vector<PiecewiseCurve> desired_trajectory;
 StdVectorVectorDIM state;// this one needs to be changed
 StdVectorVectorDIM current_pose;
 unsigned int continuity_upto_degree;
 double testing;
+std_msgs::Bool activation;
+std::string optimizer;
 
 
 // Dynamic Planner Params
@@ -82,6 +87,7 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
         }
         other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max);
     }
+
 } // other robot shapes
 
 
@@ -98,6 +104,10 @@ void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
+void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+    activation = *msg;
+}
 
 void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &msg)
 {
@@ -122,12 +132,12 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
             }
             bez.appendControlPoint(starting_cpt);
             bez.appendControlPoint(end_cpt);
-
-        }
             curve[i].addPiece(bez);
+        }
+        
     }
     desired_trajectory = curve;
-    desired_trajectory_set_time = ros::Time::now();
+    auto desired_trajectory_set_time = msg->start_time;
 }
 
 void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
@@ -164,6 +174,19 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     optimization_obstacle_check_distance = msg->obs_check_distance;
     rescaling_factor = msg->rescaling_factor;
     intended_velocity = msg->intended_velocity;
+
+    switch (solver_type)
+    {
+    case 0:
+        optimizer = "rlss-hard-soft";
+        break;
+    case 1:
+        optimizer = "rlss-soft";
+        break;
+    case 2:
+        optimizer = "rlss-hard";
+        break;
+    }
 }
 
 
@@ -278,19 +301,19 @@ int main(int argc, char **argv)
 
 
     //soft-hard, hard, soft
-    std::string optimizer;
-    switch (solver_type)
-    {
-    case 0:
-        optimizer = "rlss-hard-soft";
-        break;
-    case 1:
-        optimizer = "rlss-soft";
-        break;
-    case 2:
-        optimizer = "rlss-hard";
-        break;
-    }
+    //std::string optimizer;
+    //switch (solver_type)
+    //{
+    //case 0:
+    //    optimizer = "rlss-hard-soft";
+    //    break;
+    //case 1:
+    //    optimizer = "rlss-soft";
+    //    break;
+    //case 2:
+    //    optimizer = "rlss-hard";
+    //    break;
+   // }
 
 
     //end point cost weights
@@ -353,7 +376,7 @@ int main(int argc, char **argv)
     //Goal selection constructor
     auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>(
         desired_time_horizon,
-        desired_trajectory[d],// taken from dynamic_desired_target_feeder
+        desired_trajectory,// taken from dynamic_desired_target_feeder
         workspace,
         self_col_shape,
         search_step);
@@ -463,6 +486,9 @@ int main(int argc, char **argv)
         
     //Current drone's intended goal and starting cpt/position
     ros::Subscriber destrajsub = nh.subscribe("Pseudo_trajectory", 1, desiredTrajectoryCallback);
+
+    //Planner usage
+    ros::Subscriber planner_sub = nh.subscribe("planner_activation", 1, plannerCallback);
     
     
     //Occupancy grid of current drone
@@ -476,96 +502,59 @@ int main(int argc, char **argv)
     //loops at the rate of the replanning period
     ros::Rate rate(1 / replanning_period);
 
+    StdVectorVectorDIM new_state;
+
     while (ros::ok())
     {
         ros::spinOnce();
-
-        //        if(self_robot_idx == 6) {
-        //            ROS_INFO_STREAM("desired_trajectory_set_time:");
-        //            ROS_INFO_STREAM(desired_trajectory_set_time);
-        //        }
-
-        //if(desired_trajectory_set_time != ros::Time(0)){
-        //    ROS_INFO_STREAM("true");
-        //}
-        //else{
-        //    ROS_INFO_STREAM("false");
-        //}
-        // piecewise curve is empty and needs fixing****
-        //ROS_INFO_STREAM (desired_trajectory_set_time);
-        if (desired_trajectory_set_time != ros::Time(0))
+        switch (activation.data)
         {
-            //ROS_INFO_STREAM("desired trajectory set.");
-            
-            // to do for tmr, need to add in number of drones, 2 plans within a for loop from a single planner
-            for(std::size_t i = 0; i < number_of_drones; i++)
-            ///// to do for tmr
-            rlss_goal_selector->setOriginalTrajectory(desired_trajectory); //from callback
-
-            std::vector<AlignedBox> other_robot_shapes;
-            for (const auto &elem : other_robot_collision_shapes) //from callback
-            {
-                other_robot_shapes.push_back(elem.second);
-            }
-
+        case true:
+            std::vector<std::vector<AlignedBox>> other_robot_shapes;
+            other_robot_shapes[0].push_back(other_robot_collision_shapes[1]);
+            other_robot_shapes[1].push_back(other_robot_collision_shapes[0]);
             ros::Time current_time = ros::Time::now();
-            ros::Duration time_on_trajectory =
-                current_time - desired_trajectory_set_time; //desired_traj_time defined to be time set when desired traj is issued
-
-            //            if(self_robot_idx == 6) {
-            //                ROS_INFO_STREAM("before plan");
-            //            }
-            std::optional<PiecewiseCurve> curve = planner.plan(
+            for (unsigned int i = 0; i < number_of_drones; i++)
+            {
+                rlss_goal_selector->setOriginalTrajectory(desired_trajectory[i]); //from callback
+                ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
+                
+                //Planner
+                std::optional<PiecewiseCurve> curve = planner.plan(
                 time_on_trajectory.toSec(),// time
-                state,// where i m currently
-                other_robot_shapes,//where other robots r currently 
-                *occupancy_grid_ptr);// occupancy
+                state[i],// where i m currently
+                other_robot_shapes[i],//where other robots r currently 
+                *occupancy_grid_ptr
+                );// occupancy
 
-            //            if(self_robot_idx == 6) {
-            //                ROS_INFO_STREAM("after plan");
-            //            }
-            if (curve)
-            {
-                //                if(self_robot_idx == 6) {
-                //                    ROS_INFO_STREAM("curve");
-                //                }
-                PiecewiseCurve traj = *curve;
-
-                rlss_ros::PiecewiseTrajectory traj_msg;
-                traj_msg.generation_time.data = current_time;
-                for (std::size_t i = 0; i < traj.numPieces(); i++)
-                {
-                    rlss_ros::Bezier bez_msg;
-                    bez_msg.dimension = DIMENSION;
-                    bez_msg.duration = traj[i].maxParameter();
-
-                    for (std::size_t j = 0; j < traj[i].numControlPoints(); j++)
-                    {
-                        const auto &cpt = traj[i][j];
-                        for (unsigned int d = 0; d < DIM; d++)
-                        {
-                            bez_msg.cpts.push_back(cpt(d));
-                        }
-                    }
-                    traj_msg.pieces.push_back(bez_msg);
+                //curve
+                if (curve)
+                {                    
+                    PiecewiseCurve traj = *curve;
+                    rlss_ros::PiecewiseTrajectory traj_msg;
+                    //traj_msg.generation_time.data = current_time;
+                    new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
+                    // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
                 }
-                trajpub.publish(traj_msg);
+                else
+                {
+                    ROS_WARN_STREAM("planner failed.");
+                }
             }
-            else
+            break;
+        
+        case false:
+            for (unsigned int i = 0; i < number_of_drones; i++)
             {
-                //                if(self_robot_idx == 6) {
-                //                    ROS_INFO_STREAM("no curve");
-                //                }
-                ROS_WARN_STREAM("planner failed.");
-            }
+                new_state[i] = state[i];
+            } 
+            break;
         }
-        else
-        {
-            ROS_INFO_STREAM(testing);
-            ROS_INFO_STREAM("desired trajectory not yet set.");
-        }
+
         rate.sleep();
+
     }
 
     return 0;
+
 }

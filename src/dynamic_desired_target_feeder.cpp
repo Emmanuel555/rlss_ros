@@ -18,6 +18,8 @@
 #include <std_msgs/Float64.h>
 #include <eigen3/Eigen/Dense>
 #include <rlss_ros/setTargetsConfig.h>
+#include <std_msgs/Time.h>
+#include <std_msgs/Bool.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -58,6 +60,7 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
 
     dyn_msg.number_of_drones = config.number_of_drones; 
     dyn_msg.reach_distance = config.reach_distance;
+    reach_distance = config.reach_distance;
     dyn_msg.obs_check_distance = config.optimization_obstacle_check_distance;
     dyn_msg.rescaling_factor = config.rescaling_factor;
     dyn_msg.solver_type = config.solver_type;
@@ -80,7 +83,7 @@ void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 }
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "static_desired_trajectory_feeder");
+    ros::init(argc, argv, "dynamic_desired_target_feeder");
     ros::NodeHandle nh;
 
     //dynamic reconfigure callback
@@ -97,73 +100,76 @@ int main(int argc, char** argv) {
     //publishing
     ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 10); //just added 
     dp = nh.advertise<rlss_ros::dyn_params>("dyn_params",10);
+    ros::Publisher planner_activation = nh.advertise<std_msgs::Bool>("planner_activation", 1);
     ros::Rate rate(10);
 
     //control_pts setup
-    //int starting_pt = 0;
+    int trigger = 0;
+    StdVectorVectorDIM trigger_pose;
     StdVectorVectorDIM starting_cpt;
     std::size_t count = 0;
     std::size_t anti_count = 0;
     Vector2d duration;
 
-    //rlss_ros msgs
-    rlss_ros::PiecewiseTrajectory pt_msg;
-    rlss_ros::Bezier bez_msg;
-
     while(ros::ok()){
-        rate.sleep();
         ros::spinOnce(); 
+
+        if(trigger_pose != goal_pose){
+            trigger_pose = goal_pose;
+            trigger = 0;
+        }
+
         switch(trajectory_target){
         
         case 0:
-            //if (starting_pt > 0){
-            pt_msg.pieces.clear();
-            //    starting_pt = 0;
-            //}
-            //else{
-            for(unsigned int d = 0; d < number_of_drones; d++){
-                starting_cpt[d] = current_pose[d];
-                duration[d] = 0;
-                bez_msg.dimension = DIM;
-                bez_msg.duration = duration[d];
-                for (std::size_t i = 0; i < DIM; i++){
-                    bez_msg.start.push_back(starting_cpt[d][i]);// x y z thats why need []
-                    bez_msg.end.push_back(starting_cpt[d][i]);
-                } 
-                pt_msg.pieces.push_back(bez_msg);
-                bez_msg.start.clear();
-                bez_msg.end.clear();
-            }
-            pt.publish(pt_msg);
+    
+            trigger = 0;
+            trigger_pose.clear()
+            std_msgs::bool activation;
+            activation.data = false;
+            planner_activation.publish(activation); 
             ROS_INFO_STREAM ("Hovering");
+
             break;
             
         case 1:
-            //if(starting_pt < 1){
-            pt_msg.pieces.clear();
-            for(unsigned int d = 0; d < number_of_drones; d++){
-                starting_cpt[d] = current_pose[d];
-                duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
-                bez_msg.dimension = DIM;
-                bez_msg.duration = duration[d];
-                for (std::size_t i = 0; i < DIM; i++){
-                    bez_msg.start.push_back(starting_cpt[d][i]);
-                    bez_msg.end.push_back(goal_pose[d][i]);
-                } 
-                //bez_msg.starting_cpts = starting_cpt[d]; need to fking run a double for loop to include all the values
-                //bez_msg.goal_pose = goal_pose[d];
-                pt_msg.pieces.push_back(bez_msg);
-                bez_msg.start.clear();
-                bez_msg.end.clear();
-            } 
-            //    starting_pt += 1;
-            pt.publish(pt_msg);
-            ROS_INFO_STREAM ("Going to target");
+            //pt_msg.pieces.clear();
+            if ((goal_pose[d] - starting_cpt[d]).norm() > reach_distance){ 
+                std_msgs::bool activation;
+                activation.data = true;
+                planner_activation.publish(activation); 
+                if(trigger < 1){
+                    rlss_ros::PiecewiseTrajectory pt_msg;
+                    pt_msg.start_time.data = ros::Time::now();
+                    for(unsigned int d = 0; d < number_of_drones; d++){
+                        rlss_ros::Bezier bez_msg;
+                        starting_cpt[d] = current_pose[d];
+                        duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
+                        bez_msg.dimension = DIM;
+                        bez_msg.duration = duration[d];
+                        for (std::size_t i = 0; i < DIM; i++){
+                            bez_msg.start.push_back(starting_cpt[d][i]);
+                            bez_msg.end.push_back(goal_pose[d][i]);
+                        } 
+                        pt_msg.pieces.push_back(bez_msg);
+                        //bez_msg.start.clear();
+                        //bez_msg.end.clear();
+                    } 
+                    trigger += 1;
+                    pt.publish(pt_msg);
+                }
+                ROS_INFO_STREAM ("Going to target");
+            }
+            else{
+                std_msgs::bool activation;
+                activation.data = false;
+                planner_activation.publish(activation); 
+            }
+            
             break;
-            //}
 
         }    
-
+        rate.sleep();
     }
     return 0;
 }
