@@ -403,41 +403,41 @@ target_compile_definitions(
         DIMENSION=3
 )
 
-#add_executable(
-#        static_desired_trajectory_feeder_2d
-#        src/static_desired_trajectory_feeder.cpp
-#)
-#target_link_libraries(
-#        static_desired_trajectory_feeder_2d
-#        ${catkin_LIBRARIES}
-#        rlss
-#)
-#add_dependencies(
-#        static_desired_trajectory_feeder_2d
-#        ${PROJECT_NAME}_generate_messages_cpp
-#)
-#target_compile_definitions(
-#        static_desired_trajectory_feeder_2d PUBLIC
-#        DIMENSION=2
-#)
+add_executable(
+        static_desired_trajectory_feeder_2d
+        src/static_desired_trajectory_feeder.cpp
+)
+target_link_libraries(
+        static_desired_trajectory_feeder_2d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        static_desired_trajectory_feeder_2d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        static_desired_trajectory_feeder_2d PUBLIC
+        DIMENSION=2
+)
 
-#add_executable(
-#        static_desired_trajectory_feeder_3d
-#        src/static_desired_trajectory_feeder.cpp
-#)
-#target_link_libraries(
-#        static_desired_trajectory_feeder_3d
-##        ${catkin_LIBRARIES}
- #       rlss
-#)
-#add_dependencies(
-#        static_desired_trajectory_feeder_3d
-#        ${PROJECT_NAME}_generate_messages_cpp
-#)
-#target_compile_definitions(
-#        static_desired_trajectory_feeder_3d PUBLIC
-#        DIMENSION=3
-#)
+add_executable(
+        static_desired_trajectory_feeder_3d
+        src/static_desired_trajectory_feeder.cpp
+)
+target_link_libraries(
+        static_desired_trajectory_feeder_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        static_desired_trajectory_feeder_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        static_desired_trajectory_feeder_3d PUBLIC
+        DIMENSION=3
+)
 
 ########### Borealis #############
 add_executable(

@@ -4,4 +4,4 @@ build*/*
 
 .idea
 .idea/*
-third_party/rlss
+third_party/rlss/*

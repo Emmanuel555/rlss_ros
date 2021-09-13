@@ -613,3 +613,11 @@ Run Build Command:"/usr/bin/ninja" "cmTC_78bad"
 
 Source file was:
 int main() { return 0; }
+Determining if the function dgemm_ exists passed with the following output:
+Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/ninja" "cmTC_c0163"
+[1/2] Building C object CMakeFiles/cmTC_c0163.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_c0163
+
+
