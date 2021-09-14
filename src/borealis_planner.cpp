@@ -10,6 +10,8 @@
 #include <rlss_ros/PiecewiseTrajectory.h>
 #include "../third_party/rlss/third_party/json.hpp"
 #include <splx/opt/PiecewiseCurveQPGenerator.hpp>
+#include <splx/curve/PiecewiseCurve.hpp>
+#include <splx/curve/Bezier.hpp>
 #include <rlss/TrajectoryOptimizers/RLSSHardOptimizer.hpp>
 #include <rlss/TrajectoryOptimizers/RLSSSoftOptimizer.hpp>
 #include <rlss/TrajectoryOptimizers/RLSSHardSoftOptimizer.hpp>
@@ -29,9 +31,9 @@
 
 constexpr unsigned int DIM = DIMENSION;
 
+using RLSS = rlss::RLSS<double, DIMENSION>;
 using CollisionShape = rlss::CollisionShape<double, DIM>;
 using AlignedBoxCollisionShape = rlss::AlignedBoxCollisionShape<double, DIM>;
-using RLSS = rlss::RLSS<double, DIMENSION>;
 using OccupancyGrid = rlss::OccupancyGrid<double, DIM>;
 using OccIndex = OccupancyGrid::Index;
 using OccCoordinate = OccupancyGrid::Coordinate;
@@ -52,13 +54,12 @@ using DiscretePathSearcher = rlss::DiscretePathSearcher<double, DIM>;
 using ValidityChecker = rlss::ValidityChecker<double, DIM>;
 using GoalSelector = rlss::GoalSelector<double, DIM>;
 
-int self_robot_idx;
+//int self_robot_idx;
 std::vector<AlignedBox> other_robot_collision_shapes; // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
-std::vector<PiecewiseCurve> desired_trajectory;
-PiecewiseCurve desired_trajectory_1;
+PiecewiseCurve desired_trajectory;
 StdVectorVectorDIM state;// this one needs to be changed
 StdVectorVectorDIM current_pose;
 unsigned int continuity_upto_degree;
@@ -89,7 +90,6 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
         }
         other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max);
     }
-
 } // other robot shapes
 
 
@@ -113,7 +113,8 @@ void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
 
 void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &msg)
 {
-    std::vector<PiecewiseCurve> curve;
+    PiecewiseCurve curve;
+    //std::vector<std::optional<PiecewiseCurve>> curve;
     for (std::size_t i = 0; i < msg->pieces.size(); i++)
     {
         rlss_ros::Bezier piece_msg = msg->pieces[i];
@@ -134,7 +135,7 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
             }
             bez.appendControlPoint(starting_cpt);
             bez.appendControlPoint(end_cpt);
-            curve[i].addPiece(bez);
+            curve.addPiece(bez);
         }
         
     }
@@ -199,14 +200,16 @@ int main(int argc, char **argv)
 
     
     //required params from launch file*********************************************
-    nh.getParam("robot_idx", self_robot_idx);
+    //nh.getParam("robot_idx", self_robot_idx);
     
+
     //continuity upto deg
     int c_upto_d;
     nh.getParam("continuity_upto_degree", c_upto_d);
     continuity_upto_degree = c_upto_d;
     state.resize(continuity_upto_degree + 1);
     
+
     //replanning period
     double replanning_period;
     nh.getParam("replanning_period", replanning_period);
@@ -283,7 +286,6 @@ int main(int argc, char **argv)
         aabb_col_shape);
 
 
-
     //soft optimisation SVM params for r2r, r2o, ipc, cc 
     const std::vector<std::string> soft_opt_param_names{
         "robot_to_robot_hyperplane_constraints",
@@ -348,23 +350,28 @@ int main(int argc, char **argv)
     double desired_time_horizon;
     nh.getParam("desired_time_horizon", desired_time_horizon);
 
+
     //how many times can the recalculation be done
     unsigned int max_rescaling_count;
     int m_r_c;
     nh.getParam("max_rescaling_count", m_r_c);
     max_rescaling_count = m_r_c;
 
+
     //duration multiplier
-    double rescaling_multiplier;
-    nh.getParam("rescaling_multiplier", rescaling_multiplier);
+    //double rescaling_multiplier;
+    //nh.getParam("rescaling_multiplier", rescaling_multiplier);
+
 
     //search step for validity 
     double search_step;
     nh.getParam("search_step", search_step);
 
+
     //Time horizon divided by 4, where each piece has 8 control points
     std::vector<int> num_bezier_control_points;
     nh.getParam("num_bezier_control_points", num_bezier_control_points);
+
 
     PiecewiseCurveQPGenerator qp_generator;
     for (const auto &cpts : num_bezier_control_points)
@@ -374,12 +381,12 @@ int main(int argc, char **argv)
 
 //**************************Planners*********************************
 
-    
+    PiecewiseCurve temp_traj;
     //Goal selection constructor
     auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>
             (
                     desired_time_horizon,
-                    desired_trajectory_1, //this is the motherfker
+                    temp_traj, //this is the motherfker
                     workspace,
                     self_col_shape,
                     search_step
@@ -477,7 +484,7 @@ int main(int argc, char **argv)
         discrete_path_searcher,
         validity_checker,
         max_rescaling_count,
-        rescaling_multiplier
+        rescaling_factor
         );
     
     
@@ -512,52 +519,63 @@ int main(int argc, char **argv)
     while (ros::ok())
     {
         ros::spinOnce();
-        /* std::vector<std::vector<AlignedBox>> other_robot_shapes;
-        other_robot_shapes[0].push_back(other_robot_collision_shapes[1]);
-        other_robot_shapes[1].push_back(other_robot_collision_shapes[0]);
-        for (unsigned int i = 0; i < number_of_drones; i++)
+        //std::vector<std::vector<AlignedBox>> other_robot_shapes;
+        //other_robot_shapes[0].push_back(other_robot_collision_shapes[1]);
+        //other_robot_shapes[1].push_back(other_robot_collision_shapes[0]);
+
+        
+        for (std::size_t i = 0; i < number_of_drones; i++)
         {
-            rlss_goal_selector->setOriginalTrajectory(desired_trajectory[i]);
-    
-            //switch (activation.data)
-            //{
-            //case true:
-            //    {
+            PiecewiseCurve new_curve;
+            new_curve.addPiece(desired_trajectory.operator[](i));
+            rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
+            StdVectorVectorDIM selected_state;
+            selected_state.push_back(state[1-i]);
+            std::vector<AlignedBox> selected_shapes_to_collide;
+            selected_shapes_to_collide.push_back(other_robot_collision_shapes[1-i]);
+
+            switch (activation.data)
+            {
+            case true:
+            {
                 
             ros::Time current_time = ros::Time::now(); 
             ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
+
             //Planner
+            
             std::optional<PiecewiseCurve> curve = planner.plan(
             time_on_trajectory.toSec(),// time
-            state[i],// where i m currently
-            other_robot_shapes[i],//where other robots r currently 
+            selected_state,// where i m currently
+            selected_shapes_to_collide,//where other robots r currently 
             *occupancy_grid_ptr
             );// occupancy
 
             //curve
             if (curve)
             {                    
-                PiecewiseCurve traj = *curve;
+                PiecewiseCurve traj = *curve; //* = dereferencing
                 rlss_ros::PiecewiseTrajectory traj_msg;
                 //traj_msg.generation_time.data = current_time;
+                //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
                 new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
                 // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
-                 }
-/*                else
-                {
-                    ROS_WARN_STREAM("planner failed.");
-                }
-                
-                }
-                break;
-            
+            }
+            else
+            {
+                ROS_WARN_STREAM("planner failed.");
+            }
+            }
+            break;
+
             case false:
-                {
-                    new_state[i] = state[i];
-                } 
-                break;
-            } */ 
-    //    }
+            {
+                new_state[i] = state[i];
+            } 
+            break;
+            }
+        } 
+
         rate.sleep();
 
     }
