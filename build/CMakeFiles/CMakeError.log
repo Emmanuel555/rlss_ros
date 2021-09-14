@@ -1,12 +1,12 @@
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/ninja" "cmTC_6915f"
-[1/2] Building C object CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o
-[2/2] Linking C executable cmTC_6915f
-FAILED: cmTC_6915f 
-: && /usr/bin/x86_64-linux-gnu-gcc-10   -rdynamic CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o  -o cmTC_6915f   && :
-CMakeFiles/cmTC_6915f.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command:"/usr/bin/ninja" "cmTC_fa5b7"
+[1/2] Building C object CMakeFiles/cmTC_fa5b7.dir/CheckSymbolExists.c.o
+[2/2] Linking C executable cmTC_fa5b7
+FAILED: cmTC_fa5b7 
+: && /usr/bin/x86_64-linux-gnu-gcc-7   -rdynamic CMakeFiles/cmTC_fa5b7.dir/CheckSymbolExists.c.o  -o cmTC_fa5b7   && :
+CMakeFiles/cmTC_fa5b7.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
 ninja: build stopped: subcommand failed.
@@ -29,11 +29,11 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/emmanuel/rlss_ws/src/rlss_ros/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/ninja" "cmTC_6925e"
-[1/2] Building C object CMakeFiles/cmTC_6925e.dir/CheckFunctionExists.c.o
-[2/2] Linking C executable cmTC_6925e
-FAILED: cmTC_6925e 
-: && /usr/bin/x86_64-linux-gnu-gcc-10 -DCHECK_FUNCTION_EXISTS=pthread_create  -rdynamic CMakeFiles/cmTC_6925e.dir/CheckFunctionExists.c.o  -o cmTC_6925e  -lpthreads && :
+Run Build Command:"/usr/bin/ninja" "cmTC_91c1f"
+[1/2] Building C object CMakeFiles/cmTC_91c1f.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_91c1f
+FAILED: cmTC_91c1f 
+: && /usr/bin/x86_64-linux-gnu-gcc-7 -DCHECK_FUNCTION_EXISTS=pthread_create  -rdynamic CMakeFiles/cmTC_91c1f.dir/CheckFunctionExists.c.o  -o cmTC_91c1f  -lpthreads && :
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
 ninja: build stopped: subcommand failed.

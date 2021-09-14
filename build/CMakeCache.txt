@@ -30,31 +30,7 @@ ABSL_USE_EXTERNAL_GOOGLETEST:BOOL=OFF
 ABSL_USE_GOOGLETEST_HEAD:BOOL=OFF
 
 //Path to a library.
-BLAS_Accelerate_LIBRARY:FILEPATH=BLAS_Accelerate_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_acml_LIBRARY:FILEPATH=BLAS_acml_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_acml_mp_LIBRARY:FILEPATH=BLAS_acml_mp_LIBRARY-NOTFOUND
-
-//Path to a library.
 BLAS_atlas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libatlas.so
-
-//Path to a library.
-BLAS_blas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libblas.so
-
-//Path to a library.
-BLAS_complib.sgimath_LIBRARY:FILEPATH=BLAS_complib.sgimath_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_cxml_LIBRARY:FILEPATH=BLAS_cxml_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_dxml_LIBRARY:FILEPATH=BLAS_dxml_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_essl_LIBRARY:FILEPATH=BLAS_essl_LIBRARY-NOTFOUND
 
 //Path to a library.
 BLAS_f77blas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libf77blas.so
@@ -64,18 +40,6 @@ BLAS_goto2_LIBRARY:FILEPATH=BLAS_goto2_LIBRARY-NOTFOUND
 
 //Path to a library.
 BLAS_openblas_LIBRARY:FILEPATH=BLAS_openblas_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_scsl_LIBRARY:FILEPATH=BLAS_scsl_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_sgemm_LIBRARY:FILEPATH=BLAS_sgemm_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_sunperf_LIBRARY:FILEPATH=BLAS_sunperf_LIBRARY-NOTFOUND
-
-//Path to a library.
-BLAS_vecLib_LIBRARY:FILEPATH=BLAS_vecLib_LIBRARY-NOTFOUND
 
 //Builds the googlemock subproject
 BUILD_GMOCK:BOOL=ON
@@ -129,19 +93,20 @@ CATKIN_SYMLINK_INSTALL:BOOL=OFF
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
-//No help, variable specified on the command line.
-CMAKE_BUILD_TYPE:STRING=Debug
+//Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
+// CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.
+CMAKE_BUILD_TYPE:STRING=
 
 //No help, variable specified on the command line.
-CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-g++-10
+CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-g++-7
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-10
+CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-7
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-10
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-7
 
 //Flags used by the compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -160,15 +125,15 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //No help, variable specified on the command line.
-CMAKE_C_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-10
+CMAKE_C_COMPILER:FILEPATH=/usr/bin/x86_64-linux-gnu-gcc-7
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-10
+CMAKE_C_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-7
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-10
+CMAKE_C_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-7
 
 //Flags used by the compiler during all build types.
 CMAKE_C_FLAGS:STRING=
@@ -201,8 +166,8 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//No help, variable specified on the command line.
-CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
+//Enable/Disable output of compile commands during generation.
+CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
 
 //User executables (bin)
 CMAKE_INSTALL_BINDIR:PATH=bin
@@ -497,7 +462,7 @@ RT_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
 SETUPTOOLS_DEB_LAYOUT:BOOL=ON
 
 //Name of the computer/site where compile is being run
-SITE:STRING=emmanuel-ThinkPad-X1-Carbon-Gen-9
+SITE:STRING=Emmanuel
 
 //LSB Distrib tag
 UBUNTU:BOOL=TRUE
@@ -913,26 +878,8 @@ xmlrpcpp_DIR:PATH=/opt/ros/melodic/share/xmlrpcpp/cmake
 # INTERNAL cache entries
 ########################
 
-//ADVANCED property for variable: BLAS_Accelerate_LIBRARY
-BLAS_Accelerate_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_acml_LIBRARY
-BLAS_acml_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_acml_mp_LIBRARY
-BLAS_acml_mp_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_atlas_LIBRARY
 BLAS_atlas_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_blas_LIBRARY
-BLAS_blas_LIBRARY-ADVANCED:INTERNAL=1
-//Have function sgemm_
-BLAS_blas_WORKS:INTERNAL=1
-//ADVANCED property for variable: BLAS_complib.sgimath_LIBRARY
-BLAS_complib.sgimath_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_cxml_LIBRARY
-BLAS_cxml_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_dxml_LIBRARY
-BLAS_dxml_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_essl_LIBRARY
-BLAS_essl_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_f77blas_LIBRARY
 BLAS_f77blas_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_f77blas_atlas_WORKS
@@ -943,14 +890,6 @@ BLAS_f77blas_atlas_WORKS:INTERNAL=1
 BLAS_goto2_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BLAS_openblas_LIBRARY
 BLAS_openblas_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_scsl_LIBRARY
-BLAS_scsl_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_sgemm_LIBRARY
-BLAS_sgemm_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_sunperf_LIBRARY
-BLAS_sunperf_LIBRARY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: BLAS_vecLib_LIBRARY
-BLAS_vecLib_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_DIR
 Boost_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_DEBUG

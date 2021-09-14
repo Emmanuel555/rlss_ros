@@ -20,6 +20,7 @@
 #include <rlss_ros/setTargetsConfig.h>
 #include <std_msgs/Time.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int32.h>
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -47,25 +48,51 @@ double obs_check_distance;
 double rescaling_factor;
 double intended_velocity;
 unsigned int solver;
+std_msgs::Int32 trigger;
 
 ros::Publisher dp;
+ros::Publisher planner_activation;
+ros::Publisher tri;
 
 bool reached_final_destination(const StdVectorVectorDIM& goal_pose, 
                             const StdVectorVectorDIM& current_pose, 
                             const double& reach_distance,
                             const double& number_of_drones){
+
+    double count = 0;
     for (unsigned int i = 0; i < number_of_drones; i++)
     {
-        double count = 0;
+        std_msgs::Bool activation;
         if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
         {
             count += 1;
-       
+        }
+
+        if(count > 1)
+        {
+            ROS_INFO_STREAM ("Finished going to target");
+            activation.data = false;
+            planner_activation.publish(activation); 
+            return true;
+        }
+
+        else
+        {
+            ROS_INFO_STREAM ("Still going to target");
+            activation.data = true;
+            planner_activation.publish(activation); 
+            return false;
         }
     }
 
-
+    count = 0; //resets the counter just in case
+    
 }
+
+void triggerCallback(const std_msgs::Int32& msg)
+    {
+        trigger = msg;
+    }
 
 void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level){
     rlss_ros::dyn_params dyn_msg;
@@ -112,50 +139,52 @@ int main(int argc, char** argv) {
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
     ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber trigger_sub = nh.subscribe("trigger", 1, triggerCallback);
     // dso convex hull algo would be added here
 
     //publishing
     ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("Pseudo_trajectory", 10); //just added 
     dp = nh.advertise<rlss_ros::dyn_params>("dyn_params",10);
-    ros::Publisher planner_activation = nh.advertise<std_msgs::Bool>("planner_activation", 1);
+    planner_activation = nh.advertise<std_msgs::Bool>("planner_activation", 1);
+    tri = nh.advertise<std_msgs::Int32>("trigger",1);
     ros::Rate rate(10);
 
     //control_pts setup
-    int trigger = 0;
     StdVectorVectorDIM trigger_pose;
     StdVectorVectorDIM starting_cpt;
     std::size_t count = 0;
     std::size_t anti_count = 0;
     Vector2d duration;
-
+    std_msgs::Int32 init_trigger;
+    init_trigger.data = 0;
+    tri.publish(init_trigger);
     while(ros::ok()){
         ros::spinOnce(); 
 
         if(trigger_pose != goal_pose){
             trigger_pose = goal_pose;
-            trigger = 0;
+            trigger.data = 0;
+            tri.publish(trigger);
         }
 
         switch(trajectory_target){
         
         case 0:
-    
-            trigger = 0;
-            trigger_pose.clear();
+            {
+            trigger.data = 0;
+            //trigger_pose.clear();
             std_msgs::Bool activation;
             activation.data = false;
             planner_activation.publish(activation); 
+            tri.publish(trigger);
             ROS_INFO_STREAM ("Hovering");
-
+            }
             break;
             
         case 1:
-            //pt_msg.pieces.clear();
-            if (((goal_pose[0] - current_pose[0]).norm() && (goal_pose[1] - starting_cpt[1]).norm())  > reach_distance){ 
-                std_msgs::bool activation;
-                activation.data = true;
-                planner_activation.publish(activation); 
-                if(trigger < 1){
+            {//pt_msg.pieces.clear();
+            while (!reached_final_destination(goal_pose,current_pose,reach_distance,number_of_drones)){ 
+                if(trigger.data < 1){
                     rlss_ros::PiecewiseTrajectory pt_msg;
                     pt_msg.start_time.data = ros::Time::now();
                     for(unsigned int d = 0; d < number_of_drones; d++){
@@ -172,20 +201,22 @@ int main(int argc, char** argv) {
                         //bez_msg.start.clear();
                         //bez_msg.end.clear();
                     } 
-                    trigger += 1;
+                    trigger.data += 1;
+                    tri.publish(trigger);
                     pt.publish(pt_msg);
                 }
-                ROS_INFO_STREAM ("Going to target");
+                else
+                {
+                    break;
+                }
+                }
             }
-            else{
-                std_msgs::bool activation;
-                activation.data = false;
-                planner_activation.publish(activation); 
-            }
-            
             break;
-
-        }    
+        } 
+        if (trajectory_target == 0)
+        {
+            trigger_pose.clear();
+        }   
         rate.sleep();
     }
     return 0;

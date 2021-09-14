@@ -454,23 +454,24 @@ target_compile_definitions(
         dynamic_desired_target_feeder_3d PUBLIC
         DIMENSION=3
 )
-#add_executable(
-#        borealis_planner_3d
-#        src/borealis_planner.cpp
-#)
-#target_compile_definitions(
-#        borealis_planner_3d PUBLIC
-#        DIMENSION=3
-#)
-#target_link_libraries(
-#        borealis_planner_3d
-#        ${catkin_LIBRARIES}
-#        rlss
-#)
-#add_dependencies(
-#        borealis_planner_3d
-#        ${PROJECT_NAME}_generate_messages_cpp
-#)
+
+add_executable(
+        borealis_planner_3d
+        src/borealis_planner.cpp
+)
+target_link_libraries(
+        borealis_planner_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        borealis_planner_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        borealis_planner_3d PUBLIC
+        DIMENSION=3
+)
 
 
 
