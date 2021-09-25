@@ -5,3 +5,9 @@ build*/*
 .idea
 .idea/*
 third_party/rlss/*
+build/Testing/Temporary/LastTest.log
+build/build.ninja
+build/CMakeCache.txt
+build/compile_commands.json
+build/rules.ninja
+build/CMakeFiles/TargetDirectories.txt

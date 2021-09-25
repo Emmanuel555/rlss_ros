@@ -1,32 +1,97 @@
 <launch>
 
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />
+
+    <!-- COMMANDER PARAMETERS -->
+    <arg name="commander_dt" default="0.05"/> <!-- search step -->
+
+
     <!-- OBSTACLE FEEDER PARAMETERS -->
     <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/gazebo_sim"/>
     <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
 
 
     <!-- PLANNER PARAMETERS -->
+
+    <arg name="continuity_upto_degree" default="2"/> <!-- used in commander as well -->
+    <arg name="replanning_period" default="0.1"/>
+    <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
+    <arg name="maximum_derivative_magnitude_magnitudes" default="[20, 20]"/>
     <arg name="workspace_min" default="[50, -50, 0]"/>
     <arg name="workspace_max" default="[50, 50, 10]"/>
+    <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
+    <arg name="max_rescaling_count" default="10"/>
+    <!-- <arg name="rescaling_multiplier" default="1.2"/> -->
+    <!-- <arg name="optimization_obstacle_check_distance" default="0.5"/> -->
+    <!-- <arg name="optimizer" default="rlss-hard"/> -->
+    <arg name="integrated_squared_derivative_weight_degrees" default="[1, 2]"/>
+    <arg name="integrated_squared_derivative_weight_weights" default="[1.0, 0.8]"/>
+    <arg name="desired_time_horizon" default="8.0"/>
+     <arg name="search_step" default="0.01"/>
+    <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
     <arg name="collision_shape_at_zero_min" default="[-1, -1, -1]"/>
     <arg name="collision_shape_at_zero_max" default="[1, 1, 1]"/>
+
+    <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>
+    <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>
+    <arg name="soft_optimization_parameters/initial_point_constraints_enabled" default="true"/>
+    <arg name="soft_optimization_parameters/continuity_constraints_enabled" default="true"/>
+    
+    <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_value" default="10000"/>
+    <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_value" default="1000000"/>
+    <arg name="soft_optimization_parameters/initial_point_constraints_value" default="100000"/>
+    <arg name="soft_optimization_parameters/continuity_constraints_value" default="1000"/>
+    
+    <!-- <arg name="optimizer" default="rlss-hard"/> -->
     
 
+
+
+    <!-- Assigning to directory -->
     <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>
     <rosparam param="occupancy_grid_step_size" subst_value="True">$(arg occupancy_grid_step_size)</rosparam>
+    <!--<rosparam param="robot_idx" subst_value="True">$(arg robot_idx)</rosparam>-->
+    <rosparam param="continuity_upto_degree" subst_value="True">$(arg continuity_upto_degree)</rosparam>
+    <rosparam param="replanning_period" subst_value="True">$(arg replanning_period)</rosparam>
+    <rosparam param="maximum_derivative_magnitude_degrees" subst_value="True">$(arg maximum_derivative_magnitude_degrees)</rosparam>
+    <rosparam param="maximum_derivative_magnitude_magnitudes" subst_value="True">$(arg maximum_derivative_magnitude_magnitudes)</rosparam>
     <rosparam param="workspace_min" subst_value="True">$(arg workspace_min)</rosparam>
     <rosparam param="workspace_max" subst_value="True">$(arg workspace_max)</rosparam>
     <rosparam param="collision_shape_at_zero_min" subst_value="True">$(arg collision_shape_at_zero_min)</rosparam>
     <rosparam param="collision_shape_at_zero_max" subst_value="True">$(arg collision_shape_at_zero_max)</rosparam>
-   
-    <node pkg="rlss_ros" name="static_occupancy_grid_feeder" type="static_occupancy_grid_feeder_2d" required="true">
+    <rosparam param="piece_endpoint_cost_weights" subst_value="True">$(arg piece_endpoint_cost_weights)</rosparam>
+    <rosparam param="integrated_squared_derivative_weight_degrees" subst_value="True">$(arg integrated_squared_derivative_weight_degrees)</rosparam>
+    <rosparam param="integrated_squared_derivative_weight_weights" subst_value="True">$(arg integrated_squared_derivative_weight_weights)</rosparam>
+    <rosparam param="desired_time_horizon" subst_value="True">$(arg desired_time_horizon)</rosparam>
+    <rosparam param="max_rescaling_count" subst_value="True">$(arg max_rescaling_count)</rosparam>
+    <!-- <rosparam param="rescaling_multiplier" subst_value="True">$(arg rescaling_multiplier)</rosparam> -->
+    <!-- <rosparam param="optimization_obstacle_check_distance" subst_value="True">$(arg optimization_obstacle_check_distance)</rosparam> -->
+    <!-- <rosparam param="optimizer" subst_value="True">$(arg optimizer)</rosparam> -->
+    <rosparam param="search_step" subst_value="True">$(arg search_step)</rosparam>
+    <rosparam param="num_bezier_control_points" subst_value="True">$(arg num_bezier_control_points)</rosparam>
+    <rosparam param="commander_dt" subst_value="True">$(arg commander_dt)</rosparam>
+
+    <rosparam param="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" subst_value="True">$(arg soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled)</rosparam>
+    <rosparam param="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" subst_value="True">$(arg soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled)</rosparam>
+    <rosparam param="soft_optimization_parameters/initial_point_constraints_enabled" subst_value="True">$(arg soft_optimization_parameters/initial_point_constraints_enabled)</rosparam>
+    <rosparam param="soft_optimization_parameters/continuity_constraints_enabled" subst_value="True">$(arg soft_optimization_parameters/continuity_constraints_enabled)</rosparam>
+    <rosparam param="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_value" subst_value="True">$(arg soft_optimization_parameters/robot_to_robot_hyperplane_constraints_value)</rosparam>
+    <rosparam param="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_value" subst_value="True">$(arg soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_value)</rosparam>
+    <rosparam param="soft_optimization_parameters/initial_point_constraints_value" subst_value="True">$(arg soft_optimization_parameters/initial_point_constraints_value)</rosparam>
+    <rosparam param="soft_optimization_parameters/continuity_constraints_value" subst_value="True">$(arg soft_optimization_parameters/continuity_constraints_value)</rosparam>
+    
+    <!-- nodes-->
+
+    <node pkg="rlss_ros" name="static_occupancy_grid_feeder" type="static_occupancy_grid_feeder_3d" required="true">
     </node>
 
-    <node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_2d" required="true" output="screen">
-    </node>
+    <!--<node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_3d" required="true" output="screen"/>
+    </node>-->
 
-<!--    <node pkg="rosservice" type="rosservice" name="enable_motors" args='call &#45;&#45;wait enable_motors "enable: true"'>-->
+    <!--<node pkg="rlss_ros" name="drone_localizer" type="borealis_callbacks" output="screen"/>-->
+    
+    <!--<node pkg="rlss_ros" name="dynamic_traj_feeder" type="dynamic_desired_target_feeder_3d" required="true" output="screen"/>-->
 
-<!--    </node>-->
+    
 
 </launch>
