@@ -1,6 +1,6 @@
 <launch>
 
-    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
 
     <!-- COMMANDER PARAMETERS -->
     <arg name="commander_dt" default="0.05"/> <!-- search step -->
@@ -90,7 +90,7 @@
 
     <!--<node pkg="rlss_ros" name="drone_localizer" type="borealis_callbacks" output="screen"/>-->
     
-    <!--<node pkg="rlss_ros" name="dynamic_traj_feeder" type="dynamic_desired_target_feeder_3d" required="true" output="screen"/>-->
+    <node pkg="rlss_ros" name="dynamic_traj_feeder" type="dynamic_desired_target_feeder_3d" required="true" output="screen"/>
 
     
 

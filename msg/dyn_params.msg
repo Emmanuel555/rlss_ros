@@ -1,4 +1,4 @@
-uint32 number_of_drones # used to be uint8 stupid variable
+uint32 number_of_drones 
 float64 reach_distance
 uint32 solver_type
 float64 obs_check_distance
