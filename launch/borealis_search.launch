@@ -23,7 +23,7 @@
     <arg name="max_rescaling_count" default="10"/>
     <!-- <arg name="rescaling_multiplier" default="1.2"/> -->
     <!-- <arg name="optimization_obstacle_check_distance" default="0.5"/> -->
-    <!-- <arg name="optimizer" default="rlss-hard"/> -->
+    <arg name="optimizer" default="rlss-hard"/> -->
     <arg name="integrated_squared_derivative_weight_degrees" default="[1, 2]"/>
     <arg name="integrated_squared_derivative_weight_weights" default="[1.0, 0.8]"/>
     <arg name="desired_time_horizon" default="8.0"/>
@@ -88,7 +88,7 @@
     <!--<node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_3d" required="true" output="screen"/>
     </node>-->
 
-    <!--<node pkg="rlss_ros" name="drone_localizer" type="borealis_callbacks" output="screen"/>-->
+    <node pkg="rlss_ros" name="drone_localizer" type="borealis_callbacks" output="screen"/>-->
     
     <node pkg="rlss_ros" name="dynamic_traj_feeder" type="dynamic_desired_target_feeder_3d" required="true" output="screen"/>
 

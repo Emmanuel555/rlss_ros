@@ -37,6 +37,7 @@ using Bezier = splx::Bezier<double, DIM>;
 using PiecewiseCurve = splx::PiecewiseCurve<double, DIM>;
 using VectorDIM = Bezier::VectorDIM;
 
+
 // Trajectory Target
 StdVectorVectorDIM goal_pose(DIM);
 StdVectorVectorDIM current_pose(DIM);
@@ -67,6 +68,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     for (unsigned int i = 0; i < number_of_drones; i++)
     {
         //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
+        //ROS_INFO_STREAM (goal_pose[i][0]);
         if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
         {
             count += 1;
@@ -74,11 +76,20 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
         }
     }
 
+    ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
+    ROS_INFO_STREAM (goal_pose[0][0]);
+    ROS_INFO_STREAM ("Separator");
+    ROS_INFO_STREAM (count);
+    ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
+    ROS_INFO_STREAM (goal_pose[1][0]);
+
     if(count > 1)
         {
             ROS_INFO_STREAM ("Finished going to target");
             activation.data = false;
             planner_activation.publish(activation); 
+            trigger_callback.data = 0;
+            //tri.publish(trigger_callback);
             return true;
         }
     else
@@ -139,14 +150,14 @@ int main(int argc, char **argv) {
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
     ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
-    ros::Subscriber trigger_sub = nh.subscribe("/trigger", 1, triggerCallback);
+    ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
     // dso convex hull algo would be added here
 
     //publishing
     ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/Pseudo_trajectory", 10); //just added 
     dp = nh.advertise<rlss_ros::dyn_params>("/dyn_params",10);
-    planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation", 1);
-    tri = nh.advertise<std_msgs::Int32>("/trigger",1);
+    planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation", 10);
+    tri = nh.advertise<std_msgs::Int32>("/trigger",10);
     ros::Rate rate(10);
 
     //control_pts setup
@@ -174,12 +185,6 @@ int main(int argc, char **argv) {
             dyn_msg.intended_velocity = velocity;  
             dp.publish(dyn_msg);
             
-            if(trigger_pose != goal_pose){
-                trigger_pose = goal_pose;
-                trigger_callback.data = 0;
-                tri.publish(trigger_callback);
-            }
-
             switch(trajectory_target){
             
             case 0:
@@ -197,9 +202,16 @@ int main(int argc, char **argv) {
                 
             case 1:
                 {//pt_msg.pieces.clear();
+                if(trigger_pose != goal_pose)
+                {
+                    trigger_pose = goal_pose;
+                    trigger_callback.data = 0;
+                    tri.publish(trigger_callback);
+                }
                 while (!reached_final_destination(goal_pose,current_pose,reach_distance,number_of_drones)){ 
-                    ROS_INFO_STREAM(trigger_callback.data);
+                    //ROS_INFO_STREAM(trigger_callback.data);
                     if(trigger_callback.data < 1){
+                        pt_msg.pieces.clear();
                         pt_msg.start_time.data = ros::Time::now();
                         for(unsigned int d = 0; d < number_of_drones; d++){
                             rlss_ros::Bezier bez_msg;
@@ -217,7 +229,7 @@ int main(int argc, char **argv) {
                         } 
                         trigger_callback.data += 1;
                         ROS_INFO_STREAM ("Trigger callback not detected");
-                        tri.publish(trigger_callback);
+                        //tri.publish(trigger_callback);
                         //pt.publish(pt_msg);
                     }
                     else
@@ -226,6 +238,7 @@ int main(int argc, char **argv) {
                     }
                     }
                 //ROS_INFO_STREAM (duration[0]);
+                tri.publish(trigger_callback);
                 pt.publish(pt_msg);
                 }
                 break;

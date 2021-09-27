@@ -438,9 +438,6 @@ target_compile_definitions(
         DIMENSION=3
 )
 
-
-
-
 add_executable(
         dynamic_desired_target_feeder_3d
         src/dynamic_desired_target_feeder.cpp
@@ -458,10 +455,6 @@ target_compile_definitions(
         dynamic_desired_target_feeder_3d PUBLIC
         DIMENSION=3
 )
-
-
-
-
 
 add_executable(
         borealis_planner_3d

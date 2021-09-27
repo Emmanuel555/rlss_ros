@@ -55,13 +55,13 @@ using ValidityChecker = rlss::ValidityChecker<double, DIM>;
 using GoalSelector = rlss::GoalSelector<double, DIM>;
 
 //int self_robot_idx;
-std::vector<AlignedBox> other_robot_collision_shapes; // robot_idx -> colshape
+std::vector<AlignedBox> other_robot_collision_shapes(DIM); // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
 PiecewiseCurve desired_trajectory;
-StdVectorVectorDIM state;// this one needs to be changed
-StdVectorVectorDIM current_pose;
+StdVectorVectorDIM state(DIM);// this one needs to be changed
+StdVectorVectorDIM current_pose(DIM);
 unsigned int continuity_upto_degree;
 double testing;
 std_msgs::Bool activation;
@@ -73,6 +73,7 @@ double reach_distance;
 double optimization_obstacle_check_distance;
 unsigned int solver_type;
 unsigned int number_of_drones;
+
 // Duration and rescaling coeff
 double rescaling_factor;
 double intended_velocity;
@@ -82,7 +83,7 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
 {   
     for (const auto &c_s : msg->col_shapes){
         unsigned int robot_idx = c_s.robot_idx;
-        VectorDIM shape_min, shape_max;
+        VectorDIM shape_min(DIM), shape_max(DIM);
         for (unsigned int i = 0; i < DIM; i++)
         {
             shape_min(i) = c_s.bbox.min[i]; // -0.6, 0.6, 0
@@ -126,8 +127,8 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
         else
         {
             Bezier bez(piece_msg.duration);
-            VectorDIM starting_cpt;
-            VectorDIM end_cpt;
+            VectorDIM starting_cpt(DIM);
+            VectorDIM end_cpt(DIM);
             for (unsigned int j = 0; j < DIM; j++)
             {    
                 starting_cpt[j] = piece_msg.start[j];
@@ -178,7 +179,7 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     rescaling_factor = msg->rescaling_factor;
     intended_velocity = msg->intended_velocity;
 
-    switch (solver_type)
+    /*switch (solver_type)
     {
     case 0:
         optimizer = "rlss-hard-soft";
@@ -189,13 +190,13 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     case 2:
         optimizer = "rlss-hard";
         break;
-    }
+    }*/
 }
 
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "borealis-planner-3D");
+    ros::init(argc, argv, "borealis_planner");
     ros::NodeHandle nh;
 
     
@@ -217,8 +218,8 @@ int main(int argc, char **argv)
 
 
     //max derivative mag
-    std::vector<int> maximum_derivative_magnitude_degrees;
-    std::vector<double> maximum_derivative_magnitude_magnitudes;
+    std::vector<int> maximum_derivative_magnitude_degrees(DIM);
+    std::vector<double> maximum_derivative_magnitude_magnitudes(DIM);
     nh.getParam("maximum_derivative_magnitude_degrees", maximum_derivative_magnitude_degrees);
     nh.getParam("maximum_derivative_magnitude_magnitudes", maximum_derivative_magnitude_magnitudes);
     if (maximum_derivative_magnitude_degrees.size() != maximum_derivative_magnitude_magnitudes.size())
@@ -226,7 +227,7 @@ int main(int argc, char **argv)
         ROS_FATAL_STREAM("maximum derivative magnitude degree magnitude mismatch");
         return 0;
     }
-    std::vector<std::pair<unsigned int, double>> maximum_derivative_magnitudes;
+    std::vector<std::pair<unsigned int, double>> maximum_derivative_magnitudes(DIM);
     for (std::size_t i = 0; i < maximum_derivative_magnitude_degrees.size(); i++)
     {
         maximum_derivative_magnitudes.push_back(
@@ -237,7 +238,7 @@ int main(int argc, char **argv)
 
 
     //workspace size 
-    std::vector<double> workspace_min_vec, workspace_max_vec;
+    std::vector<double> workspace_min_vec(DIM), workspace_max_vec(DIM);
     nh.getParam("workspace_min", workspace_min_vec);
     nh.getParam("workspace_max", workspace_max_vec);
     if (workspace_min_vec.size() != workspace_max_vec.size())
@@ -250,7 +251,7 @@ int main(int argc, char **argv)
         ROS_FATAL_STREAM("workspace vector size not equal to dimension");
         return 0;
     }
-    VectorDIM workspace_min, workspace_max;
+    VectorDIM workspace_min(DIM), workspace_max(DIM);
     for (unsigned int i = 0; i < DIM; i++)
     {
         workspace_min(i) = workspace_min_vec[i];
@@ -260,7 +261,7 @@ int main(int argc, char **argv)
 
 
     //UAV collision shape
-    std::vector<double> colshape_min_vec, colshape_max_vec;
+    std::vector<double> colshape_min_vec(DIM), colshape_max_vec(DIM);
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
     nh.getParam("collision_shape_at_zero_max", colshape_max_vec);
     if (colshape_min_vec.size() != colshape_max_vec.size())
@@ -273,7 +274,7 @@ int main(int argc, char **argv)
         ROS_FATAL_STREAM("colshape vector size not equal to dimension");
         return 0;
     }
-    VectorDIM colshape_min, colshape_max;
+    VectorDIM colshape_min(DIM), colshape_max(DIM);
     for (unsigned int i = 0; i < DIM; i++)
     {
         colshape_min(i) = colshape_min_vec[i];
@@ -321,13 +322,13 @@ int main(int argc, char **argv)
 
 
     //end point cost weights
-    std::vector<double> piece_endpoint_cost_weights;
+    std::vector<double> piece_endpoint_cost_weights(DIM);
     nh.getParam("piece_endpoint_cost_weights", piece_endpoint_cost_weights);
 
 
     //integrated squared derivative weights
-    std::vector<int> integrated_squared_derivative_weight_degrees;
-    std::vector<double> integrated_squared_derivative_weight_weights;
+    std::vector<int> integrated_squared_derivative_weight_degrees(DIM);
+    std::vector<double> integrated_squared_derivative_weight_weights(DIM);
     nh.getParam("integrated_squared_derivative_weight_degrees", integrated_squared_derivative_weight_degrees);
     nh.getParam("integrated_squared_derivative_weight_weights", integrated_squared_derivative_weight_weights);
     if (integrated_squared_derivative_weight_weights.size() != integrated_squared_derivative_weight_degrees.size())
@@ -336,7 +337,7 @@ int main(int argc, char **argv)
         return 0;
     }
     std::vector<std::pair<unsigned int, double>>
-        integrated_squared_derivative_weights;
+        integrated_squared_derivative_weights(DIM);
     for (std::size_t i = 0; i < integrated_squared_derivative_weight_degrees.size(); i++)
     {
         integrated_squared_derivative_weights.push_back(
@@ -369,7 +370,7 @@ int main(int argc, char **argv)
 
 
     //Time horizon divided by 4, where each piece has 8 control points
-    std::vector<int> num_bezier_control_points;
+    std::vector<int> num_bezier_control_points(DIM);
     nh.getParam("num_bezier_control_points", num_bezier_control_points);
 
 
@@ -386,7 +387,7 @@ int main(int argc, char **argv)
     auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>
             (
                     desired_time_horizon,
-                    temp_traj, //this is the motherfker
+                    desired_trajectory, //this is the motherfker
                     workspace,
                     self_col_shape,
                     search_step
@@ -417,6 +418,26 @@ int main(int argc, char **argv)
 
 
     //Traj optimisation constructor
+
+    switch (solver_type)
+    {
+    case 0:
+    {
+        optimizer = "rlss-hard-soft";
+    }    
+        break;
+    case 1:
+    {
+        optimizer = "rlss-soft";
+    }
+        break;
+    case 2:
+    {
+        optimizer = "rlss-hard";
+    }    
+        break;
+    }
+
     std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
     if (optimizer == "rlss-hard-soft")
     {
@@ -498,14 +519,16 @@ int main(int argc, char **argv)
     
         
     //Current drone's intended goal and starting cpt/position
-    ros::Subscriber destrajsub = nh.subscribe("Pseudo_trajectory", 1, desiredTrajectoryCallback);
+    ros::Subscriber destrajsub = nh.subscribe("/Pseudo_trajectory", 1, desiredTrajectoryCallback);
 
     //Planner usage
-    ros::Subscriber planner_sub = nh.subscribe("planner_activation", 1, plannerCallback);
-    
+    ros::Subscriber planner_sub = nh.subscribe("/planner_activation", 1, plannerCallback);
+
+    //Dynamic Params
+    ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("occupancy_grid", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
 
     //Push the position of where this drone shud go into topic 
@@ -513,12 +536,14 @@ int main(int argc, char **argv)
 
 
     //loops at the rate of the replanning period
-    ros::Rate rate(1 / replanning_period);
+    ros::Rate rate(1/replanning_period);
 
-    StdVectorVectorDIM new_state;
+    StdVectorVectorDIM new_state(DIM);
+
     while (ros::ok())
     {
         ros::spinOnce();
+        ROS_INFO_STREAM (number_of_drones);
         //std::vector<std::vector<AlignedBox>> other_robot_shapes;
         //other_robot_shapes[0].push_back(other_robot_collision_shapes[1]);
         //other_robot_shapes[1].push_back(other_robot_collision_shapes[0]);
@@ -526,12 +551,14 @@ int main(int argc, char **argv)
         
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
+            ROS_INFO_STREAM ("lolol");
             PiecewiseCurve new_curve;
             new_curve.addPiece(desired_trajectory.operator[](i));
+            ROS_INFO_STREAM (new_curve.numPieces());
             rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
-            StdVectorVectorDIM selected_state;
-            selected_state.push_back(state[1-i]);
-            std::vector<AlignedBox> selected_shapes_to_collide;
+            StdVectorVectorDIM selected_state(DIM);
+            selected_state.push_back(state[i]);
+            std::vector<AlignedBox> selected_shapes_to_collide(number_of_drones);
             selected_shapes_to_collide.push_back(other_robot_collision_shapes[1-i]);
 
             switch (activation.data)
@@ -552,7 +579,7 @@ int main(int argc, char **argv)
             );// occupancy
 
             //curve
-            if (curve)
+            /*if (curve)
             {                    
                 PiecewiseCurve traj = *curve; //* = dereferencing
                 rlss_ros::PiecewiseTrajectory traj_msg;
@@ -560,11 +587,12 @@ int main(int argc, char **argv)
                 //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
                 new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
                 // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
+                ROS_INFO_STREAM (new_state[i][0]);
             }
             else
             {
                 ROS_WARN_STREAM("planner failed.");
-            }
+            }*/
             }
             break;
 
@@ -574,7 +602,7 @@ int main(int argc, char **argv)
             } 
             break;
             }
-        } 
+        }
 
         rate.sleep();
 
