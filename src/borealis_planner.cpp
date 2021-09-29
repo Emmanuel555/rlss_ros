@@ -559,6 +559,7 @@ int main(int argc, char **argv)
             //Goal selection constructor
             OccCoordinate start_position_1(current_position[0],current_position[1],current_position[2]); // starting coordinate has to ensure that space is accounted for the collision shapes
             OccCoordinate goal_position_1(target_position[0],target_position[1],target_position[2]);
+            
             auto result = rlss::internal::discreteSearch<double, DIM>(
                             start_position_1, 
                             goal_position_1, 
