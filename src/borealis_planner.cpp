@@ -557,10 +557,11 @@ int main(int argc, char **argv)
 
             //**************************Planner*********************************    
             //Goal selection constructor
-            OccCoordinate start_position_1(current_position[0],current_position[1],current_position[2]); // starting coordinate has to ensure that space is accounted for the collision shapes
-            OccCoordinate goal_position_1(target_position[0],target_position[1],target_position[2]);
             
-            auto result = rlss::internal::discreteSearch<double, DIM>(
+            //OccCoordinate start_position_1(current_position[0],current_position[1],current_position[2]); // starting coordinate has to ensure that space is accounted for the collision shapes
+            //OccCoordinate goal_position_1(target_position[0],target_position[1],target_position[2]);
+            
+            /*auto result = rlss::internal::discreteSearch<double, DIM>(
                             start_position_1, 
                             goal_position_1, 
                             occupancy_grid, 
@@ -568,9 +569,8 @@ int main(int argc, char **argv)
                             self_col_shape
             );
             StdVectorVectorDIM result_vector = *result;
-            ROS_INFO_STREAM (result_vector.size());
+            ROS_INFO_STREAM (result_vector.size());*/
 
-            ROS_INFO_STREAM (time_on_trajectory.toSec());
             ROS_INFO_STREAM (time_on_trajectory.toSec());
             ROS_INFO_STREAM (desired_time_horizon);
             ROS_INFO_STREAM (search_step);
