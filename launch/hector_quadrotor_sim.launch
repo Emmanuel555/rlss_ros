@@ -94,8 +94,8 @@
 
     <node pkg="rlss_ros" name="localizer" type="hector_quadrotor_localizer" required="true" output="screen"/>
 
-    <node name="desired_traj_feeder" pkg="rlss_ros" type="static_desired_trajectory_feeder_3d" required="true"  output="screen">
-    </node>
+    <!--<node name="desired_traj_feeder" pkg="rlss_ros" type="static_desired_trajectory_feeder_3d" required="true"  output="screen">
+    </node>-->
 
     <!--<node pkg="rlss_ros" name="controller" type="hector_quadrotor_controller" required="true" output="screen">
         <param name="kpp" value="$(arg kpp)"/>

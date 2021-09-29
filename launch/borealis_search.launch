@@ -1,13 +1,13 @@
 <launch>
 
-    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
+    <!--<node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
 
     <!-- COMMANDER PARAMETERS -->
     <arg name="commander_dt" default="0.05"/> <!-- search step -->
 
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
-    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/gazebo_sim"/>
+    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/1obstacle"/>
     <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
 
 
@@ -29,8 +29,8 @@
     <arg name="desired_time_horizon" default="8.0"/>
      <arg name="search_step" default="0.01"/>
     <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
-    <arg name="collision_shape_at_zero_min" default="[-1, -1, -1]"/>
-    <arg name="collision_shape_at_zero_max" default="[1, 1, 1]"/>
+    <arg name="collision_shape_at_zero_min" default="[-0.6, -0.6, 0]"/>
+    <arg name="collision_shape_at_zero_max" default="[0.6, 0.6, 0.25]"/>
 
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>
     <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>
@@ -83,7 +83,7 @@
     <!-- nodes-->
 
     <node pkg="rlss_ros" name="static_occupancy_grid_feeder" type="static_occupancy_grid_feeder_3d" required="true">
-    </node>
+    </node>-->
 
     <!--<node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_3d" required="true" output="screen"/>
     </node>-->
