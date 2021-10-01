@@ -18,7 +18,7 @@
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[20, 20]"/>
     <arg name="workspace_min" default="[-20, -20, -10]"/>
-    <arg name="workspace_max" default="[20, 20, 10]"/>
+    <arg name="workspace_max" default="[20, 20, 20]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
     <arg name="max_rescaling_count" default="10"/>
     <!-- <arg name="rescaling_multiplier" default="1.2"/> -->

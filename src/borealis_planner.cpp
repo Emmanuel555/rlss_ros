@@ -527,6 +527,7 @@ int main(int argc, char **argv)
             //ROS_INFO_STREAM (new_curve.numPieces());
             //rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
             StdVectorVectorDIM selected_state(DIM);
+            ROS_INFO_STREAM (selected_state.size());
             VectorDIM current_position(DIM);
             std::vector<AlignedBox> selected_shapes_to_collide(DIM);
             for (std::size_t d = 0; d < DIM; d++)
