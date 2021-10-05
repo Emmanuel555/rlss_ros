@@ -17,7 +17,7 @@
     <arg name="replanning_period" default="0.1"/>
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[20, 20]"/>
-    <arg name="workspace_min" default="[-20, -20, -10]"/>
+    <arg name="workspace_min" default="[-20, -20, -1]"/>
     <arg name="workspace_max" default="[20, 20, 20]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
     <arg name="max_rescaling_count" default="10"/>
@@ -29,7 +29,7 @@
     <arg name="desired_time_horizon" default="8.0"/>
      <arg name="search_step" default="0.01"/>
     <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
-    <arg name="collision_shape_at_zero_min" default="[-0.6, -0.6, 0.0]"/>
+    <arg name="collision_shape_at_zero_min" default="[-0.6, -0.6, -0.25]"/>
     <arg name="collision_shape_at_zero_max" default="[0.6, 0.6, 0.25]"/>
 
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>

@@ -521,8 +521,8 @@ int main(int argc, char **argv)
                         new_curve.maxParameter(), 0);
             ROS_INFO_STREAM (goal_position[i]);
             VectorDIM target_position(DIM); 
-            target_position = new_curve.eval(desired_time_horizon, 0);
-            ROS_INFO_STREAM (target_position[i]);
+            //target_position = new_curve.eval(desired_time_horizon, 0);
+            //ROS_INFO_STREAM (target_position[i]);
         
             //ROS_INFO_STREAM (new_curve.numPieces());
             //rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
@@ -576,7 +576,9 @@ int main(int argc, char **argv)
             ROS_INFO_STREAM (time_on_trajectory.toSec());
             ROS_INFO_STREAM (desired_time_horizon);
             ROS_INFO_STREAM (search_step);
-            ROS_INFO_STREAM (current_time.toSec());
+            AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
+            ROS_INFO_STREAM (occupancy_grid.isOccupied(robot_box));
+            ROS_INFO_STREAM (workspace.contains(robot_box));
             ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
             ROS_INFO_STREAM (new_curve.numPieces());
             auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>
