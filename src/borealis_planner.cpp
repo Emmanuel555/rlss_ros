@@ -96,7 +96,7 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
             shape_min(i) = c_s.bbox.min[i]; // -0.6, 0.6, 0
             shape_max(i) = c_s.bbox.max[i]; // 0.6, 0.6, 0.25
         }
-        other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max);
+        other_robot_collision_shapes[robot_idx] = AlignedBox(shape_min, shape_max); // if its 0,0,0, cannot work with this current setup
     }
 } // other robot shapes
 
@@ -185,7 +185,7 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
     reach_distance = msg->reach_distance;
     solver_type = msg->solver_type;
-    optimization_obstacle_check_distance = msg->obs_check_distance;
+    optimization_obstacle_check_distance = 5.0; //msg->obs_check_distance;
     rescaling_multiplier = msg->rescaling_factor;
     intended_velocity = msg->intended_velocity;
 
@@ -508,18 +508,21 @@ int main(int argc, char **argv)
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
             ROS_INFO_STREAM (occupancy_grid.size());
-            OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
-            ROS_INFO_STREAM (typeid(testing_lol).name());
+            //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
+            //ROS_INFO_STREAM (typeid(testing_lol).name());
             ROS_INFO_STREAM ("lololol");
+            ROS_INFO_STREAM (soft_optimization_parameters["robot_to_robot_hyperplane_constraints"].first);
             counter += replanning_period;
-            ROS_INFO_STREAM (counter);
+            //ROS_INFO_STREAM (counter);
+            
+            //add destination
             PiecewiseCurve new_curve;
             new_curve.addPiece(desired_trajectory.operator[](i));
 
             VectorDIM goal_position
                 = new_curve.eval(
                         new_curve.maxParameter(), 0);
-            ROS_INFO_STREAM (goal_position[i]);
+            //ROS_INFO_STREAM (goal_position[i]);
             VectorDIM target_position(DIM); 
             //target_position = new_curve.eval(desired_time_horizon, 0);
             //ROS_INFO_STREAM (target_position[i]);
@@ -528,6 +531,7 @@ int main(int argc, char **argv)
             //rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
             StdVectorVectorDIM selected_state(DIM);
             ROS_INFO_STREAM (selected_state.size());
+            ROS_INFO_STREAM (continuity_upto_degree);
             VectorDIM current_position(DIM);
             std::vector<AlignedBox> selected_shapes_to_collide(DIM);
             for (std::size_t d = 0; d < DIM; d++)
@@ -536,10 +540,14 @@ int main(int argc, char **argv)
                 current_position[d] = state[i][d];
             }
             //selected_shapes_to_collide[i].push_back(other_robot_collision_shapes[1-i].second);
-            for (const auto &elem: other_robot_collision_shapes) 
-            {
-                selected_shapes_to_collide.push_back(elem.second);
-            }
+            
+
+
+            /* Nothing to collide into for now */
+            //for (const auto &elem: other_robot_collision_shapes) 
+            //{
+            //    selected_shapes_to_collide.push_back(elem.second);
+            //}
             
             //switch (activation.data)
             //{
@@ -575,12 +583,21 @@ int main(int argc, char **argv)
 
             ROS_INFO_STREAM (time_on_trajectory.toSec());
             ROS_INFO_STREAM (desired_time_horizon);
-            ROS_INFO_STREAM (search_step);
+            ROS_INFO_STREAM (optimizer);
+            ROS_INFO_STREAM (optimization_obstacle_check_distance);
             AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
-            ROS_INFO_STREAM (occupancy_grid.isOccupied(robot_box));
-            ROS_INFO_STREAM (workspace.contains(robot_box));
-            ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
-            ROS_INFO_STREAM (new_curve.numPieces());
+            //ROS_INFO_STREAM ("Is the occupancy grid of the robot state occupied?");
+            //ROS_INFO_STREAM (occupancy_grid.isOccupied(selected_state[0]));
+            //ROS_INFO_STREAM (workspace.contains(robot_box));
+            //ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
+            //ROS_INFO_STREAM (new_curve.numPieces());
+
+
+
+
+
+
+
             auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>
                 (
                         desired_time_horizon,
@@ -751,7 +768,8 @@ int main(int argc, char **argv)
             std::optional<PiecewiseCurve> curve = planners[i].plan(
                 time_on_trajectory.toSec(),// time
                 selected_state,// where i m currently
-                selected_shapes_to_collide,//where other robots r currently 
+                selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
+                // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
                 occupancy_grid
             ); // occupancy
             
