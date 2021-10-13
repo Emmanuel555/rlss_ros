@@ -188,19 +188,6 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     optimization_obstacle_check_distance = msg->obs_check_distance;
     rescaling_multiplier = msg->rescaling_factor;
     intended_velocity = msg->intended_velocity;
-
-    /*switch (solver_type)
-    {
-    case 0:
-        optimizer = "rlss-hard-soft";
-        break;
-    case 1:
-        optimizer = "rlss-soft";
-        break;
-    case 2:
-        optimizer = "rlss-hard";
-        break;
-    }*/
 }
 
 
@@ -237,7 +224,7 @@ int main(int argc, char **argv)
         ROS_FATAL_STREAM("maximum derivative magnitude degree magnitude mismatch");
         return 0;
     }
-    std::vector<std::pair<unsigned int, double>> maximum_derivative_magnitudes(DIM);
+    std::vector<std::pair<unsigned int, double>> maximum_derivative_magnitudes(continuity_upto_degree);
     for (std::size_t i = 0; i < maximum_derivative_magnitude_degrees.size(); i++)
     {
         maximum_derivative_magnitudes[i].first = maximum_derivative_magnitude_degrees[i],
@@ -470,6 +457,7 @@ int main(int argc, char **argv)
     //loops at the rate of the replanning period
     ros::Rate rate(1/replanning_period);
 
+    //new state created for final position
     StdVectorVectorDIM new_state(DIM);
 
     /*std::vector<RLSS> planners;*/
@@ -484,12 +472,9 @@ int main(int argc, char **argv)
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
             ROS_INFO_STREAM ("lololol");
-            ROS_INFO_STREAM (intended_velocity);
+            //ROS_INFO_STREAM (intended_velocity);
             ROS_INFO_STREAM (solver_type);
             ROS_INFO_STREAM (soft_optimization_parameters["robot_to_robot_hyperplane_constraints"].second);
-            //ROS_INFO_STREAM (maximum_derivative_magnitude_degrees[0]);
-            //ROS_INFO_STREAM (maximum_derivative_magnitude_degrees[1]);
-            //ROS_INFO_STREAM (maximum_derivative_magnitude_magnitudes[0]);
             /*std::vector<std::pair<unsigned int, double>> testing_derivatives(DIM);
             for (std::size_t i = 0; i < maximum_derivative_magnitude_degrees.size(); i++)
             {
@@ -500,7 +485,7 @@ int main(int argc, char **argv)
             }
 
             ROS_INFO_STREAM (testing_derivatives[0].second);*/
-            counter += replanning_period;
+            //counter += replanning_period;
             //ROS_INFO_STREAM (counter);
             
             //add destination
@@ -540,14 +525,18 @@ int main(int argc, char **argv)
             //    case true:
                 
             //    {
+
             ros::Time current_time = ros::Time::now(); 
             ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
             
-            ROS_INFO_STREAM (time_on_trajectory.toSec());
+            ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
+            ROS_INFO_STREAM (current_time.toSec());
+            ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
             ROS_INFO_STREAM (desired_time_horizon);
-            ROS_INFO_STREAM (optimizer);
             ROS_INFO_STREAM (optimization_obstacle_check_distance);
-            AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
+            
+            //AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
+
             //ROS_INFO_STREAM ("Is the occupancy grid of the robot state occupied?");
             //ROS_INFO_STREAM (occupancy_grid.isOccupied(selected_state[0]));
             //ROS_INFO_STREAM (workspace.contains(robot_box));
@@ -599,10 +588,6 @@ int main(int argc, char **argv)
             double maximum_velocity = std::numeric_limits<double>::max();
             for (const auto &[d, v] : maximum_derivative_magnitudes)
             {
-            /*ROS_INFO_STREAM ("d....");
-            ROS_INFO_STREAM (d);
-            ROS_INFO_STREAM ("v....");
-            ROS_INFO_STREAM (v);*/
             if (d == 1)
             {
                 maximum_velocity = v;
@@ -625,30 +610,60 @@ int main(int argc, char **argv)
 
 
             //Traj optimisation constructor
-
+            std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
             switch (solver_type)
             {
             
             case 0:
             {
-                optimizer = "rlss-hard-soft";
+                auto rlss_hard_soft_optimizer = std::make_shared<RLSSHardSoftOptimizer>(
+                    self_col_shape,
+                    qp_generator,
+                    workspace,
+                    continuity_upto_degree,
+                    integrated_squared_derivative_weights,
+                    piece_endpoint_cost_weights,
+                    soft_optimization_parameters,
+                    optimization_obstacle_check_distance);
+                    trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                    rlss_hard_soft_optimizer);
             }    
                 break;
                 
             case 1:
             {
-                optimizer = "rlss-soft";
+                auto rlss_soft_optimizer = std::make_shared<RLSSSoftOptimizer>(
+                    self_col_shape,
+                    qp_generator,
+                    workspace,
+                    continuity_upto_degree,
+                    integrated_squared_derivative_weights,
+                    piece_endpoint_cost_weights,
+                    soft_optimization_parameters,
+                    optimization_obstacle_check_distance);
+                    trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                    rlss_soft_optimizer);
             }
                 break;
 
             case 2:
             {
-                optimizer = "rlss-hard";
+                auto rlss_hard_optimizer = std::make_shared<RLSSHardOptimizer>(
+                    self_col_shape,
+                    qp_generator,
+                    workspace,
+                    continuity_upto_degree,
+                    integrated_squared_derivative_weights,
+                    piece_endpoint_cost_weights,
+                    optimization_obstacle_check_distance);
+                trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                    rlss_hard_optimizer);
             }    
                 break;
 
             }
-            std::cout << "Optimizer..." << optimizer << std::endl;
+
+            /*std::cout << "Optimizer..." << optimizer << std::endl;
             std::shared_ptr<TrajectoryOptimizer> trajectory_optimizer;
             if (optimizer == "rlss-hard-soft")
             {
@@ -699,8 +714,13 @@ int main(int argc, char **argv)
                         optimizer,
                         " not recognized.")
                 );
-            }
+            }*/
 
+            /*ROS_INFO_STREAM ("Testing maximum derivative mag");
+            ROS_INFO_STREAM (maximum_derivative_magnitude_degrees[0]);
+            ROS_INFO_STREAM (maximum_derivative_magnitude_degrees[1]);
+            ROS_INFO_STREAM (maximum_derivative_magnitude_magnitudes[0]);
+            ROS_INFO_STREAM (maximum_derivative_magnitudes[0].first);*/
 
             //validity check constructor
             auto rlss_validity_checker = std::make_shared<RLSSValidityChecker>(
@@ -737,14 +757,17 @@ int main(int argc, char **argv)
             //curve
             if (curve)
             {                    
-                ROS_INFO_STREAM ("pukimakao");
-                /*PiecewiseCurve traj = *curve; //* = dereferencing
-                rlss_ros::PiecewiseTrajectory traj_msg;
+                ROS_INFO_STREAM ("Curve succeeded...");
+                PiecewiseCurve traj = *curve; //* = dereferencing
+                //rlss_ros::PiecewiseTrajectory traj_msg;
                 //traj_msg.generation_time.data = current_time;
                 //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
                 new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
                 // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
-                ROS_INFO_STREAM (new_state[i][0]);*/
+                ROS_INFO_STREAM_ONCE ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
+                ROS_INFO_STREAM (traj.maxParameter());
+                ROS_INFO_STREAM_ONCE ("NEW STATE...X axis");
+                ROS_INFO_STREAM (new_state[i][0]);
             }
             else
             {
