@@ -1,6 +1,6 @@
 <launch>
 
-    <!--<node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
 
     <!-- COMMANDER PARAMETERS -->
     <arg name="commander_dt" default="0.05"/> <!-- search step -->
@@ -26,7 +26,7 @@
     <arg name="optimizer" default="rlss-hard"/> -->
     <arg name="integrated_squared_derivative_weight_degrees" default="[1, 2]"/>
     <arg name="integrated_squared_derivative_weight_weights" default="[1.0, 0.8]"/>
-    <arg name="desired_time_horizon" default="8.0"/>
+    <arg name="desired_time_horizon" default="2.0"/>
      <arg name="search_step" default="0.01"/>
     <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
     <arg name="collision_shape_at_zero_min" default="[-0.6, -0.6, 0.0]"/>

@@ -89,7 +89,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
             activation.data = false;
             planner_activation.publish(activation); 
             trigger_callback.data = 0;
-            //tri.publish(trigger_callback);
+            tri.publish(trigger_callback);
             return true;
         }
     else
@@ -100,7 +100,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
             return false;
         }
 
-    count = 0; //resets the counter just in case
+    //count = 0; //resets the counter just in case
     
 }
 
@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
                             //bez_msg.end.clear();
                         } 
                         trigger_callback.data += 1;
-                        ROS_INFO_STREAM ("Trigger callback not detected");
+                        ROS_INFO_STREAM ("Sending goal position...");
                         //tri.publish(trigger_callback);
                         //pt.publish(pt_msg);
                     }

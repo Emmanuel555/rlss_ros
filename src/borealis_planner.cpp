@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <rlss/RLSS.hpp>
+#include <rlss/Borealis_Planning.hpp>
 #include <rlss/CollisionShapes/AlignedBoxCollisionShape.hpp>
 #include <vector>
 #include <rlss_ros/AABB.h>
@@ -18,6 +19,7 @@
 #include <rlss/DiscretePathSearchers/RLSSDiscretePathSearcher.hpp>
 #include <rlss/ValidityCheckers/RLSSValidityChecker.hpp>
 #include <rlss/GoalSelectors/RLSSGoalSelector.hpp>
+#include <rlss/GoalSelectors/BorealisGoalSelector.hpp>
 #include <std_msgs/Time.h>
 #include <rlss_ros/setTargetsConfig.h>
 #include <geometry_msgs/TwistStamped.h>
@@ -35,6 +37,7 @@ namespace fs = boost::filesystem;
 constexpr unsigned int DIM = DIMENSION;
 
 using RLSS = rlss::RLSS<double, DIMENSION>;
+using Borealis_Planning = rlss::Borealis_Planning<double,DIMENSION>;
 using CollisionShape = rlss::CollisionShape<double, DIM>;
 using AlignedBoxCollisionShape = rlss::AlignedBoxCollisionShape<double, DIM>;
 using OccupancyGrid = rlss::OccupancyGrid<double, DIM>;
@@ -52,6 +55,7 @@ using RLSSHardSoftOptimizer = rlss::RLSSHardSoftOptimizer<double, DIM>;
 using RLSSDiscretePathSearcher = rlss::RLSSDiscretePathSearcher<double, DIM>;
 using RLSSValidityChecker = rlss::RLSSValidityChecker<double, DIM>;
 using RLSSGoalSelector = rlss::RLSSGoalSelector<double, DIM>;
+using BorealisGoalSelector = rlss::BorealisGoalSelector<double, DIM>;
 using TrajectoryOptimizer = rlss::TrajectoryOptimizer<double, DIM>;
 using DiscretePathSearcher = rlss::DiscretePathSearcher<double, DIM>;
 using ValidityChecker = rlss::ValidityChecker<double, DIM>;
@@ -449,9 +453,8 @@ int main(int argc, char **argv)
     //Occupancy grid of current drone
     ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
-
     //Push the position of where this drone shud go into topic 
-    ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/trajectory", 1);
+    ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
 
 
     //loops at the rate of the replanning period
@@ -460,11 +463,12 @@ int main(int argc, char **argv)
     //new state created for final position
     StdVectorVectorDIM new_state(DIM);
 
-    /*std::vector<RLSS> planners;*/
+    rlss_ros::PiecewiseTrajectory pt_msg;
     double counter = 0.0;
     while (ros::ok())
     {
         ros::spinOnce();
+        pt_msg.pieces.clear();
         ROS_INFO_STREAM (number_of_drones);
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
@@ -491,7 +495,6 @@ int main(int argc, char **argv)
             //add destination
             PiecewiseCurve new_curve;
             new_curve.addPiece(desired_trajectory.operator[](i));
-            
 
             VectorDIM goal_position
                 = new_curve.eval(
@@ -517,15 +520,10 @@ int main(int argc, char **argv)
             /* Nothing to collide into for now */
             //for (const auto &elem: other_robot_collision_shapes) 
             //{
-            //    selected_shapes_to_collide.push_back(elem.second);
+            //    if elem.first = 1-i;
+            //    selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
             //}
             
-            //switch (activation.data)
-            //{
-            //    case true:
-                
-            //    {
-
             ros::Time current_time = ros::Time::now(); 
             ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
             
@@ -543,8 +541,7 @@ int main(int argc, char **argv)
             //ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
             //ROS_INFO_STREAM (new_curve.numPieces());
             //selected_shapes_to_collide[i].push_back(other_robot_collision_shapes[1-i].second);
-            
-            
+               
             //double new_time = time_on_trajectory.toSec()
             /*ROS_INFO_STREAM (time_on_trajectory.toSec());
             ROS_INFO_STREAM (state[0][1]);
@@ -553,8 +550,6 @@ int main(int argc, char **argv)
             ROS_INFO_STREAM (other_robot_collision_shapes.size());
             occupancy_grid_ptr.*/
 
-            
-            
             //std::vector<std::vector<AlignedBox>> other_robot_shapes;
             //other_robot_shapes[0].push_back(other_robot_collision_shapes[1]);
             //other_robot_shapes[1].push_back(other_robot_collision_shapes[0]);
@@ -562,9 +557,6 @@ int main(int argc, char **argv)
             //ROS_INFO_STREAM (selected_state[0][0]);
             //ROS_INFO_STREAM (selected_state[0][1]);
             //ROS_INFO_STREAM (selected_state[0][2]);
-
-
-
 
             //**************************Planner*********************************
 
@@ -741,57 +733,75 @@ int main(int argc, char **argv)
                 rescaling_multiplier
             );
 
-
-            //Planner
-            std::optional<PiecewiseCurve> curve = planner.plan(
-                time_on_trajectory.toSec(),// time
-                selected_state,// where i m currently
-                selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
-                // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
-                occupancy_grid 
-            ); // occupancy 
-            
-            //PiecewiseCurve traj = *curve; // dun uncomment this shit, will prompt error if theres nth to deref from
-            //new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); 
-            
-            //curve
-            if (curve)
-            {                    
-                ROS_INFO_STREAM ("Curve succeeded...");
-                PiecewiseCurve traj = *curve; //* = dereferencing
-                //rlss_ros::PiecewiseTrajectory traj_msg;
-                //traj_msg.generation_time.data = current_time;
-                //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
-                new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
-                // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
-                ROS_INFO_STREAM_ONCE ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
-                ROS_INFO_STREAM (traj.maxParameter());
-                ROS_INFO_STREAM_ONCE ("NEW STATE...X axis");
-                ROS_INFO_STREAM (new_state[i][0]);
-            }
-            else
+            switch (activation.data)
             {
+                
+            case true:
+                
+            {
+                ROS_INFO_STREAM ("Planner activated...");
 
-                ROS_WARN_STREAM("planner failed.");
+                //Planner
+                std::optional<PiecewiseCurve> curve = planner.plan(
+                    time_on_trajectory.toSec(),// time
+                    selected_state,// where i m currently
+                    selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
+                    // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
+                    occupancy_grid 
+                ); // occupancy 
+                
+
+                //curve
+                if (curve)
+                {                    
+                    
+                    ROS_INFO_STREAM ("Planner worked and Curve succeeded...");
+                    PiecewiseCurve traj = *curve; //* = dereferencing
+                    //rlss_ros::PiecewiseTrajectory traj_msg;
+                    //traj_msg.generation_time.data = current_time;
+                    //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
+                    new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
+                    // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
+                    ROS_INFO_STREAM_ONCE ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
+                    ROS_INFO_STREAM (traj.maxParameter());
+                    ROS_INFO_STREAM_ONCE ("NEW STATE...X axis");
+                    ROS_INFO_STREAM (new_state[i][0]);
+
+                    rlss_ros::Bezier bez_msg;
+                    for (std::size_t f = 0; f < DIM; f++){
+                        bez_msg.end.push_back(new_state[i][f]);
+                    }
+                    pt_msg.pieces.push_back(bez_msg);
+                    
+                }
+                else
+                {
+
+                    ROS_WARN_STREAM("Planner failed");
+                
+                }
             
-            }
-            /*}
-
                 break;
 
-                case false:
+            }
+                
+            case false:
 
-                {
+            {
+            
                 //    new_state[i] = state[i];
-                    ROS_INFO_STREAM ("super_pukimakao");
-                } 
+                    ROS_INFO_STREAM ("Planner deactivated...");
+            
+            } 
 
                 break;
                 
-            }*/
+            }
 
-        }    
-        //planners.clear();
+        }
+         
+        trajpub.publish(pt_msg);   
+
         rate.sleep();
         
     }
