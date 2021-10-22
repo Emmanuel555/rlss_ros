@@ -455,6 +455,9 @@ int main(int argc, char **argv)
     
     //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
+    ros::Publisher trajpub_1 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_1", 1);
+    ros::Publisher trajpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_0", 1);
+    ros::Publisher currentpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/current_trajectory_pose_0", 1);
 
 
     //loops at the rate of the replanning period
@@ -462,6 +465,9 @@ int main(int argc, char **argv)
 
     //new state created for final position
     StdVectorVectorDIM new_state(DIM);
+    geometry_msgs::PoseStamped traj_0;
+    geometry_msgs::PoseStamped traj_1;
+    geometry_msgs::PoseStamped current_0;
 
     rlss_ros::PiecewiseTrajectory pt_msg;
     double counter = 0.0;
@@ -492,17 +498,8 @@ int main(int argc, char **argv)
             //counter += replanning_period;
             //ROS_INFO_STREAM (counter);
             
-            //add destination
-            PiecewiseCurve new_curve;
-            new_curve.addPiece(desired_trajectory.operator[](i));
-
-            VectorDIM goal_position
-                = new_curve.eval(
-                        new_curve.maxParameter(), 0);
-            ROS_INFO_STREAM (new_curve.maxParameter());
-            VectorDIM target_position(DIM); 
-            //target_position = new_curve.eval(desired_time_horizon, 0);
-            //ROS_INFO_STREAM (target_position[i]);
+            
+           
         
             //ROS_INFO_STREAM (new_curve.numPieces());
             //rlss_goal_selector->setOriginalTrajectory(new_curve); //cannot call use the index beside the std::vector here, it has to stand alone
@@ -524,14 +521,7 @@ int main(int argc, char **argv)
             //    selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
             //}
             
-            ros::Time current_time = ros::Time::now(); 
-            ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
             
-            ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
-            ROS_INFO_STREAM (current_time.toSec());
-            ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
-            ROS_INFO_STREAM (desired_time_horizon);
-            ROS_INFO_STREAM (optimization_obstacle_check_distance);
             
             //AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
 
@@ -558,6 +548,8 @@ int main(int argc, char **argv)
             //ROS_INFO_STREAM (selected_state[0][1]);
             //ROS_INFO_STREAM (selected_state[0][2]);
 
+
+
             //**************************Planner*********************************
 
             // somehow values from callback are only reflected inside here 
@@ -572,7 +564,7 @@ int main(int argc, char **argv)
                         self_col_shape,
                         search_step
                 );
-            rlss_goal_selector->setOriginalTrajectory(new_curve);
+            //rlss_goal_selector->setOriginalTrajectory(new_curve);
             auto goal_selector
                 = std::static_pointer_cast<GoalSelector>(rlss_goal_selector);
 
@@ -741,6 +733,28 @@ int main(int argc, char **argv)
             {
                 ROS_INFO_STREAM ("Planner activated...");
 
+                //add destination
+                PiecewiseCurve new_curve;
+                new_curve.addPiece(desired_trajectory.operator[](i));
+                VectorDIM goal_position
+                    = new_curve.eval(
+                            new_curve.maxParameter(), 0);
+                ROS_INFO_STREAM (new_curve.maxParameter());
+
+                //add original pw curve to goal selector
+                rlss_goal_selector->setOriginalTrajectory(new_curve);
+
+                //Start timer
+                ros::Time current_time = ros::Time::now(); 
+                ros::Duration time_on_trajectory = current_time - desired_trajectory_set_time.data;
+                
+                ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
+                ROS_INFO_STREAM (current_time.toSec());
+                ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
+                //ROS_INFO_STREAM (desired_time_horizon);
+                //ROS_INFO_STREAM (optimization_obstacle_check_distance);
+                
+
                 //Planner
                 std::optional<PiecewiseCurve> curve = planner.plan(
                     time_on_trajectory.toSec(),// time
@@ -748,9 +762,9 @@ int main(int argc, char **argv)
                     selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
                     // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
                     occupancy_grid 
-                ); // occupancy 
+                ); // occupancy  
                 
-
+                
                 //curve
                 if (curve)
                 {                    
@@ -765,14 +779,37 @@ int main(int argc, char **argv)
                     ROS_INFO_STREAM_ONCE ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
                     ROS_INFO_STREAM (traj.maxParameter());
                     ROS_INFO_STREAM_ONCE ("NEW STATE...X axis");
+                    ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
+                    traj_0.header.stamp.sec = time_on_trajectory.toSec(); 
+                    traj_1.header.stamp.sec = time_on_trajectory.toSec(); 
+                    current_0.header.stamp.sec = time_on_trajectory.toSec();
+                    current_0.pose.position.x = state[0][0];
+                    current_0.pose.position.y = state[0][1];
+                    current_0.pose.position.z = state[0][2];
+                    //ROS_INFO_STREAM (current_time.toSec());
+                    //ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
                     ROS_INFO_STREAM (new_state[i][0]);
 
                     rlss_ros::Bezier bez_msg;
                     for (std::size_t f = 0; f < DIM; f++){
                         bez_msg.end.push_back(new_state[i][f]);
                     }
+
                     pt_msg.pieces.push_back(bez_msg);
-                    
+
+                    if (i==0)
+                    {
+                        traj_0.pose.position.x = new_state[i][0]; 
+                        traj_0.pose.position.y = new_state[i][1];   
+                        traj_0.pose.position.z = new_state[i][2];                      
+                    }
+                    if (i==1)
+                    {
+
+                        traj_1.pose.position.x = new_state[i][0]; 
+                        traj_1.pose.position.y = new_state[i][1];   
+                        traj_1.pose.position.z = new_state[i][2];   
+                    }
                 }
                 else
                 {
@@ -801,7 +838,9 @@ int main(int argc, char **argv)
         }
          
         trajpub.publish(pt_msg);   
-
+        trajpub_0.publish(traj_0);
+        trajpub_1.publish(traj_1);
+        currentpub_0.publish(current_0);
         rate.sleep();
         
     }

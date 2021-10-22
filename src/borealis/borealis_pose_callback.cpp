@@ -37,7 +37,7 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    state[1] << (local_pos.pose.position.x)+1.0, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 int main(int argc, char **argv) {

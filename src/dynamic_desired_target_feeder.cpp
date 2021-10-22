@@ -50,6 +50,7 @@ double rescaling_factor;
 unsigned int solver_type;
 std_msgs::Int32 trigger_callback;
 double buffer = 5.0;
+double count = 0.0;
 
 ros::Publisher dp;
 ros::Publisher planner_activation;
@@ -60,19 +61,30 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
                             const double& reach_distance,
                             const double& number_of_drones){
 
-    double count = 0;
+    ROS_INFO_STREAM ("Count");
+    ROS_INFO_STREAM (count);
+    
     std_msgs::Bool activation;
 
-    //ROS_INFO_STREAM (trigger_callback.data);
-    
-    for (unsigned int i = 0; i < number_of_drones; i++)
+    if (trigger_callback.data == 0)
     {
-        //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
-        //ROS_INFO_STREAM (goal_pose[i][0]);
-        if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
+
+        count = 0.0;
+
+    };
+
+    //ROS_INFO_STREAM (trigger_callback.data);
+    if (count < number_of_drones)
+    {
+        for (unsigned int i = 0; i < number_of_drones; i++)
         {
-            count += 1;
-            //ROS_INFO_STREAM (number_of_drones);
+            //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
+            //ROS_INFO_STREAM (goal_pose[i][0]);
+            if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
+            {
+                count += 1;
+                //ROS_INFO_STREAM (number_of_drones);
+            }
         }
     }
 
@@ -83,13 +95,13 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
     ROS_INFO_STREAM (goal_pose[1][0]);
 
-    if(count > 1)
+    if(count > 0) //for 2 drones, shud be (count > 1) but for this testing, I am gonna let count be only > 0 cos i am testing one drone first
         {
             ROS_INFO_STREAM ("Finished going to target");
             activation.data = false;
             planner_activation.publish(activation); 
-            trigger_callback.data = 0;
-            tri.publish(trigger_callback);
+            //trigger_callback.data = 0;
+            //tri.publish(trigger_callback);
             return true;
         }
     else
