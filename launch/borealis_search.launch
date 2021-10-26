@@ -16,7 +16,7 @@
     <arg name="continuity_upto_degree" default="2"/> <!-- used in commander as well -->
     <arg name="replanning_period" default="0.1"/> <!-- used to be 0.1-->
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
-    <arg name="maximum_derivative_magnitude_magnitudes" default="[3, 4]"/>
+    <arg name="maximum_derivative_magnitude_magnitudes" default="[10, 10]"/>
     <arg name="workspace_min" default="[-20, -20, -1]"/>
     <arg name="workspace_max" default="[20, 20, 5]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
