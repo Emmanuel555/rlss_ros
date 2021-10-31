@@ -481,7 +481,7 @@ int main(int argc, char **argv)
             ROS_INFO_STREAM (occupancy_grid.size());
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
-            ROS_INFO_STREAM ("lololol");
+            ROS_INFO_STREAM ("Planner Commencing");
             //ROS_INFO_STREAM (intended_velocity);
             ROS_INFO_STREAM (solver_type);
             ROS_INFO_STREAM (soft_optimization_parameters["robot_to_robot_hyperplane_constraints"].second);
@@ -776,9 +776,9 @@ int main(int argc, char **argv)
                     //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
                     new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
                     // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
-                    ROS_INFO_STREAM_ONCE ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
+                    ROS_INFO_STREAM ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
                     ROS_INFO_STREAM (traj.maxParameter());
-                    ROS_INFO_STREAM_ONCE ("NEW STATE...X axis");
+                    ROS_INFO_STREAM ("Time taken to so far...");
                     ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
                     traj_0.header.stamp.sec = time_on_trajectory.toSec(); 
                     traj_1.header.stamp.sec = time_on_trajectory.toSec(); 
@@ -788,7 +788,12 @@ int main(int argc, char **argv)
                     current_0.pose.position.z = state[0][2];
                     //ROS_INFO_STREAM (current_time.toSec());
                     //ROS_INFO_STREAM (desired_trajectory_set_time.data.toSec());
-                    ROS_INFO_STREAM (new_state[i][0]);
+                    /*ROS_INFO_STREAM ("x");
+                    ROS_INFO_STREAM (new_state[0][0]); // even if start from 0, domain error would pop if 0 is being accessed wo processing for drone 1
+                    ROS_INFO_STREAM ("y");
+                    ROS_INFO_STREAM (new_state[0][1]);
+                    ROS_INFO_STREAM ("z");
+                    ROS_INFO_STREAM (new_state[0][2]);*/
 
                     rlss_ros::Bezier bez_msg;
                     for (std::size_t f = 0; f < DIM; f++){
@@ -836,7 +841,22 @@ int main(int argc, char **argv)
             }
 
         }
-         
+
+
+        ROS_INFO_STREAM ("x_0");
+        ROS_INFO_STREAM (new_state[0][0]);
+        ROS_INFO_STREAM ("current_x_0");
+        ROS_INFO_STREAM (current_0.pose.position.x);
+        ROS_INFO_STREAM ("y_0");
+        ROS_INFO_STREAM (new_state[0][1]);
+        ROS_INFO_STREAM ("current_y_0");
+        ROS_INFO_STREAM (current_0.pose.position.y);
+        ROS_INFO_STREAM ("z_0");
+        ROS_INFO_STREAM (new_state[0][2]);
+        ROS_INFO_STREAM ("current_z_0");
+        ROS_INFO_STREAM (current_0.pose.position.z);
+
+    
         trajpub.publish(pt_msg);   
         trajpub_0.publish(traj_0);
         trajpub_1.publish(traj_1);
