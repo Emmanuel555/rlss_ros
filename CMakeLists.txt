@@ -474,13 +474,67 @@ target_compile_definitions(
         DIMENSION=3
 )
 
+# actual deployment
 
+# single planner
+add_executable(
+        single_borealis_planner_3d
+        src/borealis_deployment/single_borealis_planner.cpp
+)
+target_link_libraries(
+        single_borealis_planner_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        single_borealis_planner_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        single_borealis_planner_3d PUBLIC
+        DIMENSION=3
+)
 
+# pose callback
+add_executable(
+        single_borealis_callbacks
+        src/borealis_deployment/single_borealis_pose_callback.cpp
+)
+target_link_libraries(
+        single_borealis_callbacks
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        single_borealis_callbacks
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        single_borealis_callbacks PUBLIC
+        DIMENSION=3
+)
 
+# dynamic targeting for deployment
+add_executable(
+        single_dynamic_desired_target_feeder_3d
+        src/borealis_deployment/single_dynamic_desired_target_feeder.cpp
+)
+target_link_libraries(
+        single_dynamic_desired_target_feeder_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        single_dynamic_desired_target_feeder_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        single_dynamic_desired_target_feeder_3d PUBLIC
+        DIMENSION=3
+)
 
-
-
-
+ 
+ 
 
 #add_executable(
 #        hector_quadrotor_localizer
