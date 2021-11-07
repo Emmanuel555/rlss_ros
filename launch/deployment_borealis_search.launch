@@ -1,6 +1,6 @@
 <launch>
 
-    <node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
+    <!--<node pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" name="rqt_reconfigure" />-->
 
     <!-- COMMANDER PARAMETERS -->
     <arg name="commander_dt" default="0.05"/> <!-- search step -->
@@ -9,6 +9,13 @@
     <!-- OBSTACLE FEEDER PARAMETERS -->
     <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/borealis_demo_1"/>
     <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
+
+    <!-- traj parameters -->
+    <arg name="intended_velocity" default="0.5"/>
+    <arg name="reach_distance" default="0.5"/>
+    <arg name="obs_check_distance" default="0.5"/>
+    <arg name="rescaling_factor" default="1.2"/>
+    <arg name="trajectory_target" default="1"/>
 
 
     <!-- PLANNER PARAMETERS -->
@@ -45,9 +52,18 @@
     <!-- <arg name="optimizer" default="rlss-hard"/> -->
     
 
+    <!-- Assigning to trajectory targets -->
+    
+    <rosparam param="intended_velocity" subst_value="True">$(arg intended_velocity)</rosparam>
+    <rosparam param="reach_distance" subst_value="True">$(arg reach_distance)</rosparam>
+    <rosparam param="obs_check_distance" subst_value="True">$(arg obs_check_distance)</rosparam>
+    <rosparam param="rescaling_factor" subst_value="True">$(arg rescaling_factor)</rosparam>
+    <rosparam param="trajectory_target" subst_value="True">$(arg trajectory_target)</rosparam>
 
 
     <!-- Assigning to directory -->
+
+
     <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>
     <rosparam param="occupancy_grid_step_size" subst_value="True">$(arg occupancy_grid_step_size)</rosparam>
     <!--<rosparam param="robot_idx" subst_value="True">$(arg robot_idx)</rosparam>-->
@@ -88,9 +104,9 @@
     <!--<node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_3d" required="true" output="screen"/>
     </node>-->
 
-    <node pkg="rlss_ros" name="drone_localizer" type="borealis_callbacks" output="screen"/>-->
+    <node pkg="rlss_ros" name="drone_localizer" type="single_borealis_callbacks" output="screen"/>-->
     
-    <node pkg="rlss_ros" name="dynamic_traj_feeder" type="dynamic_desired_target_feeder_3d" required="true" output="screen"/>
+    <node pkg="rlss_ros" name="dynamic_traj_feeder" type="single_dynamic_desired_target_feeder_3d" required="true" output="screen"/>
 
     
 

@@ -28,21 +28,25 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
 }
 
-void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right for this callbacks, it shud be the other surrounding drones local position
 {
     auto local_pos = *msg;
     state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
-void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+/*void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
     state[1] << (local_pos.pose.position.x)+1.0, local_pos.pose.position.y, local_pos.pose.position.z;
-}
+}*/
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "pose_callback_for_drones");
     ros::NodeHandle nh;
+
+    //replanning period
+    double replanning_period;
+    nh.getParam("replanning_period", replanning_period);
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
@@ -61,9 +65,9 @@ int main(int argc, char **argv) {
 
     //subscribers
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    //ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
-    ros::Rate rate(10);
+    ros::Rate rate(1/replanning_period);
 
     //rlss_ros msgs    
     rlss_ros::AABBCollisionShape cs_msg;

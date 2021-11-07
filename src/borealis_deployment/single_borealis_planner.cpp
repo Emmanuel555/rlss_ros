@@ -112,11 +112,12 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 }
 
 
-void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+/*void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
     state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
-}
+}*/
+
 
 void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
 {
@@ -438,7 +439,7 @@ int main(int argc, char **argv)
 
     //mavros subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    //ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
     
         
     //Current drone's intended goal and starting cpt/position
@@ -455,7 +456,7 @@ int main(int argc, char **argv)
     
     //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
-    ros::Publisher trajpub_1 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_1", 1);
+    //ros::Publisher trajpub_1 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_1", 1);
     ros::Publisher trajpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_0", 1);
     ros::Publisher currentpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/current_trajectory_pose_0", 1);
 
@@ -466,7 +467,7 @@ int main(int argc, char **argv)
     //new state created for final position
     StdVectorVectorDIM new_state(DIM);
     geometry_msgs::PoseStamped traj_0;
-    geometry_msgs::PoseStamped traj_1;
+    //geometry_msgs::PoseStamped traj_1;
     geometry_msgs::PoseStamped current_0;
 
     rlss_ros::PiecewiseTrajectory pt_msg;
@@ -781,7 +782,7 @@ int main(int argc, char **argv)
                     ROS_INFO_STREAM ("Time taken to so far...");
                     ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
                     traj_0.header.stamp.sec = time_on_trajectory.toSec(); 
-                    traj_1.header.stamp.sec = time_on_trajectory.toSec(); 
+                    //traj_1.header.stamp.sec = time_on_trajectory.toSec(); 
                     current_0.header.stamp.sec = time_on_trajectory.toSec();
                     current_0.pose.position.x = state[0][0];
                     current_0.pose.position.y = state[0][1];
@@ -808,13 +809,15 @@ int main(int argc, char **argv)
                         traj_0.pose.position.y = new_state[i][1];   
                         traj_0.pose.position.z = new_state[i][2];                      
                     }
-                    if (i==1)
+
+                    /*if (i==1)
                     {
 
                         traj_1.pose.position.x = new_state[i][0]; 
                         traj_1.pose.position.y = new_state[i][1];   
                         traj_1.pose.position.z = new_state[i][2];   
-                    }
+                    }*/
+
                 }
                 else
                 {
@@ -859,7 +862,7 @@ int main(int argc, char **argv)
     
         trajpub.publish(pt_msg);   
         trajpub_0.publish(traj_0);
-        trajpub_1.publish(traj_1);
+        //trajpub_1.publish(traj_1);
         currentpub_0.publish(current_0);
         rate.sleep();
         

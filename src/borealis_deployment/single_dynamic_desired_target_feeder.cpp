@@ -6,7 +6,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
-#include <dynamic_reconfigure/server.h>
+//#include <dynamic_reconfigure/server.h>
 #include <rlss_ros/PiecewiseTrajectory.h>
 #include <rlss_ros/Bezier.h>
 #include <rlss_ros/dyn_params.h>
@@ -43,11 +43,11 @@ StdVectorVectorDIM goal_pose(DIM);
 StdVectorVectorDIM current_pose(DIM);
 int trajectory_target;
 double velocity;
-unsigned int number_of_drones;
+unsigned int number_of_drones = 1; //Always 1!!!!!!!!
 double reach_distance;
 double obs_check_distance;
 double rescaling_factor;
-unsigned int solver_type;
+unsigned int solver_type = 0; // rlss hard soft
 std_msgs::Int32 trigger_callback;
 double buffer = 5.0;
 double count = 0.0;
@@ -90,10 +90,10 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
 
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
     ROS_INFO_STREAM (goal_pose[0][0]);
-    ROS_INFO_STREAM ("Separator");
+    ROS_INFO_STREAM ("Count_Number");
     ROS_INFO_STREAM (count);
-    ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
-    ROS_INFO_STREAM (goal_pose[1][0]);
+    /*ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
+    ROS_INFO_STREAM (goal_pose[1][0]);*/
 
     if(count > 0) //for 2 drones, shud be (count > 1) but for this testing, I am gonna let count be only > 0 cos i am testing one drone first
         {
@@ -121,7 +121,7 @@ void triggerCallback(const std_msgs::Int32& msg)
         trigger_callback = msg;
     }
 
-void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level)
+/*void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level)
 {
     trajectory_target = config.trajectory_target;
     velocity = config.intended_velocity;
@@ -133,6 +133,13 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
     rescaling_factor = config.rescaling_factor;
     solver_type = config.solver_type;
 
+}*/
+
+void targetCallback(const geometry_msgs::Vector3::ConstPtr& msg)
+{
+    auto target_pos = *msg;
+    goal_pose[0] << target_pos.x, target_pos.y, target_pos.z;
+
 }
 
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -141,27 +148,38 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
-void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
-{
-    auto local_pos = *msg;
-    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
-}
-
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "dynamic_desired_target_feeder");
+    ros::init(argc, argv, "single_dynamic_desired_target_feeder");
     ros::NodeHandle nh;
     
 
     //dynamic reconfigure callback
-    dynamic_reconfigure::Server<rlss_ros::setTargetsConfig> server;
+    /*dynamic_reconfigure::Server<rlss_ros::setTargetsConfig> server;
     dynamic_reconfigure::Server<rlss_ros::setTargetsConfig>::CallbackType f;
 
     f = boost::bind(&dynamicReconfigureCallback, _1, _2);
-    server.setCallback(f);
+    server.setCallback(f);*/
+
+    //param_callbacks
+    nh.getParam("intended_velocity", velocity);
+    nh.getParam("reach_distance", reach_distance);
+    nh.getParam("obs_check_distance", obs_check_distance);
+    nh.getParam("trajectory_target", trajectory_target);
+    nh.getParam("rescaling_factor", rescaling_factor);
+    
+    
+    //replanning period
+    double replanning_period;
+    nh.getParam("replanning_period", replanning_period);
+    
+
+    //subscription
+    ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
 
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    
+    //trigger subscription
     ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
     // dso convex hull algo would be added here
 
@@ -170,7 +188,7 @@ int main(int argc, char **argv) {
     dp = nh.advertise<rlss_ros::dyn_params>("/dyn_params",10);
     planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation", 10);
     tri = nh.advertise<std_msgs::Int32>("/trigger",10);
-    ros::Rate rate(10);
+    ros::Rate rate(1/replanning_period);
 
     //control_pts setup
     StdVectorVectorDIM trigger_pose(DIM);
