@@ -7,12 +7,12 @@
 
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
-    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/borealis_demo_1"/>
-    <arg name="occupancy_grid_step_size" default="[0.5, 0.5, 0.5]"/>
+    <arg name="obstacles_directory" default="/home/borealis/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/borealis_demo_1"/>
+    <arg name="occupancy_grid_step_size" default="[0.25, 0.25, 0.25]"/>
 
     <!-- traj parameters -->
-    <arg name="intended_velocity" default="0.5"/>
-    <arg name="reach_distance" default="0.5"/>
+    <arg name="intended_velocity" default="3.0"/>
+    <arg name="reach_distance" default="0.1"/>
     <arg name="obs_check_distance" default="0.5"/>
     <arg name="rescaling_factor" default="1.2"/>
     <arg name="trajectory_target" default="1"/>
@@ -21,11 +21,11 @@
     <!-- PLANNER PARAMETERS -->
 
     <arg name="continuity_upto_degree" default="2"/> <!-- used in commander as well -->
-    <arg name="replanning_period" default="0.1"/> <!-- used to be 0.1-->
+    <arg name="replanning_period" default="0.01"/> <!-- used to be 0.1-->
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[3, 4]"/>
-    <arg name="workspace_min" default="[-10, -10, -1]"/>
-    <arg name="workspace_max" default="[10, 10, 5]"/>
+    <arg name="workspace_min" default="[-10, -10, -2]"/>
+    <arg name="workspace_max" default="[10, 10, 3]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
     <arg name="max_rescaling_count" default="2"/>
     <!-- <arg name="rescaling_multiplier" default="1.2"/> -->
