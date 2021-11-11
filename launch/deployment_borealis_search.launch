@@ -11,7 +11,7 @@
     <arg name="occupancy_grid_step_size" default="[0.25, 0.25, 0.25]"/>
 
     <!-- traj parameters -->
-    <arg name="intended_velocity" default="3.0"/>
+    <arg name="intended_velocity" default="2.0"/>
     <arg name="reach_distance" default="0.1"/>
     <arg name="obs_check_distance" default="0.5"/>
     <arg name="rescaling_factor" default="1.2"/>
@@ -96,9 +96,14 @@
     <rosparam param="soft_optimization_parameters/initial_point_constraints_value" subst_value="True">$(arg soft_optimization_parameters/initial_point_constraints_value)</rosparam>
     <rosparam param="soft_optimization_parameters/continuity_constraints_value" subst_value="True">$(arg soft_optimization_parameters/continuity_constraints_value)</rosparam>
     
+    
+    <!--OCCUPANCY_GRID_GENERATOR-->
+    <include file="$(find occupancy_mapping)/launch/occupancy_mapping.launch" />
+    
+
     <!-- nodes-->
 
-    <node pkg="rlss_ros" name="static_occupancy_grid_feeder" type="static_occupancy_grid_feeder_3d" required="true">
+    <node pkg="rlss_ros" name="dynamic_occupancy_grid_feeder" type="single_dynamic_occupancy_grid_feeder_3d" required="true">
     </node>-->
 
     <!--<node pkg="rlss_ros" name="borealis_planner" type="borealis_planner_3d" required="true" output="screen"/>
@@ -107,6 +112,7 @@
     <node pkg="rlss_ros" name="drone_localizer" type="single_borealis_callbacks" output="screen"/>-->
     
     <node pkg="rlss_ros" name="dynamic_traj_feeder" type="single_dynamic_desired_target_feeder_3d" required="true" output="screen"/>
+
 
     
 

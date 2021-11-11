@@ -32,6 +32,7 @@
 #include <rlss_ros/Collision_Shape_Grp.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem.hpp>
+#include <sensor_msgs/PointCloud.h>
 
 namespace fs = boost::filesystem;
 constexpr unsigned int DIM = DIMENSION;
@@ -78,6 +79,7 @@ std_msgs::Bool activation;
 std::string optimizer;
 VectorDIM starting(DIM);
 VectorDIM ending(DIM);
+sensor_msgs::PointCloud pcl; 
 
 // Dynamic Planner Params
 double reach_distance;
@@ -159,7 +161,13 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
     desired_trajectory_set_time = msg->start_time;
 }
 
-void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+{
+    pcl = *msg;
+}
+
+
+/*void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
 {
     if (msg->step_size.size() != DIM)
     {
@@ -174,6 +182,7 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need 
         }
 
         occupancy_grid_ptr = std::make_unique<OccupancyGrid>(step_size);
+
         for (std::size_t i = 0; i < msg->occupied_indexes.size() / DIM; i++)
         {
             OccIndex index(DIM);
@@ -184,7 +193,8 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need 
             occupancy_grid_ptr->setOccupancy(index);
         }
     }
-}
+}*/
+
 
 void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
@@ -398,6 +408,14 @@ int main(int argc, char **argv)
     //ROS_INFO_STREAM(occ_step_size.transpose());
     OccupancyGrid occupancy_grid(occ_step_size);
     boost::filesystem::path p(obstacles_directory);
+
+    /*for (auto&pts : pcl.points)
+    {
+        
+        occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
+
+    }*/
+    
     for(auto& p: fs::directory_iterator(obstacles_directory)) {
         //ROS_INFO_STREAM(p.path().string());
         std::fstream obstacle_file(p.path().string(), std::ios_base::in);
@@ -452,7 +470,8 @@ int main(int argc, char **argv)
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_mapping/occupancy_pointcloud", 1, occupancyGridCallback);
+    //ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
@@ -762,7 +781,8 @@ int main(int argc, char **argv)
                     selected_state,// where i m currently
                     selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
                     // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
-                    occupancy_grid 
+                    occupancy_grid
+                    //*occupancy_grid_ptr 
                 ); // occupancy  
                 
                 
