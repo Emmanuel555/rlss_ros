@@ -5,7 +5,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
-#include <geometry_msgs/PoseWithCovariance.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <nav_msgs/Odometry.h>
 //#include <dynamic_reconfigure/server.h>
 #include <rlss_ros/PiecewiseTrajectory.h>
@@ -143,10 +143,10 @@ void triggerCallback(const std_msgs::Int32& msg)
 
 }*/
 
-void samtargetCallback(const geometry_msgs::PoseWithCovariance::ConstPtr& msg)
+void samtargetCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
 {
     auto target_pos = *msg;
-    goal_pose[0] << target_pos.pose.position.x, target_pos.pose.position.y, target_pos.pose.position.z;
+    goal_pose[0] << target_pos.pose.pose.position.x, target_pos.pose.pose.position.y, target_pos.pose.pose.position.z;
 
 }
 
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 
     //subscription
     //ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
-    ros::Subscriber target_sam = nh.subscribe("/borealis/command/pose", 10, samtargetCallback);
+    ros::Subscriber target_sam = nh.subscribe("/uav1/target_pose", 10, samtargetCallback);
 
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);

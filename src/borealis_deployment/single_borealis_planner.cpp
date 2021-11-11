@@ -408,13 +408,6 @@ int main(int argc, char **argv)
     //ROS_INFO_STREAM(occ_step_size.transpose());
     OccupancyGrid occupancy_grid(occ_step_size);
     boost::filesystem::path p(obstacles_directory);
-
-    /*for (auto&pts : pcl.points)
-    {
-        
-        occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
-
-    }*/
     
     for(auto& p: fs::directory_iterator(obstacles_directory)) {
         //ROS_INFO_STREAM(p.path().string());
@@ -448,6 +441,14 @@ int main(int argc, char **argv)
         }
     }
 
+    for (auto&pts : pcl.points)
+    {
+
+        occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
+
+    }
+
+
 
     /* Publishers and Subscribers **********/
 
@@ -470,7 +471,7 @@ int main(int argc, char **argv)
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_mapping/occupancy_pointcloud", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
     //ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
@@ -782,8 +783,8 @@ int main(int argc, char **argv)
                     selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
                     // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
                     occupancy_grid
-                    //*occupancy_grid_ptr 
-                ); // occupancy  
+                    //occupancy_grid_ptr 
+                );  //occupancy  
                 
                 
                 //curve
@@ -791,7 +792,7 @@ int main(int argc, char **argv)
                 {                    
                     
                     ROS_INFO_STREAM ("Planner worked and Curve succeeded...");
-                    PiecewiseCurve traj = *curve; //* = dereferencing
+                    PiecewiseCurve traj = *curve; // = dereferencing
                     //rlss_ros::PiecewiseTrajectory traj_msg;
                     //traj_msg.generation_time.data = current_time;
                     //traj.maxParameter might not be duration or time horizon when it reaches the end point in case

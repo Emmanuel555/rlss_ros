@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     } */
 
     
-    ros::Subscriber occgridsub = nh.subscribe("occupancy_mapping/occupancy_pointcloud", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
     ros::Publisher pub = nh.advertise<rlss_ros::OccupancyGrid>("occupancy_grid", 1);
     
 
