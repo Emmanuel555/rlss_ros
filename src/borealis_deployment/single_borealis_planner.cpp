@@ -67,7 +67,6 @@ using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 //int self_robot_idx;
 std::map<unsigned int, AlignedBox> other_robot_collision_shapes;  // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
-VectorDIM LOL;
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
 PiecewiseCurve desired_trajectory;
@@ -409,7 +408,7 @@ int main(int argc, char **argv)
     OccupancyGrid occupancy_grid(occ_step_size);
     boost::filesystem::path p(obstacles_directory);
     
-    for(auto& p: fs::directory_iterator(obstacles_directory)) {
+    /*for(auto& p: fs::directory_iterator(obstacles_directory)) {
         //ROS_INFO_STREAM(p.path().string());
         std::fstream obstacle_file(p.path().string(), std::ios_base::in);
         std::string type;
@@ -439,17 +438,9 @@ int main(int argc, char **argv)
             Ellipsoid ell(center, mtr);
             occupancy_grid.addObstacle(ell);
         }
-    }
+    }*/
 
-    for (auto&pts : pcl.points)
-    {
-
-        occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
-
-    }
-
-
-
+    
     /* Publishers and Subscribers **********/
 
     //collision shapes
@@ -497,11 +488,23 @@ int main(int argc, char **argv)
         ros::spinOnce();
         pt_msg.pieces.clear();
         ROS_INFO_STREAM (number_of_drones);
+
+        for (auto&pts : pcl.points)
+        {
+
+            occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
+
+        }
+
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
-            ROS_INFO_STREAM (occupancy_grid.size());
+            //ROS_INFO_STREAM (occupancy_grid.size());
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
+            ROS_INFO_STREAM ("pcl point size");
+            ROS_INFO_STREAM (pcl.points.size());
+            ROS_INFO_STREAM ("occupancy size");
+            ROS_INFO_STREAM (occupancy_grid.size());
             ROS_INFO_STREAM ("Planner Commencing");
             //ROS_INFO_STREAM (intended_velocity);
             ROS_INFO_STREAM (solver_type);
@@ -866,6 +869,10 @@ int main(int argc, char **argv)
 
         }
 
+        for (auto&pts : pcl.points)
+        {
+            occupancy_grid.removeOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+        }
 
         ROS_INFO_STREAM ("x_0");
         ROS_INFO_STREAM (new_state[0][0]);
