@@ -16,16 +16,17 @@
     <arg name="obs_check_distance" default="0.5"/>
     <arg name="rescaling_factor" default="1.2"/>
     <arg name="trajectory_target" default="1"/>
+    <arg name="data_cap" default="3"/>
 
 
     <!-- PLANNER PARAMETERS -->
 
     <arg name="continuity_upto_degree" default="2"/> <!-- used in commander as well -->
-    <arg name="replanning_period" default="0.1"/> <!-- used to be 0.1-->
+    <arg name="replanning_period" default="0.01"/> <!-- used to be 0.1-->
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[3, 4]"/>
     <arg name="workspace_min" default="[-10, -10, -2]"/>
-    <arg name="workspace_max" default="[10, 10, 3]"/>
+    <arg name="workspace_max" default="[10, 10, 5]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 4, 16, 64]"/>
     <arg name="max_rescaling_count" default="2"/>
     <!-- <arg name="rescaling_multiplier" default="1.2"/> -->
@@ -40,9 +41,9 @@
     <arg name="collision_shape_at_zero_max" default="[0.6, 0.6, 0.25]"/>
 
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="false"/>
-    <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>
-    <arg name="soft_optimization_parameters/initial_point_constraints_enabled" default="true"/>
-    <arg name="soft_optimization_parameters/continuity_constraints_enabled" default="true"/>
+    <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="false"/>
+    <arg name="soft_optimization_parameters/initial_point_constraints_enabled" default="false"/>
+    <arg name="soft_optimization_parameters/continuity_constraints_enabled" default="false"/>
     
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_value" default="10000"/>
     <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_value" default="1000000"/>
@@ -59,6 +60,7 @@
     <rosparam param="obs_check_distance" subst_value="True">$(arg obs_check_distance)</rosparam>
     <rosparam param="rescaling_factor" subst_value="True">$(arg rescaling_factor)</rosparam>
     <rosparam param="trajectory_target" subst_value="True">$(arg trajectory_target)</rosparam>
+    <rosparam param="data_cap" subst_value="True">$(arg data_cap)</rosparam>
 
 
     <!-- Assigning to directory -->
@@ -98,7 +100,7 @@
     
     
     <!--OCCUPANCY_GRID_GENERATOR-->
-    <include file="$(find occupancy_mapping)/launch/occupancy_mapping.launch" />
+    <include file="$(find occupancy_mapping)/launch/occupancy_mapping.launch" />-->
     
 
     <!-- nodes-->

@@ -372,6 +372,11 @@ int main(int argc, char **argv)
     //nh.getParam("rescaling_multiplier", rescaling_multiplier);
 
 
+    //data_cap for no. of points in map
+    double data_cap;
+    nh.getParam("data_cap", data_cap);
+
+
     //search step for validity 
     double search_step;
     nh.getParam("search_step", search_step);
@@ -408,7 +413,7 @@ int main(int argc, char **argv)
     OccupancyGrid occupancy_grid(occ_step_size);
     boost::filesystem::path p(obstacles_directory);
     
-    /*for(auto& p: fs::directory_iterator(obstacles_directory)) {
+    for(auto& p: fs::directory_iterator(obstacles_directory)) {
         //ROS_INFO_STREAM(p.path().string());
         std::fstream obstacle_file(p.path().string(), std::ios_base::in);
         std::string type;
@@ -438,7 +443,7 @@ int main(int argc, char **argv)
             Ellipsoid ell(center, mtr);
             occupancy_grid.addObstacle(ell);
         }
-    }*/
+    }
 
     
     /* Publishers and Subscribers **********/
@@ -488,13 +493,23 @@ int main(int argc, char **argv)
         ros::spinOnce();
         pt_msg.pieces.clear();
         ROS_INFO_STREAM (number_of_drones);
-
+        /*auto counter_1 = 0.0;
         for (auto&pts : pcl.points)
         {
+		if (counter_1 < data_cap){
+        	occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
+                }
+                counter_1 += 1.0;
+        }*/
 
-            occupancy_grid.setOccupancy(OccCoordinate(pts.x,pts.y,pts.z));
+	/*for (std::size_t i = 0; i < data_cap; i++)
+        {
+		if (pcl.points[i].x)
+                {
+			occupancy_grid.setOccupancy(OccCoordinate(pcl.points[i].x, pcl.points[i].y, pcl.points[i].z));
+                }
 
-        }
+	}*/
 
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
@@ -866,13 +881,25 @@ int main(int argc, char **argv)
                 break;
                 
             }
-
         }
 
+	/*auto counter_2 = 0.0;
         for (auto&pts : pcl.points)
         {
-            occupancy_grid.removeOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
-        }
+                if (counter_2 < data_cap){
+		occupancy_grid.removeOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+                }
+                counter_2 += 1.0;
+	}*/
+
+	/*for (std::size_t i = 0; i < data_cap; i++)
+        {
+		if (pcl.points[i].x)
+                {
+                        occupancy_grid.removeOccupancy(OccCoordinate(pcl.points[i].x, pcl.points[i].y, pcl.points[i].z));
+        	}
+        }*/
+
 
         ROS_INFO_STREAM ("x_0");
         ROS_INFO_STREAM (new_state[0][0]);

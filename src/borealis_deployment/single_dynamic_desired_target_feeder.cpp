@@ -140,7 +140,6 @@ void triggerCallback(const std_msgs::Int32& msg)
 {
     auto target_pos = *msg;
     goal_pose[0] << target_pos.x, target_pos.y, target_pos.z;
-
 }*/
 
 void samtargetCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
