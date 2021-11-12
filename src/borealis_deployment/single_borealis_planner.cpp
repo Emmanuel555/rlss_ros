@@ -25,6 +25,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
+#include <geometry_msgs/Point32.h>
 #include <nav_msgs/Odometry.h>
 #include <rlss_ros/Collision_Shape_Grp.h>
 #include <std_msgs/Bool.h>
@@ -32,6 +33,7 @@
 #include <rlss_ros/Collision_Shape_Grp.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem.hpp>
+#include <sensor_msgs/PointCloud.h>
 
 namespace fs = boost::filesystem;
 constexpr unsigned int DIM = DIMENSION;
@@ -66,7 +68,6 @@ using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 //int self_robot_idx;
 std::map<unsigned int, AlignedBox> other_robot_collision_shapes;  // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
-VectorDIM LOL;
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
 PiecewiseCurve desired_trajectory;
@@ -78,6 +79,9 @@ std_msgs::Bool activation;
 std::string optimizer;
 VectorDIM starting(DIM);
 VectorDIM ending(DIM);
+std::vector<geometry_msgs::Point32> pcl_pts;
+sensor_msgs::PointCloud pcl;
+
 
 // Dynamic Planner Params
 double reach_distance;
@@ -159,7 +163,13 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
     desired_trajectory_set_time = msg->start_time;
 }
 
-void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+{    
+    pcl_pts = msg->points;
+    pcl = *msg;
+}
+
+/*void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
 {
     if (msg->step_size.size() != DIM)
     {
@@ -184,7 +194,7 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need 
             occupancy_grid_ptr->setOccupancy(index);
         }
     }
-}
+}*/
 
 void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
@@ -398,7 +408,9 @@ int main(int argc, char **argv)
     //ROS_INFO_STREAM(occ_step_size.transpose());
     OccupancyGrid occupancy_grid(occ_step_size);
     boost::filesystem::path p(obstacles_directory);
-    for(auto& p: fs::directory_iterator(obstacles_directory)) {
+    //occupancy_grid.setOccupancy(OccCoordinate(2.0,4.0,1.0));
+
+    /*for(auto& p: fs::directory_iterator(obstacles_directory)) {
         //ROS_INFO_STREAM(p.path().string());
         std::fstream obstacle_file(p.path().string(), std::ios_base::in);
         std::string type;
@@ -428,7 +440,7 @@ int main(int argc, char **argv)
             Ellipsoid ell(center, mtr);
             occupancy_grid.addObstacle(ell);
         }
-    }
+    }*/
 
 
     /* Publishers and Subscribers **********/
@@ -452,7 +464,8 @@ int main(int argc, char **argv)
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
+    //ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
@@ -477,8 +490,20 @@ int main(int argc, char **argv)
         ros::spinOnce();
         pt_msg.pieces.clear();
         ROS_INFO_STREAM (number_of_drones);
+
+        for (auto&pts : pcl.points)
+        {
+            //occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+            occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+        }
+        
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
+            ROS_INFO_STREAM ("pcl point size");
+            //ROS_INFO_STREAM (pcl[0].x);
+            //ROS_INFO_STREAM (pcl[0].y);
+            //ROS_INFO_STREAM (pcl[0].z);
+            ROS_INFO_STREAM (pcl.points.size());
             ROS_INFO_STREAM (occupancy_grid.size());
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
@@ -775,7 +800,7 @@ int main(int argc, char **argv)
                     //rlss_ros::PiecewiseTrajectory traj_msg;
                     //traj_msg.generation_time.data = current_time;
                     //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
-                    new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
+                    new_state[i] = traj.eval(std::min(0.1, traj.maxParameter()),0); // this is the position it needs to actually go to        
                     // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
                     ROS_INFO_STREAM ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
                     ROS_INFO_STREAM (traj.maxParameter());
@@ -845,6 +870,11 @@ int main(int argc, char **argv)
 
         }
 
+        for (auto&pts : pcl.points)
+        {
+            //occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+            occupancy_grid.removeOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
+        }
 
         ROS_INFO_STREAM ("x_0");
         ROS_INFO_STREAM (new_state[0][0]);
