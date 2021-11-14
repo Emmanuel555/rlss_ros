@@ -67,7 +67,7 @@ using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 
 //int self_robot_idx;
 std::map<unsigned int, AlignedBox> other_robot_collision_shapes;  // robot_idx -> colshape
-std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
+OccupancyGrid global_occupancy_grid(OccCoordinate(0.15,0.15,0.15)); // default values
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
 PiecewiseCurve desired_trajectory;
@@ -163,14 +163,8 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
     desired_trajectory_set_time = msg->start_time;
 }
 
-void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
 {    
-    pcl_pts = msg->points;
-    pcl = *msg;
-}
-
-/*void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
-{
     if (msg->step_size.size() != DIM)
     {
         ROS_FATAL_STREAM("occupancy grid dimensions not correct");
@@ -183,7 +177,7 @@ void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need 
             step_size(i) = msg->step_size[i];
         }
 
-        occupancy_grid_ptr = std::make_unique<OccupancyGrid>(step_size);
+        auto occupancy_grid = OccupancyGrid(step_size);
         for (std::size_t i = 0; i < msg->occupied_indexes.size() / DIM; i++)
         {
             OccIndex index(DIM);
@@ -191,10 +185,12 @@ void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need 
             {
                 index(j) = msg->occupied_indexes[i * DIM + j];
             }
-            occupancy_grid_ptr->setOccupancy(index);
+            occupancy_grid.setOccupancy(index);
         }
+        global_occupancy_grid = occupancy_grid;
     }
-}*/
+    
+}
 
 void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
@@ -372,6 +368,10 @@ int main(int argc, char **argv)
     //double rescaling_multiplier;
     //nh.getParam("rescaling_multiplier", rescaling_multiplier);
 
+    //data_cap for no. of points in map
+    double data_cap;
+    nh.getParam("data_cap", data_cap);
+
 
     //search step for validity 
     double search_step;
@@ -400,14 +400,15 @@ int main(int argc, char **argv)
         ROS_FATAL_STREAM("occupancy grid step size dimension" + std::to_string(step_size.size()) + " does not match dimension " + std::to_string(DIM));
         return 0;
     }
+    
     OccCoordinate occ_step_size;
     for(std::size_t i = 0; i < DIM; i++) {
         occ_step_size(i) = step_size[i];
     }
 
     //ROS_INFO_STREAM(occ_step_size.transpose());
-    OccupancyGrid occupancy_grid(occ_step_size);
-    boost::filesystem::path p(obstacles_directory);
+    //OccupancyGrid occupancy_grid(occ_step_size);
+    //boost::filesystem::path p(obstacles_directory);
     //occupancy_grid.setOccupancy(OccCoordinate(2.0,4.0,1.0));
 
     /*for(auto& p: fs::directory_iterator(obstacles_directory)) {
@@ -464,8 +465,8 @@ int main(int argc, char **argv)
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
-    //ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
+    //ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
@@ -491,20 +492,15 @@ int main(int argc, char **argv)
         pt_msg.pieces.clear();
         ROS_INFO_STREAM (number_of_drones);
 
-        for (auto&pts : pcl.points)
-        {
-            //occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
-            occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
-        }
+
+        //OccupancyGrid occupancy_grid(occ_step_size);
+        //occupancy_grid = *occupancy_grid_ptr;
+
         
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
-            ROS_INFO_STREAM ("pcl point size");
-            //ROS_INFO_STREAM (pcl[0].x);
-            //ROS_INFO_STREAM (pcl[0].y);
-            //ROS_INFO_STREAM (pcl[0].z);
-            ROS_INFO_STREAM (pcl.points.size());
-            ROS_INFO_STREAM (occupancy_grid.size());
+            ROS_INFO_STREAM ("global occupancy size");
+            ROS_INFO_STREAM (global_occupancy_grid.size());
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
             ROS_INFO_STREAM ("Planner Commencing");
@@ -787,7 +783,7 @@ int main(int argc, char **argv)
                     selected_state,// where i m currently
                     selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
                     // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
-                    occupancy_grid 
+                    global_occupancy_grid 
                 ); // occupancy  
                 
                 
@@ -870,11 +866,6 @@ int main(int argc, char **argv)
 
         }
 
-        for (auto&pts : pcl.points)
-        {
-            //occupancy_grid.setOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
-            occupancy_grid.removeOccupancy(OccCoordinate(pts.x, pts.y, pts.z));
-        }
 
         ROS_INFO_STREAM ("x_0");
         ROS_INFO_STREAM (new_state[0][0]);

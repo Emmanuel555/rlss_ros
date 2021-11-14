@@ -533,6 +533,24 @@ target_compile_definitions(
         DIMENSION=3
 )
 
+# dynamic occupancy for deployment
+add_executable(
+        single_dynamic_occupancy_grid_feeder_3d
+        src/borealis_deployment/single_dynamic_occupancy_grid_feeder.cpp
+)
+target_link_libraries(
+        single_dynamic_occupancy_grid_feeder_3d
+        ${catkin_LIBRARIES}
+        rlss
+)
+add_dependencies(
+        single_dynamic_occupancy_grid_feeder_3d
+        ${PROJECT_NAME}_generate_messages_cpp
+)
+target_compile_definitions(
+        single_dynamic_occupancy_grid_feeder_3d PUBLIC
+        DIMENSION=3
+)
  
  
 

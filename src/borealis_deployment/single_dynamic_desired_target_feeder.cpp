@@ -89,7 +89,6 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     }
 
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
-    ROS_INFO_STREAM (goal_pose[0][0]);
     ROS_INFO_STREAM ("Count_Number");
     ROS_INFO_STREAM (count);
     /*ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
