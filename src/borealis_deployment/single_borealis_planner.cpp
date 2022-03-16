@@ -160,10 +160,10 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
     desired_trajectory_set_time = msg->start_time;
 }
 
-void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
-{
-    pcl = *msg;
-}
+//void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
+//{
+//    pcl = *msg;
+//}
 
 
 /*void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need to check if drone 2 takes off at 0,0,0 or offset based on gps
@@ -467,7 +467,7 @@ int main(int argc, char **argv)
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
+    //ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
     //ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
