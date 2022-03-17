@@ -182,10 +182,10 @@ int main(int argc, char **argv) {
 
     //subscription
     //ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
-    ros::Subscriber target_sam = nh.subscribe("/uav1/target_pose", 10, samtargetCallback);
+    ros::Subscriber target_sam = nh.subscribe("/uav1/command/pose", 10, samtargetCallback);
 
     //subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover0Callback);
     
     //trigger subscription
     ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
