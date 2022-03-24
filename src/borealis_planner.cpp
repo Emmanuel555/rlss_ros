@@ -800,7 +800,7 @@ int main(int argc, char **argv)
                         bez_msg.end.push_back(new_state[i][f]);
                     }
 
-                    pt_msg.pieces.push_back(bez_msg);
+                    pt_msg.pieces.push_back(bez_msg); // i dun think i need this line 
 
                     if (i==0)
                     {

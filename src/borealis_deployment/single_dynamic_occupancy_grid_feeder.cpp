@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
                 msg.step_size.push_back(occ_step_size(i));
             }
 
-            const auto& index_set = occupancy_grid.getIndexSet();
+            const auto& index_set = occupancy_grid.getIndexSet(); // getting the occupied indexes from the grids
 
             for(const auto& idx: index_set) {
                 for(unsigned int i = 0; i < DIM; i++) {
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
 
         case true:
         {
-            ROS_INFO_STREAM("Not inserting obstacles");
+            ROS_INFO_STREAM("Not inserting obstacles"); // rostopic msg only holds the obstacles saved during the prev collection
             break;
 
         }
