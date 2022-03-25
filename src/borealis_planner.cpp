@@ -108,14 +108,14 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    state[0] << local_pos.pose.position.x, local_pos.pose.position.y - 1.0, local_pos.pose.position.z;
 }
 
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y + 1.0, local_pos.pose.position.z;
 }
 
 void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
@@ -437,8 +437,8 @@ int main(int argc, char **argv)
     
 
     //mavros subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav2/mavros/local_position/pose", 10, hover1Callback);
     
         
     //Current drone's intended goal and starting cpt/position
@@ -843,7 +843,7 @@ int main(int argc, char **argv)
         }
 
 
-        ROS_INFO_STREAM ("x_0");
+        /* ROS_INFO_STREAM ("x_0");
         ROS_INFO_STREAM (new_state[0][0]);
         ROS_INFO_STREAM ("current_x_0");
         ROS_INFO_STREAM (current_0.pose.position.x);
@@ -854,8 +854,8 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM ("z_0");
         ROS_INFO_STREAM (new_state[0][2]);
         ROS_INFO_STREAM ("current_z_0");
-        ROS_INFO_STREAM (current_0.pose.position.z);
-
+        ROS_INFO_STREAM (current_0.pose.position.z); */
+        
     
         trajpub.publish(pt_msg);   
         trajpub_0.publish(traj_0);

@@ -7,7 +7,7 @@
 
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
-    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/borealis_demo_1"/>
+    <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/1obstacle"/>
     <arg name="occupancy_grid_step_size" default="[0.15, 0.15, 0.15]"/> <!--original was 0.5 0.5 0.5-->
 
 

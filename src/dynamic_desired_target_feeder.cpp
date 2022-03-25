@@ -138,13 +138,13 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y - 1.0, local_pos.pose.position.z;
 }
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y + 1.0, local_pos.pose.position.z;
 }
 
 int main(int argc, char **argv) {
@@ -160,8 +160,9 @@ int main(int argc, char **argv) {
     server.setCallback(f);
 
     //subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
+    //switch(drone_env) rmb need to do this for individual drones 
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav2/mavros/local_position/pose", 10, hover1Callback);
     ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
     // dso convex hull algo would be added here
 
@@ -196,7 +197,10 @@ int main(int argc, char **argv) {
             dyn_msg.solver_type = solver_type;
             dyn_msg.intended_velocity = velocity;  
             dp.publish(dyn_msg);
-            
+
+            ROS_INFO_STREAM("current position of uav 1 is " << current_pose[0]);
+            ROS_INFO_STREAM("current position of uav 2 is " << current_pose[1]);
+
             switch(trajectory_target){
             
             case 0:
@@ -241,6 +245,7 @@ int main(int argc, char **argv) {
                         } 
                         trigger_callback.data += 1;
                         ROS_INFO_STREAM ("Sending goal position...");
+
                         //tri.publish(trigger_callback);
                         //pt.publish(pt_msg);
                     }
