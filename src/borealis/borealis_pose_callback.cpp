@@ -31,13 +31,13 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[0] << local_pos.pose.position.x, local_pos.pose.position.y - 1.0, local_pos.pose.position.z;
+    state[0] << local_pos.pose.position.x, local_pos.pose.position.y - 2.0, local_pos.pose.position.z;
 }
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[1] << (local_pos.pose.position.x)+1.0, local_pos.pose.position.y + 1.0, local_pos.pose.position.z;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y + 2.0, local_pos.pose.position.z;
 }
 
 int main(int argc, char **argv) {

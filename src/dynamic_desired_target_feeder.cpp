@@ -61,8 +61,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
                             const double& reach_distance,
                             const double& number_of_drones){
 
-    ROS_INFO_STREAM ("Count");
-    ROS_INFO_STREAM (count);
+    ROS_INFO_STREAM ("Initial Count " << count);
     
     std_msgs::Bool activation;
 
@@ -76,26 +75,26 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     //ROS_INFO_STREAM (trigger_callback.data);
     if (count < number_of_drones)
     {
+        ROS_INFO_STREAM ("Measurement time");
         for (unsigned int i = 0; i < number_of_drones; i++)
         {
-            //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
-            //ROS_INFO_STREAM (goal_pose[i][0]);
+            ROS_INFO_STREAM ("Measuring against reach distance");
             if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
             {
                 count += 1;
-                //ROS_INFO_STREAM (number_of_drones);
             }
         }
     }
 
+    ROS_INFO_STREAM ("Count " << count);
+    ROS_INFO_STREAM ("Drone 1");
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
-    ROS_INFO_STREAM (goal_pose[0][0]);
-    ROS_INFO_STREAM ("Separator");
-    ROS_INFO_STREAM (count);
+    ROS_INFO_STREAM (goal_pose[0]);
+    ROS_INFO_STREAM ("Drone 2");
     ROS_INFO_STREAM ((goal_pose[1]-current_pose[1]).norm());
-    ROS_INFO_STREAM (goal_pose[1][0]);
+    ROS_INFO_STREAM (goal_pose[1]);
 
-    if(count > 0) //for 2 drones, shud be (count > 1) but for this testing, I am gonna let count be only > 0 cos i am testing one drone first
+    if(count > (number_of_drones -1)) //for 2 drones, shud be (count > 1) but for this testing, I am gonna let count be only > 0 cos i am testing one drone first
         {
             ROS_INFO_STREAM ("Finished going to target");
             activation.data = false;
@@ -112,7 +111,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
             return false;
         }
 
-    //count = 0; //resets the counter just in case
+    //count = 0.0; //resets the counter just in case
     
 }
 
@@ -138,13 +137,13 @@ void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t lev
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y - 1.0, local_pos.pose.position.z;
+    current_pose[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y + 1.0, local_pos.pose.position.z;
+    current_pose[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 int main(int argc, char **argv) {

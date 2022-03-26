@@ -108,14 +108,14 @@ void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg)
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[0] << local_pos.pose.position.x, local_pos.pose.position.y - 1.0, local_pos.pose.position.z;
+    state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[1] << local_pos.pose.position.x, local_pos.pose.position.y + 1.0, local_pos.pose.position.z;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
@@ -514,12 +514,14 @@ int main(int argc, char **argv)
                 current_position[d] = state[i][d];
             }
 
-            /* Nothing to collide into for now */
-            //for (const auto &elem: other_robot_collision_shapes) 
-            //{
-            //    if elem.first = 1-i;
-            //    selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
-            //}
+            /* Collision should be made wrt the rest, not itself */
+            for (const auto &elem: other_robot_collision_shapes) 
+            {
+                if (elem.first != i) // first is unsigned int
+                {
+                    selected_shapes_to_collide.push_back(elem.second);
+                } 
+            }
             
             
             
