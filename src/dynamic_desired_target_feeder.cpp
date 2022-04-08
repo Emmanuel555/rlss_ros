@@ -81,6 +81,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
             ROS_INFO_STREAM ("Measuring against reach distance");
             if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
             {
+                ROS_INFO_STREAM ("reach distance reached...");
                 count += 1;
             }
         }

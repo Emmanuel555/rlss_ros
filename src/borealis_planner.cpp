@@ -776,7 +776,7 @@ int main(int argc, char **argv)
                     //rlss_ros::PiecewiseTrajectory traj_msg;
                     //traj_msg.generation_time.data = current_time;
                     //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
-                    new_state[i] = traj.eval(std::min(replanning_period, traj.maxParameter()),0); // this is the position it needs to actually go to        
+                    new_state[i] = traj.eval(std::min(desired_time_horizon, traj.maxParameter()),0); // this is the position it needs to actually go to        
                     // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
                     ROS_INFO_STREAM ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
                     ROS_INFO_STREAM (traj.maxParameter());
