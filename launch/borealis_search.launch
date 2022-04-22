@@ -5,6 +5,9 @@
     <!-- COMMANDER PARAMETERS -->
     <arg name="commander_dt" default="0.05"/> <!-- search step -->
 
+    <!-- Mode -->
+    <arg name="mode" default="sim"/> <!-- sim or real -->
+
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
     <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/1obstacle"/>
@@ -50,6 +53,7 @@
     <!-- Assigning to directory -->
     <rosparam param="obstacles_directory" subst_value="True">$(arg obstacles_directory)</rosparam>
     <rosparam param="occupancy_grid_step_size" subst_value="True">$(arg occupancy_grid_step_size)</rosparam>
+    <rosparam param="mode" subst_value="True">$(arg mode)</rosparam>
     <!--<rosparam param="robot_idx" subst_value="True">$(arg robot_idx)</rosparam>-->
     <rosparam param="continuity_upto_degree" subst_value="True">$(arg continuity_upto_degree)</rosparam>
     <rosparam param="replanning_period" subst_value="True">$(arg replanning_period)</rosparam>

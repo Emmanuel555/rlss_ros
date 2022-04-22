@@ -20,6 +20,10 @@ StdVectorVectorDIM state(DIM); // state now contains the position of all the dro
 unsigned int number_of_drones;
 VectorDIM testing(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
+std::string mode;
+std::string uav_1;
+std::string uav_2;
+
 
 //ros::Publisher self_state_publisher;
 ros::Publisher collision_shape_grp_publisher;
@@ -45,6 +49,19 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
+    nh.getParam("mode", mode);
+
+    if (mode == "sim")
+    {
+        uav_1 = "/sim/uav1/mavros/local_position/pose";
+        uav_2 = "/sim/uav2/mavros/local_position/pose";
+    }
+    else
+    {
+        uav_1 = "/uav1/mavros/local_position/pose";
+        uav_2 = "/uav2/mavros/local_position/pose";
+    }
+
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
     nh.getParam("collision_shape_at_zero_max", colshape_max_vec);
     VectorDIM colshape_min(DIM), colshape_max(DIM);
