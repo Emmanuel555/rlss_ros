@@ -6,6 +6,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
+#include <nav_msgs/Path.h>
 #include <dynamic_reconfigure/server.h>
 #include <rlss_ros/PiecewiseTrajectory.h>
 #include <rlss_ros/Bezier.h>
@@ -21,6 +22,7 @@
 #include <std_msgs/Time.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
+
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -51,6 +53,10 @@ unsigned int solver_type;
 std_msgs::Int32 trigger_callback;
 double buffer = 5.0;
 double count = 0.0;
+std::string mode;
+std::string uav_1;
+std::string uav_2;
+
 
 ros::Publisher dp;
 ros::Publisher planner_activation;
@@ -75,9 +81,11 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     //ROS_INFO_STREAM (trigger_callback.data);
     if (count < number_of_drones)
     {
-        ROS_INFO_STREAM ("Measurement time");
+        ROS_INFO_STREAM ("Measurement time to final goal");
         for (unsigned int i = 0; i < number_of_drones; i++)
         {
+            ROS_INFO_STREAM ("i is " << i);
+            ROS_INFO_STREAM ("Norm for i is: " << (goal_pose[i]-current_pose[i]).norm());
             ROS_INFO_STREAM ("Measuring against reach distance");
             if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
             {
@@ -85,9 +93,13 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
                 count += 1;
             }
         }
+        if (count < number_of_drones)
+        {
+            count = 0.0;
+        }
     }
 
-    ROS_INFO_STREAM ("Count " << count);
+    ROS_INFO_STREAM ("Count is " << count);
     ROS_INFO_STREAM ("Drone 1");
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
     ROS_INFO_STREAM (goal_pose[0]);
@@ -150,6 +162,18 @@ void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 int main(int argc, char **argv) {
     ros::init(argc, argv, "dynamic_desired_target_feeder");
     ros::NodeHandle nh;
+    nh.getParam("mode", mode);
+
+    if (mode == "sim")
+    {
+        uav_1 = "/sim/uav1/mavros/local_position/pose";
+        uav_2 = "/sim/uav2/mavros/local_position/pose";
+    }
+    else
+    {
+        uav_1 = "/uav1/mavros/local_position/pose";
+        uav_2 = "/uav2/mavros/local_position/pose";
+    }
     
 
     //dynamic reconfigure callback
@@ -161,8 +185,8 @@ int main(int argc, char **argv) {
 
     //subscription
     //switch(drone_env) rmb need to do this for individual drones 
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav2/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe(uav_1, 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe(uav_2, 10, hover1Callback);
     ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
     // dso convex hull algo would be added here
 
@@ -220,6 +244,7 @@ int main(int argc, char **argv) {
                 {//pt_msg.pieces.clear();
                 if(trigger_pose != goal_pose)
                 {
+                    ROS_INFO_STREAM ("Changing goal pose...");
                     trigger_pose = goal_pose;
                     trigger_callback.data = 0;
                     tri.publish(trigger_callback);

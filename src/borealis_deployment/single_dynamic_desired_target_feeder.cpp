@@ -21,6 +21,7 @@
 #include <std_msgs/Time.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
+#include <string> 
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -43,7 +44,8 @@ StdVectorVectorDIM goal_pose(DIM);
 StdVectorVectorDIM current_pose(DIM);
 int trajectory_target;
 double velocity;
-unsigned int number_of_drones = 1; //Always 1!!!!!!!!
+unsigned int number_of_drones = 2; //Always 1!!!!!!!!
+unsigned int robot_idx; 
 double reach_distance;
 double obs_check_distance;
 double rescaling_factor;
@@ -74,19 +76,15 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     };
 
     //ROS_INFO_STREAM (trigger_callback.data);
-    if (count < number_of_drones)
+    
+    //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
+    //ROS_INFO_STREAM (goal_pose[i][0]);
+    if((goal_pose[0]-current_pose[0]).norm() < reach_distance)
     {
-        for (unsigned int i = 0; i < number_of_drones; i++)
-        {
-            //ROS_INFO_STREAM ((goal_pose[i]-current_pose[i]).norm());
-            //ROS_INFO_STREAM (goal_pose[i][0]);
-            if((goal_pose[i]-current_pose[i]).norm() < reach_distance)
-            {
-                count += 1;
-                //ROS_INFO_STREAM (number_of_drones);
-            }
-        }
+        count += 1.0;
+        //ROS_INFO_STREAM (number_of_drones);
     }
+    
 
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
     ROS_INFO_STREAM ("Count_Number");
@@ -148,7 +146,7 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "single_dynamic_desired_target_feeder");
+    ros::init(argc, argv, "single_dynamic_desired_target_feeder_1");
     ros::NodeHandle nh;
     
 
@@ -165,28 +163,30 @@ int main(int argc, char **argv) {
     nh.getParam("obs_check_distance", obs_check_distance);
     nh.getParam("trajectory_target", trajectory_target);
     nh.getParam("rescaling_factor", rescaling_factor);
-    
+    nh.getParam("robot_idx", robot_idx);
+
+    auto id = std::to_string(robot_idx);
     
     //replanning period
     double replanning_period;
     nh.getParam("replanning_period", replanning_period);
     
 
-    //subscription
+    //subscription here, TODO*
     ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
 
     //subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
     
     //trigger subscription
-    ros::Subscriber trigger_sub = nh.subscribe("/trigger", 10, triggerCallback);
+    ros::Subscriber trigger_sub = nh.subscribe("/trigger_" + id, 10, triggerCallback);
     // dso convex hull algo would be added here
 
     //publishing
-    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/Pseudo_trajectory", 10); //just added 
-    dp = nh.advertise<rlss_ros::dyn_params>("/dyn_params",10);
-    planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation", 10);
-    tri = nh.advertise<std_msgs::Int32>("/trigger",10);
+    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/Pseudo_trajectory_" + id, 10); //just added 
+    dp = nh.advertise<rlss_ros::dyn_params>("/dyn_params_" + id, 10);
+    planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation_" + id, 10);
+    tri = nh.advertise<std_msgs::Int32>("/trigger_" + id, 10);
     ros::Rate rate(1/replanning_period);
 
     //control_pts setup
@@ -242,20 +242,20 @@ int main(int argc, char **argv) {
                     if(trigger_callback.data < 1){
                         pt_msg.pieces.clear();
                         pt_msg.start_time.data = ros::Time::now();
-                        for(unsigned int d = 0; d < number_of_drones; d++){
-                            rlss_ros::Bezier bez_msg;
-                            starting_cpt[d] = current_pose[d];
-                            duration[d] = (goal_pose[d] - starting_cpt[d]).norm()/velocity;
-                            bez_msg.dimension = DIM;
-                            bez_msg.duration = duration[d];
-                            for (std::size_t i = 0; i < DIM; i++){
-                                bez_msg.start.push_back(starting_cpt[d][i]);
-                                bez_msg.end.push_back(goal_pose[d][i]);
-                            } 
-                            pt_msg.pieces.push_back(bez_msg);
-                            //bez_msg.start.clear();
-                            //bez_msg.end.clear();
+                        //for(unsigned int d = 0; d < number_of_drones; d++){
+                        rlss_ros::Bezier bez_msg;
+                        starting_cpt[0] = current_pose[0];
+                        duration[0] = (goal_pose[0] - starting_cpt[0]).norm()/velocity;
+                        bez_msg.dimension = DIM;
+                        bez_msg.duration = duration[0];
+                        for (std::size_t i = 0; i < DIM; i++){
+                            bez_msg.start.push_back(starting_cpt[d][i]);
+                            bez_msg.end.push_back(goal_pose[d][i]);
                         } 
+                        pt_msg.pieces.push_back(bez_msg);
+                        //bez_msg.start.clear();
+                        //bez_msg.end.clear();
+                        //} 
                         trigger_callback.data += 1;
                         ROS_INFO_STREAM ("Sending goal position...");
                         //tri.publish(trigger_callback);

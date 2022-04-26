@@ -20,6 +20,7 @@ StdVectorVectorDIM state(DIM); // state now contains the position of all the dro
 unsigned int number_of_drones;
 VectorDIM testing(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
+unsigned int robot_idx; 
 
 //ros::Publisher self_state_publisher;
 ros::Publisher collision_shape_grp_publisher;
@@ -31,7 +32,7 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right for this callbacks, it shud be the other surrounding drones local position
 {
     auto local_pos = *msg;
-    state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    state[robot_idx-1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 /*void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
@@ -41,12 +42,14 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right 
 }*/
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "pose_callback_for_drones");
+    ros::init(argc, argv, "pose_callback_for_drones_1");
     ros::NodeHandle nh;
 
     //replanning period
     double replanning_period;
     nh.getParam("replanning_period", replanning_period);
+    nh.getParam("robot_idx", robot_idx);
+    auto id = std::to_string(robot_idx);
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
@@ -61,12 +64,12 @@ int main(int argc, char **argv) {
 
     //publishers
     //self_state_publisher = nh.advertise<rlss_ros::RobotState>("self_state", 1);
-    collision_shape_grp_publisher = nh.advertise<rlss_ros::Collision_Shape_Grp>("/other_robot_collision_shapes", 10);
+    collision_shape_grp_publisher = nh.advertise<rlss_ros::Collision_Shape_Grp>("/other_robot_collision_shapes_" + id, 10);
 
     //subscribers
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav0/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id "/mavros/local_position/pose", 10, hover0Callback);
     //ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
-    ros::Subscriber dynamicparams = nh.subscribe("/dyn_params", 10, dynparamCallback);
+    ros::Subscriber dynamicparams = nh.subscribe("/dyn_params_" + id, 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
 
     //rlss_ros msgs    

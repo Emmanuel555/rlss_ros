@@ -26,6 +26,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
+#include <nav_msgs/Path.h>
 #include <rlss_ros/Collision_Shape_Grp.h>
 #include <std_msgs/Bool.h>
 #include <rlss_ros/dyn_params.h>
@@ -66,6 +67,7 @@ using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 //int self_robot_idx;
 std::map<unsigned int, AlignedBox> other_robot_collision_shapes;  // robot_idx -> colshape
 std::unique_ptr<OccupancyGrid> occupancy_grid_ptr;
+OccupancyGrid global_occupancy_grid(OccCoordinate(0.5,0.5,0.5)); 
 VectorDIM LOL;
 //ros::Time desired_trajectory_set_time = ros::Time(0);
 std_msgs::Time desired_trajectory_set_time;
@@ -78,6 +80,7 @@ std_msgs::Bool activation;
 std::string optimizer;
 VectorDIM starting(DIM);
 VectorDIM ending(DIM);
+VectorDIM durations(DIM);
 
 // Dynamic Planner Params
 double reach_distance;
@@ -88,6 +91,11 @@ unsigned int number_of_drones;
 // Duration and rescaling coeff
 double rescaling_multiplier;
 double intended_velocity;
+
+//sim mode
+std::string mode;
+std::string uav_1;
+std::string uav_2;
 
 
 void otherRobotShapeCallback(const rlss_ros::Collision_Shape_Grp::ConstPtr &msg) // each robot needs to have its own shape topic
@@ -138,6 +146,7 @@ void desiredTrajectoryCallback(const rlss_ros::PiecewiseTrajectory::ConstPtr &ms
         else
         {
             Bezier bez(piece_msg.duration);
+            durations[i] = piece_msg.duration;
             VectorDIM starting_cpt(DIM);
             VectorDIM end_cpt(DIM);
             for (unsigned int j = 0; j < DIM; j++)
@@ -172,7 +181,7 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need 
             step_size(i) = msg->step_size[i];
         }
 
-        occupancy_grid_ptr = std::make_unique<OccupancyGrid>(step_size);
+        /* occupancy_grid_ptr = std::make_unique<OccupancyGrid>(step_size);
         for (std::size_t i = 0; i < msg->occupied_indexes.size() / DIM; i++)
         {
             OccIndex index(DIM);
@@ -181,7 +190,20 @@ void occupancyGridCallback(const rlss_ros::OccupancyGrid::ConstPtr &msg)// need 
                 index(j) = msg->occupied_indexes[i * DIM + j];
             }
             occupancy_grid_ptr->setOccupancy(index);
+        } */
+
+        auto occupancy_grid = OccupancyGrid(step_size);
+        for (std::size_t i = 0; i < msg->occupied_indexes.size() / DIM; i++)
+        {
+            OccIndex index(DIM);
+            for (std::size_t j = 0; j < DIM; j++)
+            {
+                index(j) = msg->occupied_indexes[i * DIM + j];
+            }
+            occupancy_grid.setOccupancy(index);
         }
+        global_occupancy_grid = occupancy_grid;
+
     }
 }
 
@@ -203,6 +225,20 @@ int main(int argc, char **argv)
     
     //required params from launch file*********************************************
     //nh.getParam("robot_idx", self_robot_idx);
+
+    nh.getParam("mode", mode);
+
+    if (mode == "sim")
+    {
+        uav_1 = "/sim/uav1/mavros/local_position/pose";
+        uav_2 = "/sim/uav2/mavros/local_position/pose";
+    }
+    else
+    {
+        uav_1 = "/uav1/mavros/local_position/pose";
+        uav_2 = "/uav2/mavros/local_position/pose";
+    }
+
     
 
     //continuity upto deg
@@ -216,6 +252,9 @@ int main(int argc, char **argv)
     double replanning_period;
     nh.getParam("replanning_period", replanning_period);
     //std::cout << "replanning_period: " << replanning_period << std::endl;
+
+    double actual_timestamp;
+    nh.getParam("actual_timestamp", actual_timestamp);
 
 
     //max derivative mag
@@ -349,6 +388,8 @@ int main(int argc, char **argv)
     double desired_time_horizon;
     nh.getParam("desired_time_horizon", desired_time_horizon);
 
+    bool recording;
+    nh.getParam("recording", recording);
 
     //how many times can the recalculation be done
     unsigned int max_rescaling_count;
@@ -437,8 +478,8 @@ int main(int argc, char **argv)
     
 
     //mavros subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav2/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe(uav_1, 10, hover0Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe(uav_2, 10, hover1Callback);
     
         
     //Current drone's intended goal and starting cpt/position
@@ -457,6 +498,8 @@ int main(int argc, char **argv)
     ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory", 1);
     ros::Publisher trajpub_1 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_1", 1);
     ros::Publisher trajpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_0", 1);
+    ros::Publisher trajwhole_1 = nh.advertise<nav_msgs::Path>("/whole_trajectory_pose_1", 1);
+    ros::Publisher trajwhole_0 = nh.advertise<nav_msgs::Path>("/whole_trajectory_pose_0", 1);
     ros::Publisher currentpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/current_trajectory_pose_0", 1);
 
 
@@ -478,10 +521,12 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM (number_of_drones);
         for (std::size_t i = 0; i < number_of_drones; i++)
         {
-            ROS_INFO_STREAM (occupancy_grid.size());
+            //ROS_INFO_STREAM (occupancy_grid.size());
+            ROS_INFO_STREAM ("global occupancy size");
+            ROS_INFO_STREAM (global_occupancy_grid.size());
             //OccupancyGrid testing_lol(OccCoordinate(0.5,0.5,0.5));
             //ROS_INFO_STREAM (typeid(testing_lol).name());
-            ROS_INFO_STREAM ("Planner Commencing");
+            ROS_INFO_STREAM ("2 Drone Planner Commencing");
             //ROS_INFO_STREAM (intended_velocity);
             ROS_INFO_STREAM (solver_type);
             ROS_INFO_STREAM (soft_optimization_parameters["robot_to_robot_hyperplane_constraints"].second);
@@ -557,7 +602,7 @@ int main(int argc, char **argv)
             // somehow values from callback are only reflected inside here 
             
             //Goal selection constructor
-
+            desired_time_horizon = durations[i];
             auto rlss_goal_selector = std::make_shared<RLSSGoalSelector>
                 (
                         desired_time_horizon,
@@ -642,7 +687,7 @@ int main(int argc, char **argv)
                     integrated_squared_derivative_weights,
                     piece_endpoint_cost_weights,
                     optimization_obstacle_check_distance);
-                trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
+                    trajectory_optimizer = std::static_pointer_cast<TrajectoryOptimizer>(
                     rlss_hard_optimizer);
             }    
                 break;
@@ -763,11 +808,12 @@ int main(int argc, char **argv)
                     selected_state,// where i m currently
                     selected_shapes_to_collide,//where other robots r currently, atm no shapes r appended which meant the vectors inside have no collision shapes (no min,no max)
                     // unlike dyn sim, this vector itself has a default dim of 3, bit tricky situation
-                    occupancy_grid 
-                ); // occupancy  
+                    global_occupancy_grid 
+                    //occupancy_grid
+                );    
                 
                 
-                //curve
+                //curve succeeded
                 if (curve)
                 {                    
                     
@@ -776,10 +822,14 @@ int main(int argc, char **argv)
                     //rlss_ros::PiecewiseTrajectory traj_msg;
                     //traj_msg.generation_time.data = current_time;
                     //traj.maxParameter might not be duration or time horizon when it reaches the end point in case
-                    new_state[i] = traj.eval(std::min(desired_time_horizon, traj.maxParameter()),0); // this is the position it needs to actually go to        
+                    ROS_INFO_STREAM ("Drone no. " << i);
+                    ROS_INFO_STREAM ("Desired Time Horizon: " << desired_time_horizon);
+                    //ROS_INFO_STREAM ("Goal Pose is : " << traj.eval(desired_time_horizon,0));
+                    new_state[i] = traj.eval(std::min(actual_timestamp, traj.maxParameter()),0); // this is the position it needs to actually go to        
                     // updated position after replanning period, for planning of next curve only thats why u dun see the robot json updater                             
                     ROS_INFO_STREAM ("Max_Time_Param"); // the path is lined up for 5.28s but theres no tracking 
                     ROS_INFO_STREAM (traj.maxParameter());
+                    ROS_INFO_STREAM (recording);
                     ROS_INFO_STREAM ("Time taken to so far...");
                     ROS_INFO_STREAM (time_on_trajectory.toSec()); // current time
                     traj_0.header.stamp.sec = time_on_trajectory.toSec(); 
@@ -808,14 +858,45 @@ int main(int argc, char **argv)
                     {
                         traj_0.pose.position.x = new_state[i][0]; 
                         traj_0.pose.position.y = new_state[i][1];   
-                        traj_0.pose.position.z = new_state[i][2];                      
+                        traj_0.pose.position.z = new_state[i][2]; 
+                        
+                        if (recording)
+                        {
+                            nav_msgs::Path whole_traj_0;
+                            whole_traj_0.header.stamp.sec = time_on_trajectory.toSec();
+                            for (double d = 0; d < traj.maxParameter(); d+=0.1)
+                            {
+                                geometry_msgs::PoseStamped setpts;
+                                setpts.pose.position.x = traj.eval(d,0)[0];
+                                setpts.pose.position.y = traj.eval(d,0)[1];
+                                setpts.pose.position.z = traj.eval(d,0)[2];
+                                whole_traj_0.poses.push_back(setpts);
+                            }
+                            trajwhole_0.publish(whole_traj_0); 
+                        }                       
                     }
+
                     if (i==1)
                     {
 
                         traj_1.pose.position.x = new_state[i][0]; 
                         traj_1.pose.position.y = new_state[i][1];   
-                        traj_1.pose.position.z = new_state[i][2];   
+                        traj_1.pose.position.z = new_state[i][2];
+
+                        if (recording)
+                        {
+                            nav_msgs::Path whole_traj_1;
+                            whole_traj_1.header.stamp.sec = time_on_trajectory.toSec();
+                            for (double d = 0; d < traj.maxParameter(); d+=0.1)
+                            {
+                                geometry_msgs::PoseStamped setpts;
+                                setpts.pose.position.x = traj.eval(d,0)[0];
+                                setpts.pose.position.y = traj.eval(d,0)[1];
+                                setpts.pose.position.z = traj.eval(d,0)[2];
+                                whole_traj_1.poses.push_back(setpts);
+                            }
+                            trajwhole_1.publish(whole_traj_1);
+                        }            
                     }
                 }
                 else
