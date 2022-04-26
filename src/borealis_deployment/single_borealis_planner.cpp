@@ -66,7 +66,7 @@ using GoalSelector = rlss::GoalSelector<double, DIM>;
 using Ellipsoid = rlss::Ellipsoid<double, DIM>;
 using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 
-unsigned int robot_idx; 
+int robot_idx; 
 std::map<unsigned int, AlignedBox> other_robot_collision_shapes;  // robot_idx -> colshape
 OccupancyGrid global_occupancy_grid(OccCoordinate(0.5,0.5,0.5)); // default values
 //ros::Time desired_trajectory_set_time = ros::Time(0);
@@ -462,7 +462,7 @@ int main(int argc, char **argv)
     
 
     //mavros subscription
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id "/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
     //ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
     
         

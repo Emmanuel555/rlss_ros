@@ -45,7 +45,7 @@ StdVectorVectorDIM current_pose(DIM);
 int trajectory_target;
 double velocity;
 unsigned int number_of_drones = 2; //Always 1!!!!!!!!
-unsigned int robot_idx; 
+int robot_idx; 
 double reach_distance;
 double obs_check_distance;
 double rescaling_factor;
@@ -249,8 +249,8 @@ int main(int argc, char **argv) {
                         bez_msg.dimension = DIM;
                         bez_msg.duration = duration[0];
                         for (std::size_t i = 0; i < DIM; i++){
-                            bez_msg.start.push_back(starting_cpt[d][i]);
-                            bez_msg.end.push_back(goal_pose[d][i]);
+                            bez_msg.start.push_back(starting_cpt[0][i]);
+                            bez_msg.end.push_back(goal_pose[0][i]);
                         } 
                         pt_msg.pieces.push_back(bez_msg);
                         //bez_msg.start.clear();

@@ -19,7 +19,7 @@ using Ellipsoid = rlss::Ellipsoid<double, DIM>;
 using MatrixDIMDIM = rlss::internal::MatrixRC<double, DIM, DIM>;
 sensor_msgs::PointCloud pcl; 
 std_msgs::Bool activation;
-unsigned int robot_idx; 
+int robot_idx; 
 
 void plannerCallback(const std_msgs::Bool::ConstPtr& msg)
 {

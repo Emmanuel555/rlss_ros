@@ -20,7 +20,7 @@ StdVectorVectorDIM state(DIM); // state now contains the position of all the dro
 unsigned int number_of_drones;
 VectorDIM testing(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
-unsigned int robot_idx; 
+int robot_idx; 
 
 //ros::Publisher self_state_publisher;
 ros::Publisher collision_shape_grp_publisher;
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     collision_shape_grp_publisher = nh.advertise<rlss_ros::Collision_Shape_Grp>("/other_robot_collision_shapes_" + id, 10);
 
     //subscribers
-    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id "/mavros/local_position/pose", 10, hover0Callback);
+    ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
     //ros::Subscriber hover_pub_1 = nh.subscribe("/uav1/mavros/local_position/pose", 10, hover1Callback);
     ros::Subscriber dynamicparams = nh.subscribe("/dyn_params_" + id, 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
