@@ -35,6 +35,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem.hpp>
 #include <sensor_msgs/PointCloud.h>
+#include <stdlib.h> /*getenv*/
 
 namespace fs = boost::filesystem;
 constexpr unsigned int DIM = DIMENSION;
@@ -458,7 +459,7 @@ int main(int argc, char **argv)
     /* Publishers and Subscribers **********/
 
     //collision shapes
-    ros::Subscriber colshapesub = nh.subscribe("/other_robot_collision_shapes_" + id, 10, otherRobotShapeCallback);
+    ros::Subscriber colshapesub = nh.subscribe("/uav" + id + "/other_robot_collision_shapes", 10, otherRobotShapeCallback);
     
 
     //mavros subscription
@@ -467,23 +468,23 @@ int main(int argc, char **argv)
     
         
     //Current drone's intended goal and starting cpt/position
-    ros::Subscriber destrajsub = nh.subscribe("/Pseudo_trajectory_" + id, 1, desiredTrajectoryCallback);
+    ros::Subscriber destrajsub = nh.subscribe("/uav" + id + "/Pseudo_trajectory", 1, desiredTrajectoryCallback);
 
     //Planner usage
-    ros::Subscriber planner_sub = nh.subscribe("/planner_activation_" + id, 1, plannerCallback);
+    ros::Subscriber planner_sub = nh.subscribe("/uav" + id + "/planner_activation", 1, plannerCallback);
 
     //Dynamic Params
-    ros::Subscriber dynamicparams = nh.subscribe("/dyn_params_" + id, 10, dynparamCallback);
+    ros::Subscriber dynamicparams = nh.subscribe("/uav" + id + "/dyn_params", 10, dynparamCallback);
     
     //Occupancy grid of current drone
     //ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/occupancy_pointcloud", 1, occupancyGridCallback);
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_grid_" + id, 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/uav" + id + "/occupancy_grid", 1, occupancyGridCallback);
     
     //Push the position of where this drone shud go into topic 
-    ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/final_trajectory_" + id, 1);
+    ros::Publisher trajpub = nh.advertise<rlss_ros::PiecewiseTrajectory>("/uav" + id + "/final_trajectory", 1);
     //ros::Publisher trajpub_1 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_1", 1);
-    ros::Publisher trajwhole_0 = nh.advertise<nav_msgs::Path>("/whole_trajectory_pose_" + id, 1);
-    ros::Publisher trajpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/final_trajectory_pose_" + id, 1);
+    ros::Publisher trajwhole_0 = nh.advertise<nav_msgs::Path>("/uav" + id + "/whole_trajectory_pose", 1);
+    ros::Publisher trajpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/uav" + id + "/final_trajectory_pose", 1);
     //ros::Publisher currentpub_0 = nh.advertise<geometry_msgs::PoseStamped>("/current_trajectory_pose_0", 1);
 
 
@@ -544,8 +545,12 @@ int main(int argc, char **argv)
 
         for (const auto &elem: other_robot_collision_shapes) 
         {
-            if (elem.first != robot_idx-1);
+            /* ROS_INFO_STREAM ("elem first");
+            ROS_INFO_STREAM (elem.first);
+            ROS_INFO_STREAM (robot_idx-1); */
+            if (elem.first != robot_idx-1)
             {
+                ROS_INFO_STREAM ("Collision shape being inserted for " << elem.first);
                 selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
             }
         }
@@ -834,6 +839,7 @@ int main(int argc, char **argv)
                 if (recording)
                 {
                     nav_msgs::Path whole_traj_0;
+                    whole_traj_0.header.frame_id = "camera_init";
                     whole_traj_0.header.stamp.sec = time_on_trajectory.toSec();
                     for (double d = 0; d < traj.maxParameter(); d+=0.1)
                     {

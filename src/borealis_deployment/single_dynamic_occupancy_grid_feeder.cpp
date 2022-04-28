@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <sensor_msgs/PointCloud.h>
 #include <std_msgs/Bool.h>
+#include <stdlib.h> /*getenv*/
 
 namespace fs = boost::filesystem;
 constexpr unsigned int DIM = DIMENSION;
@@ -104,13 +105,13 @@ int main(int argc, char **argv) {
     } */
 
     //Planner usage
-    ros::Subscriber planner_sub = nh.subscribe("/planner_activation_" + id, 1, plannerCallback);
+    ros::Subscriber planner_sub = nh.subscribe("/uav" + id + "/planner_activation", 1, plannerCallback);
 
     //pcl subscription
-    ros::Subscriber occgridsub = nh.subscribe("occupancy_map/visualize_pointcloud", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/visualize_pointcloud", 1, occupancyGridCallback);
     
     //internal occupancy grid rlss pub
-    ros::Publisher pub = nh.advertise<rlss_ros::OccupancyGrid>("occupancy_grid_" + id, 1);
+    ros::Publisher pub = nh.advertise<rlss_ros::OccupancyGrid>("/uav" + id + "/occupancy_grid", 1);
     
 
     ros::Rate rate(1/replanning_period);

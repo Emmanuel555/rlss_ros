@@ -22,6 +22,7 @@
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
 #include <string> 
+#include <stdlib.h> /*getenv*/
 
 constexpr unsigned int DIM = DIMENSION;
 
@@ -179,14 +180,14 @@ int main(int argc, char **argv) {
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
     
     //trigger subscription
-    ros::Subscriber trigger_sub = nh.subscribe("/trigger_" + id, 10, triggerCallback);
+    ros::Subscriber trigger_sub = nh.subscribe("/uav" + id + "/trigger", 10, triggerCallback);
     // dso convex hull algo would be added here
 
     //publishing
-    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/Pseudo_trajectory_" + id, 10); //just added 
-    dp = nh.advertise<rlss_ros::dyn_params>("/dyn_params_" + id, 10);
-    planner_activation = nh.advertise<std_msgs::Bool>("/planner_activation_" + id, 10);
-    tri = nh.advertise<std_msgs::Int32>("/trigger_" + id, 10);
+    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/uav" + id + "/Pseudo_trajectory", 10); //just added 
+    dp = nh.advertise<rlss_ros::dyn_params>("/uav" + id + "/dyn_params", 10);
+    planner_activation = nh.advertise<std_msgs::Bool>("/uav" + id + "/planner_activation", 10);
+    tri = nh.advertise<std_msgs::Int32>("/uav" + id + "/trigger", 10);
     ros::Rate rate(1/replanning_period);
 
     //control_pts setup
