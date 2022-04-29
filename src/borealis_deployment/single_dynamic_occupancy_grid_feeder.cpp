@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
     ros::Subscriber planner_sub = nh.subscribe("/uav" + id + "/planner_activation", 1, plannerCallback);
 
     //pcl subscription
-    ros::Subscriber occgridsub = nh.subscribe("/occupancy_map/visualize_pointcloud", 1, occupancyGridCallback);
+    ros::Subscriber occgridsub = nh.subscribe("/uav" + id + "_occupancy_map/visualize_pointcloud", 1, occupancyGridCallback);
     
     //internal occupancy grid rlss pub
     ros::Publisher pub = nh.advertise<rlss_ros::OccupancyGrid>("/uav" + id + "/occupancy_grid", 1);

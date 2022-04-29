@@ -19,6 +19,7 @@ using AlignedBox = rlss::internal::AlignedBox<double, DIM>;
 //unsigned int self_robot_idx;
 StdVectorVectorDIM state(DIM); // state now contains the position of all the drones involved
 unsigned int number_of_drones;
+std::string str_number_of_drones;
 VectorDIM testing(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
 int robot_idx; 
@@ -28,6 +29,7 @@ ros::Publisher collision_shape_grp_publisher;
 
 void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
     number_of_drones = msg->number_of_drones;
+    str_number_of_drones = std::to_string(number_of_drones);
 }
 
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right for this callbacks, it shud be the other surrounding drones local position
@@ -71,7 +73,7 @@ int main(int argc, char **argv) {
 
     //subscribers
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav2/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav"+ str_number_of_drones + "/mavros/local_position/pose", 10, hover1Callback);
     ros::Subscriber dynamicparams = nh.subscribe("/uav" + id + "/dyn_params", 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
 
