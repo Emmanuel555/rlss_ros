@@ -34,7 +34,7 @@ void occupancyGridCallback(const sensor_msgs::PointCloud::ConstPtr &msg)// need 
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "dynamic_map_feeder_1");
+    ros::init(argc, argv, std::string(getenv("DRONE_NAME")) + "_dynamic_map_feeder");
     ros::NodeHandle nh;
 
     //replanning period

@@ -133,10 +133,17 @@ void triggerCallback(const std_msgs::Int32& msg)
 
 }*/
 
-void targetCallback(const geometry_msgs::Vector3::ConstPtr& msg)
+/* void targetCallback(const geometry_msgs::Vector3::ConstPtr& msg)
 {
     auto target_pos = *msg;
     goal_pose[0] << target_pos.x, target_pos.y, target_pos.z;
+
+} */
+
+void targetCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    auto target_pos = *msg;
+    goal_pose[0] << target_pos.pose.position.x, target_pos.pose.position.y, target_pos.pose.position.z;
 
 }
 
@@ -147,7 +154,7 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "single_dynamic_desired_target_feeder_1");
+    ros::init(argc, argv, std::string(getenv("DRONE_NAME")) + "_single_dynamic_desired_target_feeder");
     ros::NodeHandle nh;
     
 
@@ -174,7 +181,8 @@ int main(int argc, char **argv) {
     
 
     //subscription here, TODO*
-    ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
+    //sros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
+    ros::Subscriber target_0 = nh.subscribe("/uav" + id + "/teaming_planner/assigned_virtual_position", 10, targetCallback);
 
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);

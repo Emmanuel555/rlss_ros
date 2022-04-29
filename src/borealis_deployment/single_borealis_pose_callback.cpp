@@ -37,17 +37,17 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right 
     auto local_pos = *msg;
     state[robot_idx-1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
     //state[1] << local_pos.pose.position.x , local_pos.pose.position.y, local_pos.pose.position.z;
-    state[1] << 2.0 , 0.0, local_pos.pose.position.z;
+    //state[1] << 2.0 , 0.0, local_pos.pose.position.z;
 }
 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    //state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "pose_callback_for_drones_1");
+    ros::init(argc, argv, std::string(getenv("DRONE_NAME")) + "_pose_callback_for_drones");
     ros::NodeHandle nh;
 
     //replanning period

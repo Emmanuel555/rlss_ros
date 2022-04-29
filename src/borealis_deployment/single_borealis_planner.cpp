@@ -208,7 +208,7 @@ void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "borealis_planner_1");
+    ros::init(argc, argv, std::string(getenv("DRONE_NAME")) + "_borealis_planner");
     ros::NodeHandle nh;
 
     
@@ -839,7 +839,7 @@ int main(int argc, char **argv)
                 if (recording)
                 {
                     nav_msgs::Path whole_traj_0;
-                    whole_traj_0.header.frame_id = "camera_init";
+                    whole_traj_0.header.frame_id = "odom";
                     whole_traj_0.header.stamp.sec = time_on_trajectory.toSec();
                     for (double d = 0; d < traj.maxParameter(); d+=0.1)
                     {
