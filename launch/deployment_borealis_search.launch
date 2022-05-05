@@ -17,7 +17,7 @@
 
     <!-- traj parameters -->
     <arg name="intended_velocity" default="1.0"/>
-    <arg name="reach_distance" default="0.5"/>
+    <arg name="reach_distance" default="0.2"/>
     <arg name="obs_check_distance" default="0.5"/>
     <arg name="rescaling_factor" default="1.2"/>
     <arg name="trajectory_target" default="1"/>
@@ -30,8 +30,8 @@
     <arg name="replanning_period" default="0.1"/> <!-- used to be 0.1-->
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[3, 4]"/>
-    <arg name="workspace_min" default="[-20, -20, -0.5]"/>
-    <arg name="workspace_max" default="[20, 20, 3.0]"/>
+    <arg name="workspace_min" default="[-20, -20, 0.5]"/>
+    <arg name="workspace_max" default="[20, 20, 1.8]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 1, 1, 1]"/>
     <arg name="max_rescaling_count" default="2"/>
     <!-- <arg name="rescaling_multiplier" default="1.2"/> -->

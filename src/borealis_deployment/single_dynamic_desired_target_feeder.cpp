@@ -86,7 +86,8 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
         //ROS_INFO_STREAM (number_of_drones);
     }
     
-
+    ROS_INFO_STREAM (goal_pose[0]);
+    ROS_INFO_STREAM (current_pose[0]);
     ROS_INFO_STREAM ((goal_pose[0]-current_pose[0]).norm());
     ROS_INFO_STREAM ("Count_Number");
     ROS_INFO_STREAM (count);
