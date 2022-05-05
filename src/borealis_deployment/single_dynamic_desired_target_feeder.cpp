@@ -45,7 +45,7 @@ StdVectorVectorDIM goal_pose(DIM);
 StdVectorVectorDIM current_pose(DIM);
 int trajectory_target;
 double velocity;
-unsigned int number_of_drones = 2; //Always 1!!!!!!!!
+unsigned int number_of_drones = 3; //Always 1!!!!!!!!
 int robot_idx; 
 double reach_distance;
 double obs_check_distance;

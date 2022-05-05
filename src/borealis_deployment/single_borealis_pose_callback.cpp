@@ -7,6 +7,7 @@
 #include <rlss_ros/dyn_params.h>
 #include <rlss_ros/Collision_Shape_Grp.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <stdlib.h> /*getenv*/
 
 constexpr unsigned int DIM = DIMENSION;
@@ -20,6 +21,7 @@ using AlignedBox = rlss::internal::AlignedBox<double, DIM>;
 StdVectorVectorDIM state(DIM); // state now contains the position of all the drones involved
 unsigned int number_of_drones;
 std::string str_number_of_drones;
+std::string other_agent;
 VectorDIM testing(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
 int robot_idx; 
@@ -43,7 +45,20 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    if (robot_idx == 1)
+    {
+        state[robot_idx] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    }
+    else
+    {
+        state[robot_idx-robot_idx] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    }
+}
+
+void humanCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+{
+    auto local_pos = *msg;
+    state[2] << local_pos.pose.pose.position.x, local_pos.pose.pose.position.y, local_pos.pose.pose.position.z;
 }
 
 int main(int argc, char **argv) {
@@ -55,6 +70,15 @@ int main(int argc, char **argv) {
     nh.getParam("replanning_period", replanning_period);
     nh.getParam("robot_idx", robot_idx);
     auto id = std::to_string(robot_idx);
+
+    if (robot_idx == 1)
+    {
+        other_agent = std::to_string(robot_idx+1);
+    }
+    else
+    {
+        other_agent = std::to_string(robot_idx-1);         
+    }
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
     nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
@@ -73,7 +97,8 @@ int main(int argc, char **argv) {
 
     //subscribers
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav"+ str_number_of_drones + "/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav" + other_agent + "/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber human_pub = nh.subscribe("/HumanPose", 10, humanCallback);
     ros::Subscriber dynamicparams = nh.subscribe("/uav" + id + "/dyn_params", 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
 
