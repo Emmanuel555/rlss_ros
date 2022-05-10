@@ -536,7 +536,7 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM (selected_state.size());
         ROS_INFO_STREAM (continuity_upto_degree);
         VectorDIM current_position(DIM);
-        std::vector<AlignedBox> selected_shapes_to_collide(DIM);
+        std::vector<AlignedBox> selected_shapes_to_collide;
         ROS_INFO_STREAM ("Number of collision shapes before insertion is " << selected_shapes_to_collide.size());
         for (std::size_t d = 0; d < DIM; d++)
         {
@@ -841,7 +841,7 @@ int main(int argc, char **argv)
                 if (recording)
                 {
                     nav_msgs::Path whole_traj_0;
-                    whole_traj_0.header.frame_id = "uav1/camera_init";
+                    whole_traj_0.header.frame_id = "uav2/t265_odom_frame";
                     whole_traj_0.header.stamp.sec = time_on_trajectory.toSec();
                     for (double d = 0; d < traj.maxParameter(); d+=0.1)
                     {
