@@ -8,15 +8,15 @@
     <!-- new_params -->
     <arg name="mode" default="sim"/> <!-- sim or real -->
     <arg name="recording" default="true"/> <!-- on or off -->
-    <arg name="actual_timestamp" default="0.1"/> <!-- actual time stamp to go to -->
+    <arg name="actual_timestamp" default="1.0"/> <!-- actual time stamp to go to -->
     <arg name="robot_idx" default="$(env DRONE_NUMBER)"/> <!-- robot id -->
 
     <!-- OBSTACLE FEEDER PARAMETERS -->
     <arg name="obstacles_directory" default="/home/emmanuel/rlss_ws/src/rlss_ros/third_party/rlss/examples/inputs/obstacle_descriptions/3d/borealis_demo_1"/>
-    <arg name="occupancy_grid_step_size" default="[0.25, 0.25, 0.25]"/>
+    <arg name="occupancy_grid_step_size" default="[0.15, 0.15, 0.15]"/>
 
     <!-- traj parameters -->
-    <arg name="intended_velocity" default="0.7"/>
+    <arg name="intended_velocity" default="1.0"/>
     <arg name="reach_distance" default="0.2"/>
     <arg name="obs_check_distance" default="0.5"/>
     <arg name="rescaling_factor" default="1.2"/>
@@ -40,10 +40,13 @@
     <arg name="integrated_squared_derivative_weight_degrees" default="[1, 2, 4]"/>
     <arg name="integrated_squared_derivative_weight_weights" default="[1.0, 0.8, 0.1]"/>
     <arg name="desired_time_horizon" default="2.0"/>
-     <arg name="search_step" default="0.1"/>
+    <arg name="search_step" default="0.1"/>
     <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
-    <arg name="collision_shape_at_zero_min" default="[-0.5, -0.5, 0.0]"/>
-    <arg name="collision_shape_at_zero_max" default="[0.5, 0.5, 0.3]"/>
+    <arg name="collision_shape_at_zero_min" default="[-0.35, -0.35, 0.0]"/>
+    <arg name="others_collision_shape_min" default="[-1.0, -1.0, -1.2]"/> 
+
+    <arg name="collision_shape_at_zero_max" default="[0.35, 0.35, 0.3]"/>
+    <arg name="others_collision_shape_max" default="[1.0, 1.0, 1.2]"/>
 
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>
     <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>
@@ -87,6 +90,8 @@
     <rosparam param="workspace_min" subst_value="True">$(arg workspace_min)</rosparam>
     <rosparam param="workspace_max" subst_value="True">$(arg workspace_max)</rosparam>
     <rosparam param="collision_shape_at_zero_min" subst_value="True">$(arg collision_shape_at_zero_min)</rosparam>
+    <rosparam param="others_collision_shape_min" subst_value="True">$(arg others_collision_shape_min)</rosparam>
+    <rosparam param="others_collision_shape_max" subst_value="True">$(arg others_collision_shape_max)</rosparam>
     <rosparam param="collision_shape_at_zero_max" subst_value="True">$(arg collision_shape_at_zero_max)</rosparam>
     <rosparam param="piece_endpoint_cost_weights" subst_value="True">$(arg piece_endpoint_cost_weights)</rosparam>
     <rosparam param="integrated_squared_derivative_weight_degrees" subst_value="True">$(arg integrated_squared_derivative_weight_degrees)</rosparam>

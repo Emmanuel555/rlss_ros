@@ -81,8 +81,8 @@ int main(int argc, char **argv) {
     }
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
-    nh.getParam("collision_shape_at_zero_min", colshape_min_vec);
-    nh.getParam("collision_shape_at_zero_max", colshape_max_vec);
+    nh.getParam("others_collision_shape_min", colshape_min_vec);
+    nh.getParam("others_collision_shape_max", colshape_max_vec);
     VectorDIM colshape_min(DIM), colshape_max(DIM);
     for(unsigned int i = 0; i < DIM; i++) {
         colshape_min(i) = colshape_min_vec[i];
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     //subscribers
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
     ros::Subscriber hover_pub_1 = nh.subscribe("/uav" + other_agent + "/mavros/local_position/pose", 10, hover1Callback);
-    ros::Subscriber human_pub = nh.subscribe("/HumanPose", 10, humanCallback);
+    ros::Subscriber human_pub = nh.subscribe("/HumanUWBUAV" + id + "Pose", 10, humanCallback);
     ros::Subscriber dynamicparams = nh.subscribe("/uav" + id + "/dyn_params", 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
 
@@ -121,7 +121,14 @@ int main(int argc, char **argv) {
                 cs_msg.bbox.max.push_back(current_cs.max()(d));
             }        
             cs_grp_msg.col_shapes.push_back(cs_msg);
-        }    
+        }
+    
+        auto between_human = (state[robot_idx-1] - state[2]).norm();
+        auto between_drones = (state[1] - state[0]).norm();
+	ROS_INFO_STREAM("Human Pose " << state[2]);
+	ROS_INFO_STREAM("UAV Pose " << state[robot_idx-1]);        
+	ROS_INFO_STREAM("between_human " << between_human);
+	ROS_INFO_STREAM("between_drones " << between_drones);
         collision_shape_grp_publisher.publish(cs_grp_msg);
         cs_grp_msg.col_shapes.clear();
         

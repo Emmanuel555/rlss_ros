@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
 
     //subscription here, TODO*
     //sros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
-    ros::Subscriber target_0 = nh.subscribe("/uav" + id + "/teaming_planner/assigned_virtual_position", 10, targetCallback);
+    ros::Subscriber target_0 = nh.subscribe("/uav" + id + "/control_manager/mavros_assigned_virtual_position", 10, targetCallback);
 
     //subscription
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
