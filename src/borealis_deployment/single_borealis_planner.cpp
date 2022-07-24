@@ -537,7 +537,7 @@ int main(int argc, char **argv)
         ROS_INFO_STREAM (continuity_upto_degree);
         VectorDIM current_position(DIM);
         std::vector<AlignedBox> selected_shapes_to_collide;
-        ROS_INFO_STREAM ("Number of collision shapes before insertion is " << selected_shapes_to_collide.size());
+        ROS_INFO_STREAM ("Number of collision shapes before insertion is " << selected_shapes_to_collide.size()); //0
         for (std::size_t d = 0; d < DIM; d++)
         {
             selected_state[0][d] = state[0][d];
@@ -549,13 +549,14 @@ int main(int argc, char **argv)
             /* ROS_INFO_STREAM ("elem first");
             ROS_INFO_STREAM (elem.first);
             ROS_INFO_STREAM (robot_idx-1); */
-            if (elem.first != robot_idx-1)
-            {
-                ROS_INFO_STREAM ("Collision shape being inserted for " << elem.first);
-                selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
-            }
+            
+            //if (elem.first != robot_idx-1)
+            //{
+            ROS_INFO_STREAM ("Collision shape being inserted for " << elem.first);
+            selected_shapes_to_collide.push_back(elem.second); // first is unsigned int
+            //}
         }
-        ROS_INFO_STREAM ("Number of collision shapes after insertion is " << selected_shapes_to_collide.size());
+        ROS_INFO_STREAM ("Number of collision shapes after insertion is " << selected_shapes_to_collide.size()); //3
         
         //AlignedBox robot_box = self_col_shape->boundingBox(selected_state[0]);
 

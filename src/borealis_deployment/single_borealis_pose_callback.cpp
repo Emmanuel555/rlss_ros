@@ -18,11 +18,12 @@ using AABBCollisionShape = rlss::AlignedBoxCollisionShape<double, DIM>;
 using AlignedBox = rlss::internal::AlignedBox<double, DIM>;
 
 //unsigned int self_robot_idx;
-StdVectorVectorDIM state(DIM); // state now contains the position of all the drones involved
+StdVectorVectorDIM state(DIM); // state now contains the position of all the drones and human involved
 unsigned int number_of_drones;
 std::string str_number_of_drones;
-std::string other_agent;
-VectorDIM testing(DIM);
+std::string other_agent_a;
+std::string other_agent_b;
+VectorDIM current_drone(DIM);
 std::shared_ptr<AABBCollisionShape> shape;
 int robot_idx; 
 
@@ -30,14 +31,15 @@ int robot_idx;
 ros::Publisher collision_shape_grp_publisher;
 
 void dynparamCallback(const rlss_ros::dyn_params::ConstPtr& msg){
-    number_of_drones = msg->number_of_drones;
+    number_of_drones = msg->number_of_drones; //3
     str_number_of_drones = std::to_string(number_of_drones);
 }
 
 void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right for this callbacks, it shud be the other surrounding drones local position
 {
     auto local_pos = *msg;
-    state[robot_idx-1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    current_drone << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+    //state[robot_idx-1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
     //state[1] << local_pos.pose.position.x , local_pos.pose.position.y, local_pos.pose.position.z;
     //state[1] << 2.0 , 0.0, local_pos.pose.position.z;
 }
@@ -45,14 +47,13 @@ void hover0Callback(const geometry_msgs::PoseStamped::ConstPtr& msg) //by right 
 void hover1Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     auto local_pos = *msg;
-    if (robot_idx == 1)
-    {
-        state[robot_idx] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
-    }
-    else
-    {
-        state[robot_idx-robot_idx] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
-    }
+    state[0] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
+}
+
+void hover2Callback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+{
+    auto local_pos = *msg;
+    state[1] << local_pos.pose.position.x, local_pos.pose.position.y, local_pos.pose.position.z;
 }
 
 void humanCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
@@ -71,13 +72,28 @@ int main(int argc, char **argv) {
     nh.getParam("robot_idx", robot_idx);
     auto id = std::to_string(robot_idx);
 
-    if (robot_idx == 1)
+    switch (robot_idx)
     {
-        other_agent = std::to_string(robot_idx+1);
-    }
-    else
-    {
-        other_agent = std::to_string(robot_idx-1);         
+    case 1:
+        {
+         other_agent_a = std::to_string(2);
+         other_agent_b = std::to_string(3);   
+        }
+        break;
+
+    case 2:
+        {
+         other_agent_a = std::to_string(1);
+         other_agent_b = std::to_string(3);   
+        }
+        break;
+
+    case 3:
+        {
+         other_agent_a = std::to_string(1);
+         other_agent_b = std::to_string(2);   
+        }
+        break;
     }
 
     std::vector<double> colshape_min_vec, colshape_max_vec;
@@ -97,7 +113,8 @@ int main(int argc, char **argv) {
 
     //subscribers
     ros::Subscriber hover_pub_0 = nh.subscribe("/uav" + id + "/mavros/local_position/pose", 10, hover0Callback);
-    ros::Subscriber hover_pub_1 = nh.subscribe("/uav" + other_agent + "/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_1 = nh.subscribe("/uav" + other_agent_a + "/mavros/local_position/pose", 10, hover1Callback);
+    ros::Subscriber hover_pub_2 = nh.subscribe("/uav" + other_agent_b + "/mavros/local_position/pose", 10, hover2Callback);
     ros::Subscriber human_pub = nh.subscribe("/HumanUWBUAV" + id + "Pose", 10, humanCallback);
     ros::Subscriber dynamicparams = nh.subscribe("/uav" + id + "/dyn_params", 10, dynparamCallback);
     ros::Rate rate(1/replanning_period);
@@ -123,12 +140,15 @@ int main(int argc, char **argv) {
             cs_grp_msg.col_shapes.push_back(cs_msg);
         }
     
-        auto between_human = (state[robot_idx-1] - state[2]).norm();
-        auto between_drones = (state[1] - state[0]).norm();
-	ROS_INFO_STREAM("Human Pose " << state[2]);
-	ROS_INFO_STREAM("UAV Pose " << state[robot_idx-1]);        
-	ROS_INFO_STREAM("between_human " << between_human);
-	ROS_INFO_STREAM("between_drones " << between_drones);
+        auto between_drones_a = (current_drone - state[0]).norm();
+        auto between_drones_b = (current_drone - state[1]).norm();
+        auto between_human = (current_drone - state[2]).norm();
+
+        ROS_INFO_STREAM("Human Pose " << state[2]);
+        ROS_INFO_STREAM("Current UAV Pose " << current_drone);        
+        ROS_INFO_STREAM("between_human " << between_human);
+        //ROS_INFO_STREAM("x="<<x<<" y="<<y<<" z="<<z<<" R="<<R<<" P="<<P<<" Y="<<Y);
+        ROS_INFO_STREAM("between drone a: "<<between_drones_a<<" between drone b: "<< between_drones_b);
         collision_shape_grp_publisher.publish(cs_grp_msg);
         cs_grp_msg.col_shapes.clear();
         

@@ -45,7 +45,7 @@ StdVectorVectorDIM goal_pose(DIM);
 StdVectorVectorDIM current_pose(DIM);
 int trajectory_target;
 double velocity;
-unsigned int number_of_drones = 3; //Always 1!!!!!!!!
+unsigned int number_of_drones = 3; 
 int robot_idx; 
 double reach_distance;
 double obs_check_distance;
@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
     
 
     //subscription here, TODO*
-    //sros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
+    //ros::Subscriber target_0 = nh.subscribe("/pose3dk", 10, targetCallback);
     ros::Subscriber target_0 = nh.subscribe("/uav" + id + "/control_manager/mavros_assigned_virtual_position", 10, targetCallback);
 
     //subscription

@@ -42,11 +42,14 @@
     <arg name="desired_time_horizon" default="2.0"/>
     <arg name="search_step" default="0.1"/>
     <arg name="num_bezier_control_points" default="[8, 8, 8, 8]"/>
+
+
     <arg name="collision_shape_at_zero_min" default="[-0.35, -0.35, 0.0]"/>
     <arg name="others_collision_shape_min" default="[-1.0, -1.0, -1.2]"/> 
 
     <arg name="collision_shape_at_zero_max" default="[0.35, 0.35, 0.3]"/>
     <arg name="others_collision_shape_max" default="[1.0, 1.0, 1.2]"/>
+
 
     <arg name="soft_optimization_parameters/robot_to_robot_hyperplane_constraints_enabled" default="true"/>
     <arg name="soft_optimization_parameters/robot_to_obstacle_hyperplane_constraints_enabled" default="true"/>
