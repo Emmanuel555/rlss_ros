@@ -772,7 +772,7 @@ int main(int argc, char **argv)
             PiecewiseCurve new_curve;
             new_curve.addPiece(desired_trajectory.operator[](0));
             VectorDIM goal_position = new_curve.eval(new_curve.maxParameter(), 0);
-            ROS_INFO_STREAM (new_curve.maxParameter());
+            ROS_INFO_STREAM (new_curve.maxParameter()); 
 
             //add original pw curve to goal selector
             rlss_goal_selector->setOriginalTrajectory(new_curve);

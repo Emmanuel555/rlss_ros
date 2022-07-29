@@ -52,6 +52,7 @@ double obs_check_distance;
 double rescaling_factor;
 unsigned int solver_type = 0; // rlss hard soft
 std_msgs::Int32 trigger_callback;
+std_msgs::Int32 trigger_ros_callback;
 double buffer = 5.0;
 double count = 0.0;
 
@@ -69,7 +70,8 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     
     std_msgs::Bool activation;
 
-    if (trigger_callback.data == 0)
+    //if (trigger_callback.data == 0)
+    if (trigger_ros_callback.data == 0)
     {
 
         count = 0.0;
@@ -117,7 +119,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
 
 void triggerCallback(const std_msgs::Int32& msg)
     {
-        trigger_callback = msg;
+        trigger_ros_callback = msg;
     }
 
 /*void dynamicReconfigureCallback(rlss_ros::setTargetsConfig &config, uint32_t level)
@@ -249,7 +251,8 @@ int main(int argc, char **argv) {
                 }
                 while (!reached_final_destination(goal_pose,current_pose,reach_distance,number_of_drones)){ 
                     //ROS_INFO_STREAM(trigger_callback.data);
-                    if(trigger_callback.data < 1){
+                    //Used to be trigger_callback.data 
+                    if(trigger_ros_callback.data < 1){    
                         pt_msg.pieces.clear();
                         pt_msg.start_time.data = ros::Time::now();
                         //for(unsigned int d = 0; d < number_of_drones; d++){
@@ -277,7 +280,9 @@ int main(int argc, char **argv) {
                     }
                     }
                 //ROS_INFO_STREAM (duration[0]);
+                ROS_INFO_STREAM ("Trigger is "<< trigger_callback.data);
                 tri.publish(trigger_callback);
+                ROS_INFO_STREAM ("Goal pose to reconfirm is  "<< goal_pose[0]);
                 pt.publish(pt_msg);
                 }
                 break;
