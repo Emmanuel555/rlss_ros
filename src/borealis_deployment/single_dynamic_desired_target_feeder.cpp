@@ -71,7 +71,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     std_msgs::Bool activation;
 
     //if (trigger_callback.data == 0)
-    if (trigger_ros_callback.data == 0)
+    if (trigger_callback.data == 0)
     {
 
         count = 0.0;
@@ -271,6 +271,8 @@ int main(int argc, char **argv) {
                         //} 
                         trigger_callback.data += 1;
                         ROS_INFO_STREAM ("Sending goal position...");
+                        ROS_INFO_STREAM ("Trigger callback is "<< trigger_callback.data);
+                        ROS_INFO_STREAM ("Trigger ros callback is "<< trigger_ros_callback.data);
                         //tri.publish(trigger_callback);
                         //pt.publish(pt_msg);
                     }
