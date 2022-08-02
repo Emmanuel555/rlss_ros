@@ -59,6 +59,7 @@ double count = 0.0;
 ros::Publisher dp;
 ros::Publisher planner_activation;
 ros::Publisher tri;
+ros::Publisher pt;
 
 bool reached_final_destination(const StdVectorVectorDIM& goal_pose, 
                             const StdVectorVectorDIM& current_pose, 
@@ -71,7 +72,7 @@ bool reached_final_destination(const StdVectorVectorDIM& goal_pose,
     std_msgs::Bool activation;
 
     //if (trigger_callback.data == 0)
-    if (trigger_callback.data == 0)
+    if (trigger_ros_callback.data == 0)
     {
 
         count = 0.0;
@@ -195,7 +196,7 @@ int main(int argc, char **argv) {
     // dso convex hull algo would be added here
 
     //publishing
-    ros::Publisher pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/uav" + id + "/Pseudo_trajectory", 10); //just added 
+    pt = nh.advertise<rlss_ros::PiecewiseTrajectory>("/uav" + id + "/Pseudo_trajectory", 10); //just added 
     dp = nh.advertise<rlss_ros::dyn_params>("/uav" + id + "/dyn_params", 10);
     planner_activation = nh.advertise<std_msgs::Bool>("/uav" + id + "/planner_activation", 10);
     tri = nh.advertise<std_msgs::Int32>("/uav" + id + "/trigger", 10);
@@ -213,6 +214,9 @@ int main(int argc, char **argv) {
 
     while(ros::ok()){
         ros::spinOnce();
+        
+        //ROS_INFO_STREAM ("pt_msg is " << pt_msg);
+        //pd.publish(pt_msg);
 
         //testing_cpt = current_pose;
         if (ros::Time::now().toSec() > buffer)
@@ -249,7 +253,7 @@ int main(int argc, char **argv) {
                     trigger_callback.data = 0;
                     tri.publish(trigger_callback);
                 }
-                while (!reached_final_destination(goal_pose,current_pose,reach_distance,number_of_drones)){ 
+                if (!reached_final_destination(goal_pose,current_pose,reach_distance,number_of_drones)){ 
                     //ROS_INFO_STREAM(trigger_callback.data);
                     //Used to be trigger_callback.data 
                     if(trigger_ros_callback.data < 1){    
@@ -276,19 +280,25 @@ int main(int argc, char **argv) {
                         //tri.publish(trigger_callback);
                         //pt.publish(pt_msg);
                     }
-                    else
-                    {
-                        break;
-                    }
+                    //else
+                    //{
+                    //    break;
+                    //}
                     }
                 //ROS_INFO_STREAM (duration[0]);
                 ROS_INFO_STREAM ("Trigger is "<< trigger_callback.data);
+                ROS_INFO_STREAM ("Trigger ros callback is "<< trigger_ros_callback.data);
                 tri.publish(trigger_callback);
                 ROS_INFO_STREAM ("Goal pose to reconfirm is  "<< goal_pose[0]);
                 pt.publish(pt_msg);
                 }
                 break;
             } 
+	    //ROS_INFO_STREAM ("Traj time is " << pt_msg.start_time.data);	
+	    //ROS_INFO_STREAM ("Trigger is " << trigger_callback.data);
+	    //tri.publish(trigger_callback);
+            //ROS_INFO_STREAM ("Goal pose to reconfirm is  "<< goal_pose[0]);
+            
             if (trajectory_target == 0)
             {
                 trigger_pose.clear();

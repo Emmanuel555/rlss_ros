@@ -30,7 +30,7 @@
     <arg name="replanning_period" default="0.1"/> <!-- used to be 0.1-->
     <arg name="maximum_derivative_magnitude_degrees" default="[1, 2]"/>
     <arg name="maximum_derivative_magnitude_magnitudes" default="[3, 4]"/>
-    <arg name="workspace_min" default="[-40, -40, 0.5]"/>
+    <arg name="workspace_min" default="[-40, -40, -0.5]"/>
     <arg name="workspace_max" default="[40, 40, 1.8]"/>
     <arg name="piece_endpoint_cost_weights" default="[1, 1, 1, 1]"/>
     <arg name="max_rescaling_count" default="10"/>
